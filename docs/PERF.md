@@ -1,5 +1,8 @@
 # Performance and latency — targets, physics, and the render-path decision
 
+## DECISION (owner, 2026-10-30)
+Stay on Kotlin + Jetpack Compose; Android's own C++ engine (HWUI/Skia) does the drawing. Latency target is 10 ms, to be verified by measurement on the real unit. Gates below are therefore: app+GPU frame cost p99 <= 10 ms (hard), 5 ms as stretch goal; zero missed vsyncs; input-to-callback p99 <= 3 ms. Options B (Kotlin SurfaceView) and C (NDK C++) are held in reserve and are built only if Compose misses a gate on the unit. Touch-to-photon is reported (camera method), not gated: it is bounded by the panel refresh and touch sample rate.
+
 Owner target (2026-10-30): "<5 ms, peak smoothness, maybe a lower-level language than Kotlin".
 
 ## 1. What <5 ms can and cannot mean
@@ -31,7 +34,7 @@ Build the same Drive screen (tach arc + speed numerals + boost bar, driven by Dr
 
 | metric | how | gate |
 |--------|-----|------|
-| app frame cost p50/p99 | `adb shell dumpsys gfxinfo <pkg> framestats` (reset first), plus Perfetto trace | p99 <= 5 ms |
+| app frame cost p50/p99 | `adb shell dumpsys gfxinfo <pkg> framestats` (reset first), plus Perfetto trace | p99 <= 10 ms (stretch 5 ms) |
 | janky frames | same | < 1% |
 | missed vsync | `dumpsys SurfaceFlinger --latency <layer>` | 0 over the run |
 | input-to-callback | in-app: `SystemClock.uptimeMillis() - event.eventTime` in `onTouchEvent` | p99 <= 3 ms |
