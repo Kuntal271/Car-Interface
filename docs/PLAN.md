@@ -13,6 +13,8 @@ It shares no code, repo, remote or docs with any other project on this Mac.
 5. Done so far: repo ~/ecosport-cockpit created; tools/canbox_decode.py (Raise + Hiworld parser, checksum resync, census; 10 unit tests green); docs/CANBOX-FRAMES.md, docs/ROOT-ASSESSMENT.md, docs/DESIGN.md.
 6. New owner questions: which Canbox brand/version does Car Info show; does the stock UI show RPM and speed, and which other live values; can you download the firmware package for the unit (the dealer "hard update" file).
 
+7. Latency/smoothness: owner target <5 ms. Reframed in docs/PERF.md: per-frame cost p99 <= 5 ms and zero missed vsyncs (touch-to-photon <5 ms is physically impossible on a 60 Hz panel). Render path is decided by a spike on the real unit (A Compose, B Kotlin SurfaceView, C NDK C++ GLES); :vehicle stays Kotlin.
+
 ## Goal
 
 Replace the stock, generic launcher/UI of the owner's Blaupunkt Palm Bay 1000 Android head unit (2015 Ford EcoSport 1.0 EcoBoost, India) with a modern, glanceable "Cockpit" launcher + live-vehicle dashboard (RPM, speed, boost, coolant, battery, fuel, trip data), developed and previewed fully on the Mac first (Android emulator at the unit's resolution), then installed on the real unit.
