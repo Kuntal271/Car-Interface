@@ -9,3 +9,4 @@ __pycache__/
 docs/recon/raw/
 captures/
 .DS_Store
+firmware/

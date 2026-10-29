@@ -61,6 +61,8 @@ Head unit -> canbox: 0x81 start/stop (d0 = 1/0), 0x82 set time, 0x90 request a f
 
 ### The important finding
 
+Owner report (2026-10-30): the stock UI DOES show RPM, speed and fuel. So the unit receives them from somewhere; with a Canbox that points at the dialect or revision in use (Hiworld, or a Raise revision newer than the one decompiled here) rather than the Ford-Raise handler I read. Treat "which frame carries rpm/speed/fuel" as the first thing the capture must answer.
+
 In the Ford dialect, the head-unit side declares properties for engine speed, speedometer, battery voltage, odometer and remaining fuel, but its frame handler has NO case that fills them: there is no 0x41 or 0x16 handler. The Ford dialect delivers doors, A/C (with outside temperature), radar, steering keys, backlight, time and SYNC emulation. RPM and speed come in the VW dialect (0x41 sub 02).
 So if your head unit really shows RPM and speed, one of these is true: (a) your Canbox/dialect is not Raise-Ford (Hiworld? a newer Raise-Ford version?), (b) a newer protocol revision adds a vehicle-info frame, (c) speed is GPS-derived and RPM comes from somewhere else. This is exactly what the capture must settle.
 

@@ -41,6 +41,8 @@ Prior from the Blaupunkt family: the older Key Largo (Android 9, "alps 8227L") h
 
 ## Step zero, no risk, mostly on the Mac
 
+0-pre (2026-10-30): the only public firmware pointer I found for the Palm Bay 1000 was an installer's Google-Drive link (EV AUTO "Hard Software Update" video, Apr 2026; version string shown in the video: 6.1.52). That link is now dead (Drive returns "Page not found"); no other public mirror exists. The owner is on the latest OTA build. So the package has to come from the unit or from Blaupunkt: (i) the unit's OTA app downloads the package to the unit's storage when an update is offered (adb pull it, or copy via USB), (ii) Blaupunkt toll-free support / dealer will send the link if you send a photo of Settings -> System version, (iii) a factory-reset-free read of the running system over adb (getprop, /proc, pm list) answers D1 without the package.
+
 0a. Settings -> About/System: write down model, system version string, MCU version, Android version, kernel (photo is fine).
 0b. Get the firmware package for your exact unit (the same file the dealer videos use for the "hard update"). Unzip it on the Mac: file names identify the family immediately (for example an FYT unit ships `lsec6315update` + a `*_1.zip`; MediaTek ships scatter/`*.img`; Allwinner ships `*.img`/`update.zip`; Unisoc ships `*.pac`). Look for boot.img, vbmeta, an updater binary, signature files. From that: family, whether boot.img is plain, whether the updater verifies signatures.
 0c. One adb session (parked, engine on): D1 getprop dump + `adb shell su -c id` + `adb root`. 60 seconds, read-only.
