@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en" class="doc"><head><meta charset="utf-8"><title>Cockpit · EcoSport head-unit design</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="assets/ui.css"><link rel="stylesheet" href="assets/site.css">
+<script src="assets/ui.js"></script><script src="assets/screens.js"></script></head>
+<body class="doc">
+<nav class="nav"><div class="wrap"><a class="brand" href="index.html"><i></i>Cockpit</a><a class="l on" href="index.html">Overview</a><a class="l" href="prototype.html">Prototype</a><a class="l" href="#screens">Screens</a><a class="l" href="design-system.html">Design system</a><a class="l" href="components.html">Components</a><a class="l" href="specs.html">Specs</a><span class="sp"></span><a class="btn pri" style="min-height:44px;padding:0 20px;font-size:16px" href="prototype.html">Open prototype</a></div></nav>
+
+<header class="hero"><div class="wrap">
+  <div class="grid2">
+    <div>
+      <div class="kicker">Ford EcoSport 1.0 EcoBoost · Blaupunkt Palm Bay 1000 · 1280 × 800</div>
+      <h1>Cock<b>pit</b></h1>
+      <p>A launcher and live-vehicle dashboard for the head unit, designed in three colours. Every screen is a real 1280 × 800 page, and the prototype lets you move between them with a simulated engine running.</p>
+      <div class="cta"><a class="btn pri big" href="prototype.html">Open the prototype</a><a class="btn big ghost" href="#screens">Browse all screens</a></div>
+    </div>
+    <div class="dev"><div class="bz"><iframe src="screens/drive.html?embed=1&live=1&t=20" title="Live Drive screen" tabindex="-1"></iframe></div></div>
+  </div>
+  <div class="stats"><div><b id="n-screens">21</b><span>Screens</span></div><div><b>3</b><span>Colours</span></div><div><b>10 ms</b><span>Frame-cost target</span></div><div><b>0</b><span>Writes to the car</span></div></div>
+</div></header>
+
+<section class="sec"><div class="wrap">
+  <div class="kicker">How to review</div><h2>Start here</h2>
+  <p class="lead">Open the prototype and press <code>L</code> to start the simulated drive. Use the left list or the keys <code>1</code>–<code>9</code>, <code>[</code> and <code>]</code> to move around. Everything on the head unit is reached through the right-hand dock.</p>
+  <div class="three">
+    <div class="pnl"><h3>Prototype</h3><p>One bezel, every screen, a live simulated engine, and scenario buttons for parked, launch, cruise and braking.</p><p><a class="btn" href="prototype.html" style="min-height:48px">Open</a></p></div>
+    <div class="pnl"><h3>Design system</h3><p>Palette with measured contrast, type scale, grid, shapes, icons, motion and data-state rules.</p><p><a class="btn" href="design-system.html" style="min-height:48px">Open</a></p></div>
+    <div class="pnl"><h3>Specs</h3><p>Per-screen data sources, integration risk, Compose structure, overlay priorities and open questions.</p><p><a class="btn" href="specs.html" style="min-height:48px">Open</a></p></div>
+  </div>
+</div></section>
+
+<section class="sec" id="screens"><div class="wrap">
+  <div class="kicker">Every screen</div><h2>Screens</h2>
+  <p class="lead">Click a card for the static page, or add <code>?live=1</code> to its address to watch it animate. Tags show where the data comes from; the right-hand tag is integration risk on the real unit.</p>
+  <div class="jump" id="jump"></div><div id="gallery"></div>
+</div></section>
+
+<section class="sec"><div class="wrap">
+  <div class="kicker">Honest status</div><h2>What is real and what is assumed</h2>
+  <div class="two" style="margin-top:20px">
+    <div class="pnl"><h3>Designed and checked here</h3><ul><li>All 21 screens render at 1280 × 800 with no clipped or overflowing elements (automated check).</li><li>Palette contrast measured, not estimated. See the design system.</li><li>The data layer behind the Drive screen is built and tested in Kotlin (26 tests) against an ELM327 emulator.</li></ul></div>
+    <div class="pnl"><h3>Still unknown until the unit is read</h3><ul><li>Which Canbox dialect the unit speaks, so every Car-screen field is provisional.</li><li>Whether the vendor radio, DSP and camera services can be controlled from a third-party app.</li><li>Real frame times on the unit's GPU. The 10 ms target is verified by measurement, not by this mock-up.</li></ul></div>
+  </div>
+</div></section>
+
+<footer class="wrap foot">Fonts: Big Shoulders Display, Space Grotesk, JetBrains Mono (SIL Open Font License, bundled in <code>assets/fonts</code>). Static site, no build step, no network calls: publish the <code>site/</code> folder anywhere.</footer>
+
+<script>
+UI.hydrate(document);
+var g = document.getElementById('gallery'), h = '';
+GROUPS.forEach(function (grp) {
+  h += '<div class="grp" id="g-' + grp.replace(/\W+/g, '') + '">' + grp + '</div><div class="cards">';
+  SCREENS.filter(function (s) { return s.g === grp; }).forEach(function (s) {
+    h += '<a class="sc" href="screens/' + s.id + '.html"><div class="th"><img loading="lazy" src="shots/' + (s.id === 'overlays' ? 'overlays-thumb' : s.id) + '.png" alt="' + s.t + '"></div><div class="bd"><h3>' + s.t + '</h3><p>' + s.b + '</p>' +
+      s.src.map(function (x) { return '<span class="tag">' + x + '</span>'; }).join('') + '<span class="tag ' + (s.risk === 'High' ? 'hi' : s.risk === 'Med' ? 'md' : '') + '">Risk · ' + s.risk + '</span></div></a>';
+  });
+  h += '</div>';
+});
+g.innerHTML = h; document.getElementById('jump').innerHTML = GROUPS.map(function (x) { return '<a href="#g-' + x.replace(/\W+/g, '') + '">' + x + '</a>'; }).join(''); document.getElementById('n-screens').textContent = SCREENS.length;
+</script></body></html>

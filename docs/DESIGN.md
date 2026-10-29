@@ -38,6 +38,18 @@ Rules
 6. 8 dp spacing grid; 24 dp safe margin; 72 dp minimum touch target on the dock, 64 dp elsewhere.
 7. RHD ergonomics: India is right-hand drive, the screen sits to the driver's left, so the nearest edge is the RIGHT edge. Dock = vertical rail on the right; primary actions right-biased. Setting to mirror for LHD.
 
+## 3b. Final design pass (supersedes the numbers above where they differ)
+
+Built as a navigable static site: `docs/design/site/` (open `index.html` via `tools/design.sh serve`, see `docs/design/README.md`). 21 screens at 1280x800 plus design-system, components, specs and a clickable prototype.
+
+- Text floor: 18 px for everything a driver must read. One exception: 16 px JetBrains Mono for non-critical provenance captions and ids.
+- cobalt-lt (#3D6BFF) is 4.3:1 on cards (4.0:1 on surface-2), so it is for icons and graphics, or text of 24 px and larger. Small text uses text (#EAF0FF) or dim (#8190B8, 6.0:1 on cards).
+- Chamfer is 14 px on cards, 12 px on buttons. Dock is 112 px wide, 8 slots of about 93 px, on the right edge.
+- Warning = filled lime block with midnight text, pulsing at 1 Hz. Lime is therefore not used for "normal on" states on the Car screen (those are white text); it marks deviations, selection and live highs.
+- Gear, fuel use, range and consumption are estimates and are labelled EST. Fields the car may never send are hidden, never shown as zero.
+- Tach lime zone starts at 4,500 rpm, redline 6,000, scale 7,000, shift light from 5,200 (all editable in Settings > Vehicle).
+- Owner confirmed the font reading of the brief ("it's right"), though the wording was ambiguous. Bundled fonts are OFL: Big Shoulders Display, Space Grotesk, JetBrains Mono.
+
 ## 4. Screen sketches (1280x800)
 
 Drive: tach arc 270 degrees, cobalt track, lime progress after the threshold (default 4500 rpm), shift-light segments across the top; centre speed numerals (lime); right column: boost bar (vacuum = cobalt segments below zero, positive boost = lime segments), coolant, intake, battery, fuel as segmented tiles; bottom strip: trip km / avg / max / max boost / 0-100 timer.

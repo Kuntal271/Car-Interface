@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Media · Cockpit</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../assets/ui.css"><script src="../assets/ui.js"></script>
+<style>
+.title{font:800 64px/.95 var(--f-display);letter-spacing:.02em;text-transform:uppercase}
+.q{display:flex;align-items:center;gap:16px;height:76px;padding:0 10px;border-bottom:1px solid var(--hair-soft)}
+.q .n{font:500 18px var(--f-mono);color:var(--dim);width:28px}
+.q .t{font:600 22px var(--f-ui)} .q .a{font:400 18px var(--f-ui);color:var(--dim)} .q .d{margin-left:auto;font:500 18px var(--f-mono);color:var(--dim)}
+.q.on{background:linear-gradient(90deg,var(--l12),transparent);box-shadow:inset 4px 0 0 var(--lime)} .q.on .n,.q.on .t{color:var(--lime)}
+</style></head>
+<body><div class="stage"><div class="frame" data-active="media">
+<main class="main row g24" data-od-id="media">
+  <section class="col g12" style="width:650px">
+    <div class="tabs" style="height:48px;flex:none"><span class="chip on">Bluetooth</span><span class="chip">USB</span><span class="chip">Radio</span><span class="chip">Streaming</span></div>
+    <div class="card row g24" style="height:400px;padding:22px" data-od-id="now-playing">
+      <div class="art" style="width:290px;height:290px;flex:none;align-self:center"></div>
+      <div class="col grow jb" style="min-width:0">
+        <div><span class="badge">FLAC · 44.1 kHz</span><div class="title" style="margin-top:14px">Midnight City</div><div class="h3 dim" style="margin-top:10px">M83</div><div class="lbl" style="margin-top:8px">Hurry Up, We're Dreaming</div></div>
+        <div><div class="seg thin sk" data-n="40" data-v=".38" data-c="l"></div><div class="row jb mono" style="margin-top:6px"><span>1:32</span><span>−2:31</span></div></div>
+        <div class="row g12"><a class="btn grow"><i data-i="prev" data-s="30"></i></a><a class="btn pri grow" style="min-height:80px"><i data-i="pause" data-s="40"></i></a><a class="btn grow"><i data-i="next" data-s="30"></i></a></div>
+      </div>
+    </div>
+    <div class="card col grow jb" data-od-id="output">
+      <div class="row jb c"><span class="lbl row c g8"><i data-i="vol" data-s="22"></i>Volume</span><span class="num n-m lime">18</span></div>
+      <div class="slider" data-v=".36" data-n="36"></div>
+      <div class="row g12"><span class="chip on" style="height:44px"><i data-i="shuffle" data-s="20"></i>Shuffle</span><span class="chip" style="height:44px"><i data-i="repeat" data-s="20"></i>Repeat</span><span class="chip" style="height:44px"><i data-i="eq" data-s="20"></i>EQ · Flat</span></div>
+    </div>
+  </section>
+  <section class="card col grow" style="padding:14px 10px" data-od-id="queue">
+    <div class="row jb c" style="padding:0 10px 12px"><span class="h3">Up next</span><span class="lbl">12 tracks</span></div>
+    <div class="q on"><span class="n">01</span><div><div class="t">Midnight City</div><div class="a">M83</div></div><span class="d">4:03</span></div>
+    <div class="q"><span class="n">02</span><div><div class="t">Genesis</div><div class="a">Justice</div></div><span class="d">3:55</span></div>
+    <div class="q"><span class="n">03</span><div><div class="t">Nightcall</div><div class="a">Kavinsky</div></div><span class="d">4:18</span></div>
+    <div class="q"><span class="n">04</span><div><div class="t">Resonance</div><div class="a">HOME</div></div><span class="d">3:32</span></div>
+    <div class="q"><span class="n">05</span><div><div class="t">A Real Hero</div><div class="a">College &amp; Electric Youth</div></div><span class="d">4:30</span></div>
+    <div class="q"><span class="n">06</span><div><div class="t">Tech Noir</div><div class="a">Gunship</div></div><span class="d">5:22</span></div>
+    <div class="q"><span class="n">07</span><div><div class="t">Sunset</div><div class="a">The Midnight</div></div><span class="d">4:11</span></div>
+    <div class="q" style="border:0"><span class="n">08</span><div><div class="t">Neon Lights</div><div class="a">Dance With The Dead</div></div><span class="d">3:48</span></div>
+  </section>
+</main>
+</div></div></body></html>

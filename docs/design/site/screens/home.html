@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Home · Cockpit</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../assets/ui.css"><script src="../assets/ui.js"></script>
+<style>
+.mark{width:20px;height:20px;background:var(--lime);transform:rotate(45deg)}
+.np-title{font:800 56px/.95 var(--f-display);letter-spacing:.02em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.np-sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini .big{font:800 54px/1 var(--f-display)}
+.rc{width:130px;height:98px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:var(--c12);color:var(--text);font:700 18px var(--f-display);letter-spacing:.1em;text-transform:uppercase;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%)}
+.rc .ic{color:var(--cobalt-lt)}
+</style></head>
+<body><div class="stage"><div class="frame" data-active="home">
+<main class="main row g24" data-od-id="home">
+  <section class="col g16" style="width:690px" data-od-id="home-left">
+    <div class="row c jb" style="height:40px">
+      <div class="row c g12"><span class="mark"></span><span class="h2">Cockpit</span></div>
+      <span class="lbl">Engine on · Trip A <b class="white">42.8 km</b></span>
+    </div>
+    <div class="card row g24" style="height:310px;padding:20px" data-od-id="now-playing">
+      <div class="art" style="width:270px;height:270px;flex:none"></div>
+      <div class="col grow jb">
+        <div class="row jb c"><span class="chip c" style="height:40px">Bluetooth audio</span><a href="media.html" class="lbl white">Queue ›</a></div>
+        <div><div class="np-title">Midnight City</div><div class="h3 dim np-sub" style="margin-top:8px">M83 · Hurry Up, We're Dreaming</div></div>
+        <div>
+          <div class="seg thin sk" data-n="64" data-v=".38" data-c="l"></div>
+          <div class="row jb mono" style="margin-top:6px"><span>1:32</span><span>4:03</span></div>
+        </div>
+        <div class="row c g16">
+          <a class="btn grow"><i data-i="prev" data-s="30"></i></a>
+          <a class="btn pri grow" style="min-height:80px"><i data-i="pause" data-s="40"></i></a>
+          <a class="btn grow"><i data-i="next" data-s="30"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="row g16" style="height:170px">
+      <a href="projection.html" class="card mini grow col jb" data-od-id="tile-maps"><span class="lbl row c g8"><i data-i="nav" data-s="22"></i>Maps</span><div class="big lime">Launch</div><div><div class="h3">Android Auto</div><div class="lbl" style="letter-spacing:.04em;text-transform:none">Connected</div></div></a>
+      <a href="radio.html" class="card mini grow col jb" data-od-id="tile-radio"><span class="lbl row c g8"><i data-i="radio" data-s="22"></i>Radio · FM</span><div class="big lime">93.5</div><div><div class="h3">Red FM</div><div class="lbl" style="letter-spacing:.04em;text-transform:none">Preset 3 · stereo</div></div></a>
+      <a href="car.html" class="card mini grow col jb" data-od-id="tile-climate"><span class="lbl row c g8"><i data-i="snow" data-s="22"></i>Climate</span><div class="big">22.0°</div><div><div class="h3">A/C on</div><div class="lbl" style="letter-spacing:.04em;text-transform:none">Fan 3 · recirculate</div></div></a>
+    </div>
+    <div class="col" style="height:128px" data-od-id="recents">
+      <div class="lbl" style="margin-bottom:10px">Recent</div>
+      <div class="row g12">
+        <a href="trips.html" class="rc"><i data-i="route" data-s="34"></i>Trips</a>
+        <a href="parking.html" class="rc"><i data-i="park" data-s="34"></i>Parking</a>
+        <a href="diagnostics.html" class="rc"><i data-i="pulse" data-s="34"></i>Diagnose</a>
+        <a href="sound.html" class="rc"><i data-i="eq" data-s="34"></i>Sound</a>
+        <a href="radio.html" class="rc"><i data-i="radio" data-s="34"></i>Radio</a>
+        <a href="apps.html" class="rc"><i data-i="grid" data-s="34"></i>All apps</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="col g12 grow" data-od-id="home-vitals">
+    <a href="drive.html" class="card col jb" style="height:250px" data-od-id="vital-speed">
+      <div class="row jb c"><span class="lbl">Speed</span><span class="badge lime">Gear <span id="gear">3</span></span></div>
+      <div class="row" style="align-items:baseline;gap:14px"><span id="speed" class="num lime" style="font-size:168px">74</span><span class="unit">km/h</span></div>
+      <div id="spdbar" class="seg sk thin" data-n="40" data-v=".37" data-split=".75"></div>
+    </a>
+    <div class="card col g12" style="height:170px" data-od-id="vital-rpm-boost">
+      <div class="row jb c"><span class="lbl">Engine</span><span class="num n-s"><span id="rpm">5,032</span> <span class="unit">rpm</span></span></div>
+      <div id="rpmbar" class="seg sk" data-n="34" data-v=".72" data-split=".643"></div>
+      <div class="row jb c"><span class="lbl">Boost</span><span class="num n-s lime"><span id="boost">+0.95</span> <span class="unit">bar</span></span></div>
+      <div id="boostbar" class="seg sk" data-n="34" data-zero=".4" data-v=".78"></div>
+    </div>
+    <div class="card row c jb" style="height:130px" data-od-id="vital-fuel">
+      <div class="col g8"><span class="lbl row c g8"><i data-i="fuel" data-s="22"></i>Fuel</span><span class="num n-m"><span id="fuel">62</span><span class="unit">%</span></span></div>
+      <div class="col g8" style="width:190px"><div class="seg sk" data-n="12" data-v=".62" data-c="c"></div><span class="lbl" style="text-align:right">≈ 410 km range</span></div>
+    </div>
+    <div class="row g12" style="height:110px">
+      <div class="card grow col jb tight" data-od-id="vital-coolant"><span class="lbl row c g8"><i data-i="thermo" data-s="22"></i>Coolant</span><span class="num n-m"><span id="cool">92</span><span class="unit">°C</span></span></div>
+      <div class="card grow col jb tight" data-od-id="vital-volt"><span class="lbl row c g8"><i data-i="batt" data-s="22"></i>Battery</span><span class="num n-m">14.2<span class="unit">V</span></span></div>
+    </div>
+  </section>
+</main>
+</div></div>
+<script>
+UI.onready = function () {
+  var $ = function (i) { return document.getElementById(i); };
+  UI.live(function (s) {
+    $('speed').textContent = Math.round(s.speed); $('gear').textContent = s.gear; UI.setSeg($('spdbar'), s.speed / 200);
+    $('rpm').textContent = Math.round(s.rpm).toLocaleString('en-US');
+    UI.setSeg($('rpmbar'), s.rpm / 7000);
+    $('boost').textContent = (s.boost >= 0 ? '+' : '') + s.boost.toFixed(2);
+    UI.setSeg($('boostbar'), (s.boost + 1) / 2.5);
+    $('cool').textContent = Math.round(s.coolant); $('fuel').textContent = Math.round(s.fuel);
+  });
+};
+</script></body></html>

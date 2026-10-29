@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Sound · Cockpit</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../assets/ui.css"><script src="../assets/ui.js"></script>
+<style>
+.band{display:flex;flex-direction:column;align-items:center;gap:10px;flex:1}
+.band .db{font:800 30px var(--f-display)} .band .hz{font:500 18px var(--f-mono);color:var(--dim)}
+.band .seg.v{width:44px;gap:4px}
+.band .seg.v i{min-height:6px;transform:skewX(-14deg)}
+.opt{display:flex;align-items:center;gap:16px;min-height:78px;border-bottom:1px solid var(--hair-soft);font:600 22px var(--f-ui)}
+.opt:last-child{border:0} .opt .s{font:400 18px var(--f-ui);color:var(--dim)}
+</style></head>
+<body><div class="stage"><div class="frame" data-active="media">
+<main class="main row g24" data-od-id="sound">
+  <section class="col g12" style="width:690px">
+    <div class="row jb c" style="height:44px"><span class="h2">Sound</span><div class="tabs"><span class="chip">Flat</span><span class="chip">Bass</span><span class="chip on">Punch</span><span class="chip">Vocal</span></div></div>
+    <div class="card col grow" data-od-id="equalizer">
+      <div class="row jb c"><span class="lbl">Equalizer · 8 band</span><span class="badge lime">Punch · edited</span></div>
+      <div class="row grow" style="margin-top:14px;gap:6px"><div class="col jb" style="padding:34px 8px 34px 0;font:500 16px var(--f-mono);color:var(--dim);text-align:right"><span>+12</span><span>0 dB</span><span>−12</span></div><div id="eq" class="row grow" style="align-items:stretch;gap:6px"></div></div>
+    </div>
+    <div class="card col g12" style="height:150px" data-od-id="volume-block">
+      <div class="row jb c"><span class="lbl row c g8"><i data-i="vol" data-s="22"></i>Volume</span><span class="num n-m lime">18</span></div>
+      <div class="slider" data-v=".36" data-n="40"></div>
+    </div>
+  </section>
+  <section class="col g12 grow">
+    <div class="card col" style="height:410px;padding:16px 18px" data-od-id="balance">
+      <div class="row jb c"><span class="lbl">Balance · Fader</span><span class="lbl lime">L 2 · F 3</span></div>
+      <svg id="pad" viewBox="0 0 400 330" width="100%" height="330" style="margin-top:10px"></svg>
+    </div>
+    <div class="card col grow" style="padding-top:4px;padding-bottom:4px" data-od-id="dsp-options">
+      <div class="opt"><div class="grow">Subwoofer<div class="s">+4 dB</div></div><div class="slider" style="width:170px" data-v=".66" data-n="12"></div></div>
+      <div class="opt"><div class="grow">Loudness</div><span class="tg on"></span></div>
+      <div class="opt"><div class="grow">Speed-sensitive volume<div class="s">Raises level with road noise</div></div><span class="tg on"></span></div>
+    </div>
+  </section>
+</main>
+</div></div>
+<script>
+UI.onready = function () {
+  var B = [['60', 4], ['120', 3], ['250', 1], ['500', 0], ['1k', -1], ['2k', 0], ['4k', 2], ['8k', 3]], h = '';
+  B.forEach(function (b) {
+    var v = (b[1] + 12) / 24, segs = '';
+    for (var i = 0; i < 24; i++) { var f = (i + .5) / 24, c = ''; if (b[1] >= 0 ? (f >= .5 && f <= v) : (f <= .5 && f >= v)) c = b[1] >= 0 ? 'l' : 'c'; if (i === 11 || i === 12) c = c || 'w'; segs += '<i class="' + c + '" style="' + (c === 'w' ? 'opacity:.35' : '') + '"></i>'; }
+    h += '<div class="band"><span class="db ' + (b[1] > 0 ? 'lime' : '') + '">' + (b[1] > 0 ? '+' : b[1] < 0 ? '−' : '') + Math.abs(b[1]) + '</span><div class="seg v grow" style="height:auto">' + segs + '</div><span class="hz">' + b[0] + '</span></div>';
+  });
+  document.getElementById('eq').innerHTML = h;
+  var s = '', x0 = 20, y0 = 10, w = 360, hh = 300;
+  s += '<rect x="' + x0 + '" y="' + y0 + '" width="' + w + '" height="' + hh + '" fill="#0A0F1E" stroke="#2457FF" stroke-opacity=".5"/>';
+  for (var i = 1; i < 6; i++) s += '<line x1="' + (x0 + w * i / 6) + '" x2="' + (x0 + w * i / 6) + '" y1="' + y0 + '" y2="' + (y0 + hh) + '" stroke="#2457FF" stroke-opacity=".25"/>';
+  for (var j = 1; j < 5; j++) s += '<line y1="' + (y0 + hh * j / 5) + '" y2="' + (y0 + hh * j / 5) + '" x1="' + x0 + '" x2="' + (x0 + w) + '" stroke="#2457FF" stroke-opacity=".25"/>';
+  var px = x0 + w * .42, py = y0 + hh * .36;
+  s += '<line x1="' + px + '" x2="' + px + '" y1="' + y0 + '" y2="' + (y0 + hh) + '" stroke="#C8FF00" stroke-opacity=".5"/><line y1="' + py + '" y2="' + py + '" x1="' + x0 + '" x2="' + (x0 + w) + '" stroke="#C8FF00" stroke-opacity=".5"/>';
+  s += '<path d="M' + px + ' ' + (py - 20) + 'L' + (px + 20) + ' ' + py + 'L' + px + ' ' + (py + 20) + 'L' + (px - 20) + ' ' + py + 'Z" fill="#C8FF00"/>';
+  s += '<text x="' + (x0 + 12) + '" y="' + (y0 + 28) + '" font-family="Space Grotesk" font-weight="600" font-size="20" letter-spacing="3" fill="#8190B8">FRONT</text><text x="' + (x0 + 12) + '" y="' + (y0 + hh - 12) + '" font-family="Space Grotesk" font-weight="600" font-size="20" letter-spacing="3" fill="#8190B8">REAR</text>';
+  document.getElementById('pad').innerHTML = s;
+};
+</script></body></html>

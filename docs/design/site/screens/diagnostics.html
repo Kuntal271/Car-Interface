@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Diagnostics · Cockpit</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../assets/ui.css"><script src="../assets/ui.js"></script>
+<style>
+.kv{display:flex;justify-content:space-between;align-items:center;height:50px;border-bottom:1px solid var(--hair-soft);font:500 20px var(--f-ui)}
+.kv:last-child{border:0} .kv span:first-child{color:var(--dim)} .kv b{font:600 20px var(--f-ui)}
+.sum{height:112px;display:flex;flex-direction:column;justify-content:space-between;padding:14px 18px}
+.sum .v{font:800 48px/.9 var(--f-display)}
+.tbl svg{display:block;width:150px;height:30px}
+</style></head>
+<body><div class="stage"><div class="frame" data-active="apps">
+<main class="main row g24" data-od-id="diagnostics">
+  <section class="col g12" style="width:352px">
+    <div class="row jb c" style="height:44px"><span class="h2">Diagnose</span><span class="badge lime"><i data-i="key" data-s="16"></i>Read-only</span></div>
+    <div class="card col" style="padding-top:12px;padding-bottom:6px" data-od-id="adapter">
+      <div class="row jb c" style="margin-bottom:8px"><span class="lbl">OBD adapter</span><span class="badge fill">Connected</span></div>
+      <div class="kv"><span>Type</span><b>ELM327 · BLE</b></div>
+      <div class="kv"><span>Protocol</span><b>CAN 11-bit / 500k</b></div>
+      <div class="kv"><span>PIDs found</span><b>22</b></div>
+      <div class="kv"><span>Poll rate</span><b class="lime">14 Hz</b></div>
+      <div class="kv"><span>Latency</span><b>38 ms</b></div>
+    </div>
+    <div class="card col grow" data-od-id="safety">
+      <span class="lbl row c g8"><i data-i="key" data-s="22"></i>Command guard</span>
+      <div style="font:400 20px/1.35 var(--f-ui);margin-top:12px;color:var(--text)">Only <span class="lime">AT</span> setup commands and <span class="lime">Mode 01</span> live reads are ever sent. Everything else is blocked in code and in tests.</div>
+      <div class="row g8" style="margin-top:auto;flex-wrap:wrap"><span class="badge">Mode 03 · blocked</span><span class="badge">Mode 04 · blocked</span><span class="badge">Mode 22 · blocked</span></div>
+    </div>
+  </section>
+
+  <section class="col g12 grow" data-od-id="live-data">
+    <div class="row g12">
+      <div class="card sum grow"><span class="lbl">Battery</span><span class="v">14.2<span class="unit"> V</span></span></div>
+      <div class="card sum grow"><span class="lbl">Coolant</span><span class="v">92<span class="unit"> °C</span></span></div>
+      <div class="card sum grow"><span class="lbl">Load</span><span class="v lime">88<span class="unit"> %</span></span></div>
+      <div class="card sum grow"><span class="lbl">Faults</span><span class="v dim">—</span></div>
+    </div>
+    <div class="card col grow" style="padding:10px 14px">
+      <table class="tbl"><thead><tr><th>PID</th><th>Parameter</th><th style="text-align:right">Value</th><th>Unit</th><th>Trend</th><th style="text-align:right">Hz</th></tr></thead><tbody id="rows"></tbody></table>
+    </div>
+  </section>
+</main>
+</div></div>
+<script>
+UI.onready = function () {
+  /* [pid, name, value, unit, lo, hi, hz, live-key or drift] */
+  var R = [['010C', 'Engine speed', '5,029', 'rpm', 800, 6500, 12, 'rpm'], ['010D', 'Vehicle speed', '74', 'km/h', 0, 140, 12, 'speed'], ['010B', 'Manifold pressure', '195', 'kPa', 20, 220, 4, 'map'], ['0133', 'Barometric', '100', 'kPa', 90, 110, 1, 100],
+    ['010F', 'Intake air temp', '44', '°C', 20, 60, 1, 'iat'], ['0105', 'Coolant temp', '92', '°C', 40, 110, 1, 'cool'], ['0111', 'Throttle position', '78', '%', 0, 100, 4, 'throttle'], ['0104', 'Engine load', '88', '%', 0, 100, 4, 'load'],
+    ['012F', 'Fuel level', '62', '%', 0, 100, 1, 62], ['0142', 'Control module V', '14.2', 'V', 10, 16, 1, 14.2]];
+  var h = '';
+  R.forEach(function (r, i) { h += '<tr><td class="m">' + r[0] + '</td><td>' + r[1] + '</td><td class="v' + (r[6] > 1 ? ' lime' : '') + '" style="text-align:right">' + r[2] + '</td><td class="m">' + r[3] + '</td><td><svg id="sp' + i + '"></svg></td><td class="m" style="text-align:right">' + r[6] + '</td></tr>'; });
+  document.getElementById('rows').innerHTML = h;
+  R.forEach(function (r, i) {
+    var pts = [], k = r[7];
+    for (var j = 0; j < 40; j++) {
+      var d = UI.Sim.at(UI.Sim.snapT - 20 + j * 0.5);
+      pts.push(typeof k === 'string' ? (k === 'cool' ? 92 : k === 'iat' ? d.iat : d[k]) : k + Math.sin(j * .4 + i) * (k === 100 ? .25 : k === 62 ? .15 : .12));
+    }
+    UI.spark(document.getElementById('sp' + i), pts, { w: 150, h: 30, min: r[4], max: r[5], c: r[6] > 1 ? '#C8FF00' : '#3D6BFF' });
+  });
+};
+</script></body></html>

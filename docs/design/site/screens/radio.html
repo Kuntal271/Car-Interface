@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Radio · Cockpit</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../assets/ui.css"><script src="../assets/ui.js"></script>
+<style>
+.pre{height:102px;padding:12px 16px;display:flex;flex-direction:column;justify-content:space-between}
+.pre b{font:800 44px/.9 var(--f-display)} .pre .p{font:700 18px var(--f-mono);color:var(--dim)}
+.pre .n{font:600 18px var(--f-ui);color:var(--dim);letter-spacing:.04em}
+</style></head>
+<body><div class="stage"><div class="frame" data-active="media">
+<main class="main col g12" data-od-id="radio">
+  <div class="row jb c" style="height:48px">
+    <div class="tabs"><a href="media.html" class="chip">Bluetooth</a><a href="media.html" class="chip">USB</a><span class="chip on">Radio</span><a class="chip">Streaming</a></div>
+    <div class="row g12 c"><span class="chip c" style="height:40px">FM</span><span class="chip" style="height:40px">AM</span><span class="badge lime">Stereo</span><span class="badge">RDS</span><span class="row c g8 lime"><i data-i="signal" data-s="26"></i><span class="lbl white">Strong</span></span></div>
+  </div>
+  <div class="card col" style="height:308px;padding:16px 22px" data-od-id="tuner">
+    <div class="row g24 c" style="flex:1">
+      <div class="col"><span class="lbl">FM · MHz</span><span class="num lime" style="font-size:210px;margin-top:8px">93.5</span></div>
+      <div class="col grow" style="min-width:0;gap:10px">
+        <span class="h1">Red FM</span>
+        <span class="h3 dim">Preset 3 · Bajao!</span>
+        <div class="osd" style="margin-top:12px;padding:12px 16px"><span class="lbl">RDS</span><div class="mono" style="font-size:20px;color:var(--text);margin-top:6px">NOW · Tum Hi Ho — Arijit Singh</div></div>
+      </div>
+    </div>
+    <svg id="ruler" viewBox="0 0 1076 70" width="1076" height="70"></svg>
+  </div>
+  <div class="row g12" style="height:96px">
+    <a class="btn big grow"><i data-i="prev" data-s="30"></i>Seek</a>
+    <a class="btn big grow"><i data-i="minus" data-s="30"></i>0.1</a>
+    <a class="btn big grow"><i data-i="plus" data-s="30"></i>0.1</a>
+    <a class="btn big grow">Seek<i data-i="next" data-s="30"></i></a>
+    <a class="btn big pri" style="width:290px"><i data-i="plus" data-s="26"></i>Save preset</a>
+  </div>
+  <div class="grid g12" style="grid-template-columns:repeat(6,1fr);gap:12px">
+    <a class="card pre"><span class="p">P1</span><b>98.3</b><span class="n">Radio Mirchi</span></a>
+    <a class="card pre"><span class="p">P2</span><b>91.1</b><span class="n">Radio City</span></a>
+    <a class="card pre sel"><span class="p lime">P3</span><b class="lime">93.5</b><span class="n">Red FM</span></a>
+    <a class="card pre"><span class="p">P4</span><b>92.7</b><span class="n">Big FM</span></a>
+    <a class="card pre"><span class="p">P5</span><b>104.0</b><span class="n">Fever</span></a>
+    <a class="card pre"><span class="p">P6</span><b>94.3</b><span class="n">Radio One</span></a>
+    <a class="card pre"><span class="p">P7</span><b>95.0</b><span class="n">Ishq</span></a>
+    <a class="card pre"><span class="p">P8</span><b>101.9</b><span class="n">Vividh Bharati</span></a>
+    <a class="card pre"><span class="p">P9</span><b>89.4</b><span class="n">Unnamed</span></a>
+    <a class="card pre"><span class="p">P10</span><b>—</b><span class="n">Empty</span></a>
+    <a class="card pre"><span class="p">P11</span><b>—</b><span class="n">Empty</span></a>
+    <a class="card pre"><span class="p">P12</span><b>—</b><span class="n">Empty</span></a>
+  </div>
+</main>
+</div></div>
+<script>
+UI.onready = function () {
+  var lo = 87.5, hi = 108, W = 1076, s = '', st = [91.1, 92.7, 93.5, 94.3, 95.0, 98.3, 101.9, 104.0];
+  for (var f = lo; f <= hi + .001; f += 0.5) {
+    var x = (f - lo) / (hi - lo) * (W - 2) + 1, maj = Math.abs(f - Math.round(f)) < .01, big = maj && Math.round(f) % 2 === 0;
+    s += '<line x1="' + x + '" x2="' + x + '" y1="' + (big ? 26 : maj ? 32 : 40) + '" y2="62" stroke="' + (f > 93.4 && f < 93.6 ? '#C8FF00' : '#3D6BFF') + '" stroke-width="' + (maj ? 2 : 1.2) + '"/>';
+    if (big) s += '<text x="' + x + '" y="20" text-anchor="middle" font-family="JetBrains Mono" font-weight="500" font-size="18" fill="#8190B8">' + Math.round(f) + '</text>';
+  }
+  st.forEach(function (f) { var x = (f - lo) / (hi - lo) * (W - 2) + 1; s += '<path d="M' + (x - 6) + ' 68l6-8 6 8z" fill="#2457FF"/>'; });
+  var nx = (93.5 - lo) / (hi - lo) * (W - 2) + 1;
+  s += '<line x1="' + nx + '" x2="' + nx + '" y1="4" y2="66" stroke="#C8FF00" stroke-width="4"/><path d="M' + (nx - 9) + ' 0h18l-9 12z" fill="#C8FF00"/>';
+  document.getElementById('ruler').innerHTML = s;
+};
+</script></body></html>

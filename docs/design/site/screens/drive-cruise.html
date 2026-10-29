@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Drive · Cruise · Cockpit</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../assets/ui.css"><script src="../assets/ui.js"></script>
+<style>
+.side{display:flex;flex-direction:column;justify-content:space-between}
+.side .v{font:800 72px/.9 var(--f-display)}
+.ribbon-lbl{position:relative;height:22px;margin-top:6px}
+.ribbon-lbl span{position:absolute;transform:translateX(-50%);font:500 16px var(--f-mono);color:var(--dim)}
+</style></head>
+<body><div class="stage"><div class="frame" data-active="drive">
+<main class="main" data-od-id="drive-cruise">
+  <div class="row jb c abs" style="left:24px;right:24px;top:24px;height:44px">
+    <div class="tabs"><a href="drive.html" class="chip">Cluster</a><a href="drive-boost.html" class="chip">Boost</a><a class="chip on">Cruise</a></div>
+    <span class="badge">Consumption is estimated · no fuel-rate PID</span>
+  </div>
+
+  <section class="abs col g12" style="left:24px;top:84px;width:250px;height:636px">
+    <div class="card side grow" data-od-id="range">
+      <span class="lbl row c g8"><i data-i="fuel" data-s="22"></i>Range</span>
+      <div><div class="num lime" style="font-size:110px">410</div><div class="unit">km · est.</div></div>
+      <div><div class="seg sk" data-n="12" data-v=".62" data-c="c"></div><div class="row jb mono" style="margin-top:6px"><span>E</span><span>62 %</span><span>F</span></div></div>
+    </div>
+    <div class="card side grow" data-od-id="coolant">
+      <span class="lbl row c g8"><i data-i="thermo" data-s="22"></i>Coolant</span>
+      <div class="v">92<span class="unit">°C</span></div>
+      <div class="seg sk" data-n="12" data-v=".65" data-split=".81" style="height:14px"></div>
+    </div>
+  </section>
+
+  <section class="abs col jc tc" style="left:298px;top:84px;width:572px;height:636px" data-od-id="speed">
+    <span class="lbl">Speed</span>
+    <div id="speed" class="num lime" style="font-size:330px;margin:6px 0 0">74</div>
+    <div class="unit" style="font-size:26px;margin-top:6px">km/h</div>
+    <div id="ribbon" class="seg sk" data-n="44" data-v=".37" data-split=".6" style="height:30px;margin-top:34px"></div>
+    <div class="ribbon-lbl"><span style="left:0%">0</span><span style="left:25%">50</span><span style="left:50%">100</span><span style="left:75%">150</span><span style="left:100%">200</span></div>
+    <div id="hint" class="warn" style="margin-top:34px;justify-content:center"><i data-i="chevu" data-s="34"></i><span>Shift up <small>→ gear 4</small></span></div>
+  </section>
+
+  <section class="abs col g12" style="left:894px;top:84px;width:250px;height:636px">
+    <div class="card side grow" data-od-id="consumption">
+      <span class="lbl">Average</span>
+      <div><div class="v lime" style="font-size:96px;font-family:var(--f-display);font-weight:800;line-height:.9">6.4</div><div class="unit">L/100 km · est.</div></div>
+      <span class="mono">Trip A · 42.8 km</span>
+    </div>
+    <div class="card side grow" data-od-id="eco">
+      <span class="lbl">Smoothness</span>
+      <div class="row" style="align-items:baseline;gap:10px"><span class="v">82</span><span class="unit">/ 100</span></div>
+      <div class="seg sk" data-n="12" data-v=".82" data-c="l" style="height:14px"></div>
+    </div>
+  </section>
+</main>
+</div></div>
+<script>
+UI.onready = function () {
+  var $ = function (i) { return document.getElementById(i); };
+  UI.live(function (s) {
+    $('speed').textContent = Math.round(s.speed); UI.setSeg($('ribbon'), s.speed / 200);
+    var up = s.rpm > 4600 && s.gear < 6;
+    $('hint').style.visibility = up ? 'visible' : 'hidden';
+    $('hint').querySelector('small').textContent = '→ gear ' + (s.gear + 1);
+  });
+};
+</script></body></html>

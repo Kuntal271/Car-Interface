@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Apps · Cockpit</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../assets/ui.css"><script src="../assets/ui.js"></script>
+<style>
+.app{position:relative;height:146px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:var(--text);font:700 18px var(--f-display);letter-spacing:.12em;text-transform:uppercase;
+  background:var(--c12);box-shadow:inset 0 0 0 1px var(--hair-soft);clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%)}
+.app .ic{color:var(--cobalt-lt)}
+.app.rec .ic{color:var(--lime)} .app.rec::after{content:"";position:absolute;left:14px;top:14px;width:10px;height:10px;background:var(--lime);transform:rotate(45deg)}
+.find{display:flex;align-items:center;gap:14px;height:56px;padding:0 20px;width:520px;background:var(--s1);box-shadow:inset 0 0 0 1px var(--hair);color:var(--dim);font:500 22px var(--f-ui)}
+</style></head>
+<body><div class="stage"><div class="frame" data-active="apps">
+<main class="main col g12" data-od-id="apps">
+  <div class="row jb c" style="height:56px"><div class="find"><i data-i="search" data-s="26"></i>Search apps</div><div class="row c g16"><span class="lbl row c g8"><span style="width:10px;height:10px;background:var(--lime);transform:rotate(45deg);display:inline-block"></span>Recent</span><span class="lbl">24 apps</span><a class="btn ghost" style="min-height:52px;padding:0 22px">Edit layout</a></div></div>
+  <div class="grid" style="grid-template-columns:repeat(6,1fr);gap:12px">
+    <a href="radio.html" class="app rec"><i data-i="radio" data-s="44"></i>Radio</a>
+    <a href="media.html" class="app rec"><i data-i="music" data-s="44"></i>Music</a>
+    <a class="app"><i data-i="video" data-s="44"></i>Video</a>
+    <a class="app"><i data-i="folder" data-s="44"></i>Files</a>
+    <a class="app"><i data-i="globe" data-s="44"></i>Browser</a>
+    <a href="projection.html" class="app rec"><i data-i="nav" data-s="44"></i>Maps</a>
+    <a href="phone.html" class="app"><i data-i="phone" data-s="44"></i>Phone</a>
+    <a class="app"><i data-i="user" data-s="44"></i>Contacts</a>
+    <a class="app"><i data-i="chat" data-s="44"></i>Messages</a>
+    <a href="parking.html" class="app"><i data-i="camera" data-s="44"></i>Camera</a>
+    <a class="app"><i data-i="video" data-s="44"></i>Gallery</a>
+    <a class="app"><i data-i="clock" data-s="44"></i>Clock</a>
+    <a class="app"><i data-i="cloud" data-s="44"></i>Weather</a>
+    <a class="app"><i data-i="calc" data-s="44"></i>Calculator</a>
+    <a class="app"><i data-i="calendar" data-s="44"></i>Calendar</a>
+    <a href="trips.html" class="app rec"><i data-i="route" data-s="44"></i>Trips</a>
+    <a href="diagnostics.html" class="app"><i data-i="pulse" data-s="44"></i>Diagnose</a>
+    <a href="parking.html" class="app"><i data-i="park" data-s="44"></i>Parking</a>
+    <a href="sound.html" class="app"><i data-i="eq" data-s="44"></i>Sound</a>
+    <a href="car.html" class="app"><i data-i="car" data-s="44"></i>Car</a>
+    <a class="app"><i data-i="bt" data-s="44"></i>Bluetooth</a>
+    <a class="app"><i data-i="wifi" data-s="44"></i>Wi-Fi</a>
+    <a class="app"><i data-i="usb" data-s="44"></i>USB</a>
+    <a href="settings.html" class="app"><i data-i="sliders" data-s="44"></i>Settings</a>
+  </div>
+</main>
+</div></div></body></html>

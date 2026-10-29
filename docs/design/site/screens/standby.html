@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Standby · Cockpit</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../assets/ui.css"><script src="../assets/ui.js"></script>
+<style>
+.frame.sleep::before{background:none}
+.clk{font:800 380px/.82 var(--f-display);color:var(--cobalt-lt);letter-spacing:.01em;display:flex;align-items:center}
+.clk .col{color:var(--lime);margin:0 6px;animation:bl 2s steps(2) infinite}
+@keyframes bl{50%{opacity:.25}}
+.mini-s{display:flex;flex-direction:column;gap:6px;padding:0 28px;border-right:1px solid var(--hair-soft);flex:1}
+.mini-s:last-child{border:0} .mini-s b{font:800 48px/.9 var(--f-display)}
+</style></head>
+<body><div class="stage"><div class="frame sleep" data-shell="0" data-active="">
+<main class="main full" style="top:0;height:800px;padding:0" data-od-id="standby">
+  <div class="abs col c jc" style="left:0;right:0;top:120px"><div class="lbl" style="font-size:22px;margin-bottom:34px">Friday · 30 October</div><div class="clk"><span>21</span><span class="col">:</span><span>47</span></div></div>
+  <div class="abs row" style="left:90px;right:90px;bottom:90px;height:110px;border-top:1px solid var(--hair)">
+    <div class="mini-s" style="justify-content:center;padding-left:0"><span class="lbl">Outside</span><b>31<span class="unit"> °C</span></b></div>
+    <div class="mini-s" style="justify-content:center"><span class="lbl">Battery · off</span><b>12.4<span class="unit"> V</span></b></div>
+    <div class="mini-s" style="justify-content:center"><span class="lbl">Doors</span><b>Locked</b></div>
+    <div class="mini-s" style="justify-content:center"><span class="lbl">Last trip</span><b>42.8<span class="unit"> km</span></b></div>
+  </div>
+  <div class="abs lbl" style="right:90px;top:70px">Tap to wake · hold to power off</div>
+</main>
+</div></div></body></html>

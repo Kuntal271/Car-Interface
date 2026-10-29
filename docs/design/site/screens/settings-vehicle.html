@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Settings · Vehicle · Cockpit</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../assets/ui.css"><script src="../assets/ui.js"></script>
+<style>
+.stp{display:flex;align-items:center;gap:14px;min-height:60px;border-bottom:1px solid var(--hair-soft);font:600 21px var(--f-ui)}
+.stp:last-child{border:0}
+.stp .val{min-width:160px;text-align:center;font:800 34px var(--f-display)}
+.stp .b{width:52px;height:48px;display:grid;place-items:center;background:var(--c25);box-shadow:inset 0 0 0 1px var(--hair)}
+.src{display:flex;align-items:center;gap:16px;min-height:88px;border-bottom:1px solid var(--hair-soft)}
+.src:last-child{border:0} .src .t{font:600 22px var(--f-ui)} .src .s{font:400 18px var(--f-ui);color:var(--dim)}
+.cat{display:flex;align-items:center;gap:16px;height:62px;padding:0 18px;font:700 20px var(--f-display);letter-spacing:.1em;text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--hair-soft)}
+.cat.on{color:var(--text);background:linear-gradient(90deg,var(--l12),transparent);box-shadow:inset 4px 0 0 var(--lime)} .cat .ic{color:var(--cobalt-lt)} .cat.on .ic{color:var(--lime)}
+</style></head>
+<body><div class="stage"><div class="frame" data-active="settings">
+<main class="main row g24" data-od-id="settings-vehicle">
+  <section class="col g12" style="width:520px">
+    <div class="card col g8" style="height:124px;justify-content:center" data-od-id="profile">
+      <span class="lbl">Vehicle profile</span><div class="h2" style="font-size:40px">2015 Ford EcoSport</div><span class="lbl" style="text-transform:none;letter-spacing:.04em">1.0 EcoBoost · 125 PS · right-hand drive · India</span>
+    </div>
+    <div class="card col grow" style="padding-top:6px;padding-bottom:6px" data-od-id="thresholds">
+      <div class="stp"><span class="grow">Redline</span><a class="b"><i data-i="minus" data-s="22"></i></a><span class="val">6,000 <span class="unit">rpm</span></span><a class="b"><i data-i="plus" data-s="22"></i></a></div>
+      <div class="stp"><span class="grow">Tach scale</span><a class="b"><i data-i="minus" data-s="22"></i></a><span class="val">7,000 <span class="unit">rpm</span></span><a class="b"><i data-i="plus" data-s="22"></i></a></div>
+      <div class="stp"><span class="grow">Shift light from</span><a class="b"><i data-i="minus" data-s="22"></i></a><span class="val lime">5,200 <span class="unit">rpm</span></span><a class="b"><i data-i="plus" data-s="22"></i></a></div>
+      <div class="stp"><span class="grow">Speed scale</span><a class="b"><i data-i="minus" data-s="22"></i></a><span class="val">200 <span class="unit">km/h</span></span><a class="b"><i data-i="plus" data-s="22"></i></a></div>
+      <div class="stp"><span class="grow">Coolant warning</span><a class="b"><i data-i="minus" data-s="22"></i></a><span class="val">105 <span class="unit">°C</span></span><a class="b"><i data-i="plus" data-s="22"></i></a></div>
+      <div class="stp"><span class="grow">Low battery</span><a class="b"><i data-i="minus" data-s="22"></i></a><span class="val">12.0 <span class="unit">V</span></span><a class="b"><i data-i="plus" data-s="22"></i></a></div>
+      <div class="stp"><span class="grow">Low fuel</span><a class="b"><i data-i="minus" data-s="22"></i></a><span class="val">15 <span class="unit">%</span></span><a class="b"><i data-i="plus" data-s="22"></i></a></div>
+      <div class="stp"><span class="grow">Low tyre pressure</span><a class="b"><i data-i="minus" data-s="22"></i></a><span class="val">1.9 <span class="unit">bar</span></span><a class="b"><i data-i="plus" data-s="22"></i></a></div>
+      <div class="stp"><span class="grow">Service reminder</span><a class="b"><i data-i="minus" data-s="22"></i></a><span class="val">10,000 <span class="unit">km</span></span><a class="b"><i data-i="plus" data-s="22"></i></a></div>
+    </div>
+  </section>
+  <section class="col g12 grow">
+    <div class="card col" style="padding-top:12px;padding-bottom:6px" data-od-id="sources">
+      <span class="lbl" style="margin-bottom:4px">Data sources</span>
+      <div class="src"><i data-i="car" data-s="32" class="lime"></i><div class="grow"><div class="t">Canbox · UART tap</div><div class="s">Dialect: <b class="white">Unknown</b> · 18 frames/s · last 0.2 s ago</div></div><span class="badge">Listening</span></div>
+      <div class="src"><i data-i="bt" data-s="32" class="lime"></i><div class="grow"><div class="t">OBD adapter · vLinker FD</div><div class="s">BLE · CAN 11/500 · 22 PIDs · 14 Hz</div></div><span class="badge lime">Live</span></div>
+      <div class="src"><i data-i="gauge" data-s="32" class="cobalt"></i><div class="grow"><div class="t">Simulator</div><div class="s">Drive-cycle replay for demos and testing</div></div><span class="tg"></span></div>
+      <div class="src"><i data-i="export" data-s="32" class="cobalt"></i><div class="grow"><div class="t">Record raw frames</div><div class="s">Saves a capture to USB to identify the Canbox dialect</div></div><span class="tg"></span></div>
+    </div>
+    <div class="card col grow jb" data-od-id="units" style="padding-top:14px;padding-bottom:16px">
+      <span class="lbl">Units</span>
+      <div class="row jb c"><span style="font:600 22px var(--f-ui)">Distance</span><div class="tabs"><span class="chip on">km</span><span class="chip">mi</span></div></div>
+      <div class="row jb c"><span style="font:600 22px var(--f-ui)">Temperature</span><div class="tabs"><span class="chip on">°C</span><span class="chip">°F</span></div></div>
+      <div class="row jb c"><span style="font:600 22px var(--f-ui)">Pressure</span><div class="tabs"><span class="chip on">bar</span><span class="chip">psi</span><span class="chip">kPa</span></div></div>
+      <div class="row jb c"><span style="font:600 22px var(--f-ui)">Economy</span><div class="tabs"><span class="chip on">L/100</span><span class="chip">km/L</span></div></div>
+    </div>
+  </section>
+</main>
+</div></div></body></html>

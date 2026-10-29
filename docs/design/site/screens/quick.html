@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Quick panel · Cockpit</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../assets/ui.css"><script src="../assets/ui.js"></script>
+<style>
+.bk{position:absolute;left:24px;top:80px;width:1120px;height:696px}
+.bk .big{position:absolute;left:140px;top:150px;font:800 360px/.9 var(--f-display);color:rgba(61,107,255,.14)}
+.dimmer{position:absolute;inset:56px 112px 0 0;background:rgba(5,7,13,.45)}
+.gh{position:absolute;background:rgba(36,87,255,.10);box-shadow:inset 0 0 0 1px rgba(36,87,255,.25)}
+.qt{height:118px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font:700 18px var(--f-display);letter-spacing:.12em;text-transform:uppercase;color:var(--dim);
+  background:var(--c12);box-shadow:inset 0 0 0 1px var(--hair);clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%)}
+.qt .ic{color:var(--cobalt-lt)} .qt.on{background:var(--lime);color:var(--bg);box-shadow:none} .qt.on .ic{color:var(--bg)}
+</style></head>
+<body><div class="stage"><div class="frame" data-active="home">
+<div class="bk"><div class="gh" style="left:0;top:330px;width:690px;height:310px"></div><div class="gh" style="left:714px;top:330px;width:406px;height:150px"></div><div class="gh" style="left:714px;top:496px;width:406px;height:144px"></div></div><div class="dimmer"></div>
+<section class="card s2 abs" style="left:24px;top:72px;width:1120px;height:316px;z-index:6" data-od-id="quick-panel">
+  <div class="row g24" style="height:100%">
+    <div class="col jb" style="width:470px">
+      <div><div class="row jb c"><span class="lbl row c g8"><i data-i="sun" data-s="22"></i>Brightness</span><span class="num n-s">70</span></div><div class="slider" data-v=".7" data-n="22"></div></div>
+      <div><div class="row jb c"><span class="lbl row c g8"><i data-i="vol" data-s="22"></i>Volume</span><span class="num n-s lime">18</span></div><div class="slider" data-v=".36" data-n="22"></div></div>
+      <div class="row g12"><a href="settings.html" class="btn grow ghost"><i data-i="sliders" data-s="24"></i>All settings</a><a class="btn ghost"><i data-i="power" data-s="24"></i>Power</a></div>
+    </div>
+    <div class="grid grow" style="grid-template-columns:repeat(4,1fr);grid-auto-rows:118px;gap:12px;align-content:center">
+      <a class="qt on"><i data-i="wifi" data-s="34"></i>Wi-Fi</a><a class="qt on"><i data-i="bt" data-s="34"></i>Bluetooth</a><a class="qt"><i data-i="signal" data-s="34"></i>Hotspot</a><a class="qt"><i data-i="mute" data-s="34"></i>Mute</a>
+      <a class="qt"><i data-i="moon" data-s="34"></i>Night</a><a class="qt"><i data-i="power" data-s="34"></i>Screen off</a><a class="qt"><i data-i="camera" data-s="34"></i>Dash cam</a><a class="qt"><i data-i="gauge" data-s="34"></i>Simulator</a>
+    </div>
+  </div>
+</section>
+</div></div></body></html>

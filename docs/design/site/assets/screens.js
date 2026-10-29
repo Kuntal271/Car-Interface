@@ -1,0 +1,50 @@
+/* Screen registry shared by index, prototype and specs. src: where each screen's data comes from. risk: integration risk for the real unit. */
+window.GROUPS = ['Shell', 'Drive', 'Vehicle', 'Media & comms', 'System'];
+window.SCREENS = [
+  { id: 'boot', t: 'Boot', g: 'Shell', src: ['Local'], risk: 'Low', b: 'Splash while vehicle services start. Target: interactive in under 4 s after the launcher process starts.',
+    comp: 'BootScreen', states: 'starting · error (service failed, shows retry)' },
+  { id: 'home', t: 'Home', g: 'Shell', src: ['Phone', 'OBD', 'Local'], risk: 'Low', b: 'Now playing, shortcuts and live vitals on one page. Everything tappable goes one level deeper.',
+    comp: 'HomeScreen · NowPlayingCard · VitalsColumn', states: 'media idle · no phone · data stale (dim + STALE badge)' },
+  { id: 'quick', t: 'Quick panel', g: 'Shell', src: ['Local'], risk: 'Low', b: 'Swipe-down panel: brightness, volume, radios, night mode, screen off, dash cam, simulator.',
+    comp: 'QuickPanel (overlay window)', states: 'closed · open · toggle pending' },
+  { id: 'standby', t: 'Standby', g: 'Shell', src: ['Canbox', 'Local'], risk: 'Med', b: 'Parked clock with outside temp, battery and door state. Needs ACC-off wake events from the vendor service.',
+    comp: 'StandbyScreen', states: 'doors open · battery low' },
+  { id: 'overlays', t: 'System overlays', g: 'Shell', src: ['Canbox', 'OBD', 'Phone'], risk: 'Med', b: 'Volume, climate change, door open, coolant high, low battery, incoming call, shift light, reverse hand-off.',
+    comp: 'OverlayHost with a priority queue', states: 'see priority table in Specs' },
+
+  { id: 'drive', t: 'Drive · Cluster', g: 'Drive', src: ['OBD', 'Local'], risk: 'Med', b: 'Tach ring, speed, boost, coolant, intake, battery, fuel, trip strip, shift light. The screen the project is built around.',
+    comp: 'DriveScreen · TachArc · ShiftLight · BoostCard', states: 'no adapter (— dashes) · stale · simulator badge · warning inverted' },
+  { id: 'drive-boost', t: 'Drive · Boost', g: 'Drive', src: ['OBD'], risk: 'Med', b: 'Bipolar boost arc with peak hold, 25 s spool chart, throttle and load, 0–100 timer. MAP minus BARO.',
+    comp: 'BoostScreen · BoostArc · SpoolChart · LaunchTimer', states: 'timer armed · running · result' },
+  { id: 'drive-cruise', t: 'Drive · Cruise', g: 'Drive', src: ['OBD', 'Local'], risk: 'Med', b: 'Calm highway view: big speed, range, shift hint and smoothness score. Consumption is estimated, not measured.',
+    comp: 'CruiseScreen · SpeedRibbon · ShiftHint', states: 'hint hidden when not needed' },
+
+  { id: 'car', t: 'Car', g: 'Vehicle', src: ['Canbox'], risk: 'High', b: 'Doors, tailgate, bonnet, parking radar, tyre pressure, climate, lights. Depends entirely on the unit\'s Canbox dialect.',
+    comp: 'CarScreen · VehicleTopView · RadarArcs · ClimateCard', states: 'field unavailable → hidden, not zero · door open banner' },
+  { id: 'trips', t: 'Trips', g: 'Vehicle', src: ['OBD', 'Local'], risk: 'Low', b: 'Trip A and B, history, per-trip chart and moments, CSV export to USB.',
+    comp: 'TripsScreen · TripList · TripChart', states: 'no trips yet · recording · export done' },
+  { id: 'diagnostics', t: 'Diagnose', g: 'Vehicle', src: ['OBD'], risk: 'Low', b: 'Adapter health and every PID with live value, trend and poll rate. Read-only by construction.',
+    comp: 'DiagnoseScreen · PidTable · Sparkline', states: 'disconnected · unsupported PID greyed' },
+  { id: 'parking', t: 'Parking', g: 'Vehicle', src: ['Vendor', 'Canbox'], risk: 'High', b: 'Guideline overlay and radar readout around the vendor camera feed. The camera surface itself is not ours.',
+    comp: 'ParkingScreen · GuidelineOverlay', states: 'no camera · radar offline' },
+
+  { id: 'media', t: 'Media', g: 'Media & comms', src: ['Phone', 'Vendor'], risk: 'Med', b: 'Bluetooth, USB and streaming playback with queue. Reads the active MediaSession, so it works with any player.',
+    comp: 'MediaScreen · NowPlaying · QueueList', states: 'no session · buffering' },
+  { id: 'radio', t: 'Radio', g: 'Media & comms', src: ['Vendor'], risk: 'High', b: 'FM tuner with dial ruler, RDS and 12 presets. Needs the vendor tuner service API, so it may stay a launcher to the stock radio.',
+    comp: 'RadioScreen · DialRuler · PresetGrid', states: 'weak signal · scanning' },
+  { id: 'phone', t: 'Phone', g: 'Media & comms', src: ['Phone'], risk: 'Med', b: 'Dialer, recents, contacts over Bluetooth HFP. Missed calls use the lime tint.',
+    comp: 'PhoneScreen · Dialer · CallLog', states: 'no phone paired · syncing contacts' },
+  { id: 'phone-call', t: 'In call', g: 'Media & comms', src: ['Phone'], risk: 'Med', b: 'Active call with mute, keypad, route, hold and a very large End call.',
+    comp: 'InCallScreen', states: 'ringing · active · on hold · ended' },
+  { id: 'projection', t: 'Maps · Projection', g: 'Media & comms', src: ['Phone', 'Vendor'], risk: 'Med', b: 'Launch Android Auto or CarPlay, manage paired phones, connection behaviour. The projected map is the phone\'s, not ours.',
+    comp: 'ProjectionScreen · PairedPhones', states: 'connecting · disconnected · wired fallback' },
+  { id: 'sound', t: 'Sound', g: 'Media & comms', src: ['Vendor'], risk: 'High', b: 'EQ, balance and fader, subwoofer, loudness, speed-sensitive volume. Works only if the DSP exposes a control API.',
+    comp: 'SoundScreen · EqBands · BalancePad', states: 'DSP unavailable → read-only' },
+
+  { id: 'apps', t: 'Apps', g: 'System', src: ['Local'], risk: 'Low', b: 'All installed apps, recents marked with a lime diamond, edit layout.',
+    comp: 'AppsScreen · AppTile', states: 'edit mode · empty search' },
+  { id: 'settings', t: 'Settings · Display', g: 'System', src: ['Local'], risk: 'Low', b: 'Brightness, day/night, screen-off, clock, dock side, motion, gauge refresh.',
+    comp: 'SettingsScreen · SettingRow', states: 'value changed → applied immediately' },
+  { id: 'settings-vehicle', t: 'Settings · Vehicle', g: 'System', src: ['Local', 'Canbox', 'OBD'], risk: 'Low', b: 'Vehicle profile thresholds, data source health, simulator, raw capture for dialect identification, units.',
+    comp: 'VehicleSettingsScreen · SourceRow · Stepper', states: 'capture running · capture saved' }
+];

@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Boot · Cockpit</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../assets/ui.css"><script src="../assets/ui.js"></script>
+<style>
+.scan{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--lime),transparent);opacity:.55;animation:sc 3s linear infinite}
+@keyframes sc{from{top:0}to{top:800px}}
+.mk{width:56px;height:56px;background:var(--lime);transform:rotate(45deg)}
+.word{font:800 190px/.85 var(--f-display);letter-spacing:.06em;text-transform:uppercase}
+</style></head>
+<body><div class="stage"><div class="frame" data-shell="0" data-active="">
+<div class="scan"></div>
+<div class="abs col c jc" style="inset:0;gap:28px" data-od-id="boot">
+  <div class="row c g24"><span class="mk"></span><span class="word">Cockpit</span></div>
+  <div class="lbl" style="font-size:22px;letter-spacing:.4em">EcoSport · 1.0 EcoBoost</div>
+  <div class="seg sk" data-n="48" data-v=".62" data-c="l" style="width:560px;height:12px;margin-top:40px"></div>
+  <div class="mono">Starting vehicle services…</div>
+</div>
+<div class="abs mono" style="left:28px;bottom:22px">v0.1 · design preview</div>
+<div class="abs mono" style="right:28px;bottom:22px">Midnight · Cobalt · Lime</div>
+</div></div></body></html>

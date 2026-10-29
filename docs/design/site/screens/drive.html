@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Drive · Cockpit</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../assets/ui.css"><script src="../assets/ui.js"></script>
+<style>
+.tile{height:150px;display:flex;flex-direction:column;justify-content:space-between}
+.tile .v{font:800 64px/.9 var(--f-display)}
+.scale{position:relative;height:22px;margin-top:6px}
+.scale span{position:absolute;transform:translateX(-50%);font:500 16px var(--f-mono);color:var(--dim)}
+.cell{flex:1;padding:0 22px;border-right:1px solid var(--hair-soft);display:flex;flex-direction:column;justify-content:center;gap:6px}
+.cell:last-child{border:0}
+.cell .v{font:800 40px/.9 var(--f-display)}
+</style></head>
+<body><div class="stage"><div class="frame" data-active="drive">
+<main class="main" data-od-id="drive">
+  <div id="shift" class="seg sk thin abs" data-n="48" data-v="0" data-c="l" style="left:24px;top:10px;width:1120px" data-od-id="shift-light"></div>
+
+  <section class="abs" style="left:24px;top:30px;width:600px;height:600px" data-od-id="tach">
+    <svg id="tach" width="600" height="600"></svg>
+    <div class="abs tc" style="left:0;right:0;top:150px">
+      <div id="speed" class="num lime" style="font-size:236px">74</div>
+      <div class="unit" style="margin-top:2px;font-size:22px">km/h</div>
+    </div>
+    <div class="abs tc" style="left:0;right:0;top:470px"><span class="badge lime" style="height:40px;font-size:20px;padding:0 18px">Gear <b id="gear" style="font-size:26px">3</b> · est.</span></div>
+  </section>
+
+  <section class="abs col g12" style="left:652px;top:34px;width:492px" data-od-id="drive-right">
+    <div class="card col" style="height:262px" data-od-id="boost">
+      <div class="row jb c"><span class="lbl row c g8"><i data-i="bolt" data-s="22"></i>Boost</span><span class="badge lime">Peak <span id="peak">+1.04</span></span></div>
+      <div class="row" style="align-items:baseline;gap:12px;margin:6px 0 10px"><span id="boost" class="num lime" style="font-size:120px">+0.95</span><span class="unit">bar</span></div>
+      <div id="boostbar" class="seg sk" data-n="44" data-zero=".4" data-v=".78" style="height:28px"></div>
+      <div class="scale"><span style="left:0%">−1.0</span><span style="left:40%">0</span><span style="left:60%">+0.5</span><span style="left:80%">+1.0</span><span style="left:98%">+1.5</span></div>
+    </div>
+    <div class="row g12">
+      <div class="card tile grow" data-od-id="coolant"><span class="lbl row c g8"><i data-i="thermo" data-s="22"></i>Coolant</span><div class="v">92<span class="unit">°C</span></div><div class="seg sk" data-n="20" data-v=".65" data-split=".81" style="height:14px"></div></div>
+      <div class="card tile grow" data-od-id="intake"><span class="lbl row c g8"><i data-i="fan" data-s="22"></i>Intake air</span><div class="v"><span id="iat">44</span><span class="unit">°C</span></div><div class="seg sk" data-n="20" data-v=".4" data-split=".8" style="height:14px"></div></div>
+    </div>
+    <div class="row g12">
+      <div class="card tile grow" data-od-id="battery"><span class="lbl row c g8"><i data-i="batt" data-s="22"></i>Battery</span><div class="v">14.2<span class="unit">V</span></div><div class="seg sk" data-n="20" data-v=".7" data-c="c" style="height:14px"></div></div>
+      <div class="card tile grow" data-od-id="fuel"><span class="lbl row c g8"><i data-i="fuel" data-s="22"></i>Fuel</span><div class="v"><span id="fuel">62</span><span class="unit">%</span></div><div class="seg sk" data-n="20" data-v=".62" data-c="c" style="height:14px"></div></div>
+    </div>
+  </section>
+
+  <section class="card flat row abs" style="left:24px;top:644px;width:1120px;height:76px;padding:0" data-od-id="trip-strip">
+    <div class="cell"><span class="lbl">Trip A</span><span class="v">42.8 <span class="unit">km</span></span></div>
+    <div class="cell"><span class="lbl">Average</span><span class="v">38 <span class="unit">km/h</span></span></div>
+    <div class="cell"><span class="lbl">Top speed</span><span class="v">131 <span class="unit">km/h</span></span></div>
+    <div class="cell"><span class="lbl">0–100 best</span><span class="v lime">12.3 <span class="unit">s</span></span></div>
+    <div class="cell"><span class="lbl">Engine load</span><span class="v"><span id="load">88</span> <span class="unit">%</span></span></div>
+  </section>
+</main>
+</div></div>
+<script>
+var peak = 1.04;
+UI.onready = function () {
+  var $ = function (i) { return document.getElementById(i); };
+  UI.live(function (s) {
+    UI.tach($('tach'), { w: 700, h: 700, rpm: s.rpm });
+    $('speed').textContent = Math.round(s.speed); $('gear').textContent = s.gear;
+    UI.setSeg($('shift'), Math.max(0, Math.min(1, (s.rpm - 4200) / 2000)));
+    peak = Math.max(peak, s.boost); $('peak').textContent = '+' + peak.toFixed(2);
+    $('boost').textContent = (s.boost >= 0 ? '+' : '−') + Math.abs(s.boost).toFixed(2);
+    UI.setSeg($('boostbar'), (s.boost + 1) / 2.5);
+    $('iat').textContent = Math.round(s.iat); $('fuel').textContent = Math.round(s.fuel); $('load').textContent = Math.round(s.load);
+  });
+};
+</script></body></html>

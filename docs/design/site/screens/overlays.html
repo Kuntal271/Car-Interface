@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Overlays · Cockpit</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../assets/ui.css"><script src="../assets/ui.js"></script>
+<style>
+html,body{overflow:auto;background:#02030a}
+.stage{position:static;display:block;padding:32px 40px 60px}
+.hd{max-width:1380px;margin:0 auto 26px;color:var(--text);font-family:var(--f-ui)}
+.hd h1{font:800 56px/1 var(--f-display);letter-spacing:.04em;text-transform:uppercase;margin:0 0 8px} .hd p{color:var(--dim);font-size:18px;margin:0;max-width:900px;line-height:1.5}
+.gal{display:grid;grid-template-columns:repeat(2,640px);gap:34px 40px;justify-content:center}
+figure{margin:0} figcaption{font:500 17px/1.45 var(--f-ui);color:var(--dim);margin-top:10px;width:640px}
+figcaption b{display:block;color:var(--text);font:800 26px var(--f-display);letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+.mini{position:relative;width:640px;height:400px;overflow:hidden;box-shadow:0 0 0 1px var(--hair)}
+.mini .frame{position:absolute;left:0;top:0;transform:scale(.5) !important;transform-origin:0 0}
+.bk{position:absolute;left:24px;top:80px;width:1120px;height:696px}
+.bk .big{position:absolute;left:240px;top:130px;font:800 420px/.9 var(--f-display);color:rgba(61,107,255,.20)}
+.bk .ring{position:absolute;left:34px;top:34px;width:600px;height:600px;border:48px solid rgba(36,87,255,.14);border-radius:50%}
+.bk .c1,.bk .c2{position:absolute;right:0;width:490px;height:150px;background:rgba(36,87,255,.10)} .bk .c1{top:10px;height:240px} .bk .c2{top:270px}
+.dimmer{position:absolute;inset:0;background:rgba(5,7,13,.62);z-index:6}
+.sheet-t{position:absolute;z-index:7}
+</style></head>
+<body><div class="stage">
+<div class="hd"><h1>System overlays</h1><p>Everything that can interrupt the screen. Warnings are inverted-lime blocks, never red. Each overlay lists its trigger, priority and how it goes away. Priority 1 interrupts everything; lower numbers win.</p></div>
+<div class="gal">
+
+<figure><div class="mini"><div class="frame" data-active="drive"><div class="bk"><div class="ring"></div><div class="big">74</div><div class="c1"></div><div class="c2"></div></div>
+  <div class="sheet-t osd" style="left:300px;top:640px;width:560px"><div class="row c g16"><i data-i="vol" data-s="34" class="lime"></i><div class="slider grow" data-v=".36" data-n="30"></div><span class="num n-m lime">18</span></div></div></div></div>
+<figcaption><b>Volume</b>Trigger: steering-wheel keys or knob. Priority 5. Auto-hides after 1.5 s. Never blocks touch.</figcaption></figure>
+
+<figure><div class="mini"><div class="frame" data-active="drive"><div class="bk"><div class="ring"></div><div class="big">74</div><div class="c1"></div><div class="c2"></div></div>
+  <div class="sheet-t osd" style="left:340px;top:84px;width:520px"><div class="row c jb"><span class="row c g12"><i data-i="snow" data-s="36" class="lime"></i><span class="lbl">Climate</span></span><span class="num n-l">22.5<span class="unit" style="font-size:28px">°C</span></span><span class="row c g8 lime"><i data-i="chevu" data-s="30"></i></span></div></div></div></div>
+<figcaption><b>Climate change</b>Trigger: A/C or fan frame changes on the Canbox. Priority 5. Auto-hides after 2 s. View only.</figcaption></figure>
+
+<figure><div class="mini"><div class="frame" data-active="drive"><div class="bk"><div class="ring"></div><div class="big">12</div><div class="c1"></div><div class="c2"></div></div>
+  <div class="sheet-t warn" style="left:0;top:56px;width:1168px"><i data-i="warn" data-s="34"></i><span>Rear left door open <small>· 12 km/h</small></span></div></div></div>
+<figcaption><b>Door open while moving</b>Trigger: any door flag set and speed above 5 km/h. Priority 3. Stays until closed. Pulses at 1 Hz.</figcaption></figure>
+
+<figure><div class="mini"><div class="frame" data-active="drive"><div class="bk"><div class="ring"></div><div class="big">96</div><div class="c1"></div><div class="c2"></div></div><div class="dimmer"></div>
+  <div class="sheet-t card hi" style="left:295px;top:230px;width:690px;height:340px;padding:0"><div class="col c jc" style="position:absolute;inset:2px;background:var(--lime);color:var(--bg);padding:26px;text-align:center;clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%)">
+    <i data-i="thermo" data-s="64" style="stroke-width:2.4"></i><div class="h1" style="margin-top:6px">Coolant high</div><div class="num" style="font-size:130px;margin:6px 0">108<span style="font-size:44px">°C</span></div><div style="font:600 24px var(--f-ui)">Reduce load. Stop safely when possible.</div></div></div></div></div>
+<figcaption><b>Coolant high</b>Trigger: coolant above the profile threshold (105 °C). Priority 1. Modal, needs a tap to dismiss, returns if still above threshold after 60 s.</figcaption></figure>
+
+<figure><div class="mini"><div class="frame" data-active="drive"><div class="bk"><div class="ring"></div><div class="big">0</div><div class="c1"></div><div class="c2"></div></div>
+  <div class="sheet-t warn" style="left:0;bottom:0;width:1168px"><i data-i="batt" data-s="34"></i><span>Battery 11.6 V <small>· unit will sleep to protect the battery</small></span></div></div></div>
+<figcaption><b>Low battery</b>Trigger: module voltage below profile threshold with engine off. Priority 2. Bottom banner, 30 s before auto-sleep.</figcaption></figure>
+
+<figure><div class="mini"><div class="frame" data-active="drive"><div class="bk"><div class="ring"></div><div class="big">74</div><div class="c1"></div><div class="c2"></div></div>
+  <div class="sheet-t card" style="left:660px;top:80px;width:490px;padding:18px 22px"><div class="row c g16"><div style="width:84px;height:84px;display:grid;place-items:center;background:var(--s2);box-shadow:inset 0 0 0 2px var(--cobalt);font:800 44px var(--f-display);color:var(--lime)">AM</div><div class="grow"><div class="lbl">Incoming call</div><div class="h2">Aarav Mehta</div></div></div>
+    <div class="row g12" style="margin-top:16px"><a class="btn pri grow"><i data-i="phone" data-s="26"></i>Answer</a><a class="btn grow"><i data-i="close" data-s="26"></i>Decline</a></div></div></div></div>
+<figcaption><b>Incoming call</b>Trigger: Bluetooth HFP ring. Priority 2. Heads-up card top-right so gauges stay visible; ringtone through the car speakers.</figcaption></figure>
+
+<figure><div class="mini"><div class="frame" data-active="drive"><div class="bk"><div class="ring"></div><div class="big">74</div><div class="c1"></div><div class="c2"></div></div>
+  <div class="sheet-t" style="left:0;top:56px;width:1168px;height:84px;background:var(--lime);display:flex;align-items:center;justify-content:center;color:var(--bg);font:800 72px var(--f-display);letter-spacing:.3em">SHIFT</div></div></div>
+<figcaption><b>Shift light</b>Trigger: rpm above the shift threshold (5,200). Priority 4. Flashes at 4 Hz for at most 0.4 s per crossing. Off by default in Settings.</figcaption></figure>
+
+<figure><div class="mini"><div class="frame" data-active="drive"><div class="bk"><div class="ring"></div><div class="big">0</div><div class="c1"></div><div class="c2"></div></div><div class="dimmer"></div>
+  <div class="sheet-t osd" style="left:360px;top:345px;width:560px"><div class="row c g16"><span class="badge fill" style="height:60px;font-size:40px;padding:0 20px">R</span><div class="grow"><div class="h2">Reverse</div><div class="lbl" style="letter-spacing:.04em;text-transform:none">Opening rear camera</div></div><i data-i="camera" data-s="40" class="lime"></i></div></div></div></div>
+<figcaption><b>Reverse engaged</b>Trigger: reverse flag from the Canbox. Priority 1. The vendor camera surface takes over; this card covers the 200 ms hand-off.</figcaption></figure>
+
+</div></div>
+<script>
+var one = new URLSearchParams(location.search).get('one');
+if (one) {
+  document.querySelector('.hd').style.display = 'none';
+  var figs = document.querySelectorAll('figure');
+  figs.forEach(function (f, i) { if (i !== +one - 1) f.style.display = 'none'; });
+  document.querySelector('.stage').style.padding = '0'; document.querySelector('.gal').style.display = 'block';
+  var m = document.querySelector('figure:not([style*="none"]) .mini'); m.style.width = '1280px'; m.style.height = '800px';
+  m.querySelector('.frame').style.cssText += 'transform:none !important';
+  document.querySelector('figure:not([style*="none"]) figcaption').style.display = 'none';
+  document.documentElement.style.overflow = 'hidden'; document.body.style.overflow = 'hidden';
+}
+</script></body></html>

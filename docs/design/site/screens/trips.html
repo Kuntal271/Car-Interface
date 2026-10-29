@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Trips · Cockpit</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../assets/ui.css"><script src="../assets/ui.js"></script>
+<style>
+.live .v{font:800 56px/.9 var(--f-display)}
+.tr{display:grid;grid-template-columns:1fr auto auto;gap:18px;align-items:center;height:76px;padding:0 14px;border-bottom:1px solid var(--hair-soft)}
+.tr .d{font:600 22px var(--f-ui)} .tr .s{font:400 18px var(--f-ui);color:var(--dim)}
+.tr .k{font:800 34px var(--f-display);text-align:right;min-width:92px}
+.tr.on{background:linear-gradient(90deg,var(--l12),transparent);box-shadow:inset 4px 0 0 var(--lime)}
+.st{padding:0 18px;border-right:1px solid var(--hair-soft);display:flex;flex-direction:column;gap:8px;justify-content:center;flex:1}
+.st:last-child{border:0}
+.st .v{font:800 46px/.9 var(--f-display)}
+.mo{display:flex;align-items:center;gap:16px;height:52px;border-bottom:1px solid var(--hair-soft);font:500 21px var(--f-ui)}
+.mo:last-child{border:0} .mo .ic{color:var(--lime)} .mo b{font:800 28px var(--f-display);margin-left:auto}
+</style></head>
+<body><div class="stage"><div class="frame" data-active="apps">
+<main class="main row g24" data-od-id="trips">
+  <section class="col g12" style="width:470px">
+    <div class="row jb c" style="height:44px"><span class="h2">Trips</span><div class="tabs"><span class="chip on">All</span><span class="chip">Week</span></div></div>
+    <div class="row g12">
+      <div class="card live grow col g8" data-od-id="trip-a"><div class="row jb c"><span class="lbl">Trip A</span><span class="lbl white">Reset</span></div><div class="v lime">42.8<span class="unit"> km</span></div><span class="mono">1 h 08 · since ignition</span></div>
+      <div class="card live grow col g8" data-od-id="trip-b"><div class="row jb c"><span class="lbl">Trip B</span><span class="lbl white">Reset</span></div><div class="v">1,204<span class="unit"> km</span></div><span class="mono">since last refuel</span></div>
+    </div>
+    <div class="card grow col" style="padding:6px 8px" data-od-id="trip-list">
+      <div class="tr on"><div><div class="d">Today · 18:12</div><div class="s">1 h 08 · avg 38 km/h</div></div><span class="k lime">42.8</span><span class="unit">km</span></div>
+      <div class="tr"><div><div class="d">Today · 09:05</div><div class="s">0 h 41 · avg 29 km/h</div></div><span class="k">19.6</span><span class="unit">km</span></div>
+      <div class="tr"><div><div class="d">Thu 29 Oct · 19:30</div><div class="s">1 h 22 · avg 44 km/h</div></div><span class="k">60.1</span><span class="unit">km</span></div>
+      <div class="tr"><div><div class="d">Thu 29 Oct · 08:50</div><div class="s">0 h 38 · avg 27 km/h</div></div><span class="k">17.2</span><span class="unit">km</span></div>
+      <div class="tr"><div><div class="d">Wed 28 Oct · 18:40</div><div class="s">1 h 31 · avg 31 km/h</div></div><span class="k">47.0</span><span class="unit">km</span></div>
+      <div class="tr" style="border:0"><div><div class="d">Wed 28 Oct · 09:12</div><div class="s">0 h 44 · avg 30 km/h</div></div><span class="k">22.4</span><span class="unit">km</span></div>
+    </div>
+  </section>
+
+  <section class="col g12 grow" data-od-id="trip-detail">
+    <div class="card col g12" style="flex:none;padding-bottom:12px">
+      <div class="row jb c"><span class="h3">Today · 18:12 → 19:20</span><span class="badge">Recorded by Cockpit</span></div>
+      <div class="row" style="height:76px;margin-top:2px">
+        <div class="st"><span class="lbl">Distance</span><span class="v lime">42.8<span class="unit"> km</span></span></div>
+        <div class="st"><span class="lbl">Average</span><span class="v">38<span class="unit"> km/h</span></span></div>
+        <div class="st"><span class="lbl">Top</span><span class="v">131<span class="unit"> km/h</span></span></div>
+      </div>
+      <div class="hr"></div>
+      <div class="row" style="height:76px">
+        <div class="st"><span class="lbl">Max boost</span><span class="v lime">+1.04<span class="unit"> bar</span></span></div>
+        <div class="st"><span class="lbl">Fuel · est.</span><span class="v">2.9<span class="unit"> L</span></span></div>
+        <div class="st"><span class="lbl">Avg · est.</span><span class="v">6.8<span class="unit"> L/100</span></span></div>
+      </div>
+    </div>
+    <div class="card col" style="flex:none;height:176px;padding-top:12px;padding-bottom:10px" data-od-id="trip-chart">
+      <div class="row jb c"><span class="lbl">Speed &amp; boost</span><span class="row g16 mono"><span class="cobalt">■ speed</span><span class="lime">■ boost</span></span></div>
+      <svg id="chart" viewBox="0 0 560 150" width="100%" height="82" preserveAspectRatio="none" style="margin-top:8px"></svg>
+      <div class="row jb mono" style="margin-top:8px"><span>18:12</span><span>18:30</span><span>18:48</span><span>19:06</span><span>19:20</span></div>
+    </div>
+    <div class="card grow col" style="padding-top:6px;padding-bottom:6px" data-od-id="moments">
+      <div class="mo"><i data-i="bolt" data-s="26"></i>Peak boost at 4,950 rpm<b>18:31</b></div>
+      <div class="mo"><i data-i="gauge" data-s="26"></i>Top speed 131 km/h<b>18:44</b></div>
+      <div class="mo"><i data-i="clock" data-s="26"></i>Longest stop · 6 min<b>18:52</b></div>
+    </div>
+    <div class="row g12"><a class="btn grow"><i data-i="export" data-s="24"></i>Export CSV to USB</a><a class="btn ghost"><i data-i="trash" data-s="24"></i>Delete</a></div>
+  </section>
+</main>
+</div></div>
+<script>
+UI.onready = function () {
+  var W = 560, H = 150, sp = [], bo = [], s = '';
+  for (var i = 0; i <= 80; i++) { var d = UI.Sim.at(i * 1.25); sp.push((i / 80 * W).toFixed(1) + ',' + (H - d.speed / 140 * H).toFixed(1)); bo.push((i / 80 * W).toFixed(1) + ',' + (H - ((d.boost + 1) / 2.5) * H).toFixed(1)); }
+  for (var g = 0; g <= 3; g++) s += '<line x1="0" x2="' + W + '" y1="' + (g * H / 3) + '" y2="' + (g * H / 3) + '" stroke="rgba(36,87,255,.25)"/>';
+  s += '<polygon points="0,' + H + ' ' + sp.join(' ') + ' ' + W + ',' + H + '" fill="#2457FF" opacity=".2"/><polyline points="' + sp.join(' ') + '" fill="none" stroke="#3D6BFF" stroke-width="2.5" vector-effect="non-scaling-stroke"/>';
+  s += '<polyline points="' + bo.join(' ') + '" fill="none" stroke="#C8FF00" stroke-width="2.5" vector-effect="non-scaling-stroke"/>';
+  document.getElementById('chart').innerHTML = s;
+};
+</script></body></html>

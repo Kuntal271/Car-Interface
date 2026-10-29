@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Call · Cockpit</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../assets/ui.css"><script src="../assets/ui.js"></script>
+<style>
+.ctl{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;height:150px;font:700 20px var(--f-ui);letter-spacing:.1em;text-transform:uppercase;
+  background:var(--c25);box-shadow:inset 0 0 0 1px var(--hair);clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%)}
+.ctl .ic{color:var(--cobalt-lt)}
+.ctl.on{background:var(--lime);color:var(--bg);box-shadow:none} .ctl.on .ic{color:var(--bg)}
+.avatar{width:220px;height:220px;display:grid;place-items:center;background:var(--s2);box-shadow:inset 0 0 0 2px var(--cobalt);font:800 110px var(--f-display);color:var(--lime);
+  clip-path:polygon(0 0,calc(100% - 28px) 0,100% 28px,100% 100%,0 100%)}
+</style></head>
+<body><div class="stage"><div class="frame" data-active="phone">
+<main class="main row g24" data-od-id="call">
+  <section class="card col grow jb" style="width:560px" data-od-id="caller">
+    <div class="row jb c"><span class="badge lime">In call · Pixel 8</span><span class="row c g8 lime"><i data-i="signal" data-s="24"></i><span class="lbl white">HD voice</span></span></div>
+    <div class="row c g24"><div class="avatar">AM</div>
+      <div class="col g8" style="min-width:0"><div class="lbl">Mobile</div><div class="h1" style="font-size:66px">Aarav<br>Mehta</div><div class="mono" style="font-size:20px">+91 98765 43210</div></div></div>
+    <div>
+      <div class="num lime" style="font-size:112px">00:42</div>
+      <div class="seg thin sk" data-n="40" data-v=".7" data-c="c" style="margin-top:12px"></div>
+      <div class="row jb mono" style="margin-top:6px"><span>Audio · car speakers</span><span>mic level</span></div>
+    </div>
+  </section>
+  <section class="col g12" style="width:536px">
+    <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:12px">
+      <a class="ctl"><i data-i="mute" data-s="38"></i>Mute</a>
+      <a class="ctl"><i data-i="keypad" data-s="38"></i>Keypad</a>
+      <a class="ctl on"><i data-i="vol" data-s="38"></i>Speaker</a>
+      <a class="ctl"><i data-i="pause" data-s="38"></i>Hold</a>
+      <a class="ctl"><i data-i="plus" data-s="38"></i>Add call</a>
+      <a class="ctl"><i data-i="phone" data-s="38"></i>Phone</a>
+    </div>
+    <div class="card row c g16 tight" style="height:96px"><i data-i="vol" data-s="30" class="cobalt"></i><div class="slider grow" data-v=".4" data-n="26"></div><span class="num n-s">18</span></div>
+    <a href="phone.html" class="btn pri big grow" style="font-size:30px;min-height:120px"><i data-i="phone" data-s="40" style="transform:rotate(135deg)"></i>End call</a>
+  </section>
+</main>
+</div></div></body></html>

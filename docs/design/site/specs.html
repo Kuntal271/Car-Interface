@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en" class="doc"><head><meta charset="utf-8"><title>Specs · Cockpit</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="assets/ui.css"><link rel="stylesheet" href="assets/site.css"><script src="assets/ui.js"></script><script src="assets/screens.js"></script>
+<style>.flow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:8px 0}.flow .n{padding:8px 14px;background:var(--c25);box-shadow:inset 0 0 0 1px var(--hair);font:700 16px var(--f-display);letter-spacing:.1em;text-transform:uppercase}.flow .n.hi{background:var(--lime);color:var(--bg);box-shadow:none}.flow .a{color:var(--dim)}#inv td:nth-child(1){min-width:200px;white-space:nowrap}#inv td:nth-child(2){white-space:nowrap}#inv td code{white-space:normal}</style></head>
+<body class="doc">
+<nav class="nav"><div class="wrap"><a class="brand" href="index.html"><i></i>Cockpit</a><a class="l" href="index.html">Overview</a><a class="l" href="prototype.html">Prototype</a><a class="l" href="design-system.html">Design system</a><a class="l" href="components.html">Components</a><a class="l on" href="specs.html">Specs</a></div></nav>
+<div class="wrap" style="padding-top:56px">
+  <div class="kicker">For the implementer</div><h1 class="h-sec" style="font-size:96px">Specs</h1>
+  <p class="lead" style="font-size:21px">What each screen reads, how risky it is on the real unit, and how to build it in Compose without missing the 10 ms frame budget.</p>
+
+  <div class="cap">Navigation</div>
+  <div class="pnl">
+    <div class="flow"><span class="n hi">Boot</span><span class="a">→</span><span class="n hi">Home</span><span class="a">dock →</span><span class="n">Drive</span><span class="n">Car</span><span class="n">Media</span><span class="n">Phone</span><span class="n">Maps</span><span class="n">Apps</span><span class="n">Settings</span></div>
+    <div class="flow"><span class="a">Drive →</span><span class="n">Boost</span><span class="n">Cruise</span><span class="a">(tabs, swipe left/right)</span></div>
+    <div class="flow"><span class="a">Car →</span><span class="n">Parking</span> <span class="a">· Apps →</span><span class="n">Trips</span><span class="n">Diagnose</span><span class="n">Sound</span><span class="n">Radio</span> <span class="a">· Media →</span><span class="n">Radio</span><span class="n">Sound</span> <span class="a">· Phone →</span><span class="n">In call</span></div>
+    <div class="flow"><span class="a">Anywhere: swipe down →</span><span class="n">Quick panel</span><span class="a">· ignition off →</span><span class="n">Standby</span><span class="a">· reverse →</span><span class="n">Parking</span><span class="a">· events →</span><span class="n">Overlays</span></div>
+  </div>
+
+  <div class="cap">Screen inventory</div>
+  <table class="t" id="inv"><thead><tr><th>Screen</th><th>Data</th><th>Risk</th><th>Compose</th><th>States to build</th></tr></thead><tbody></tbody></table>
+
+  <div class="cap">Where each number comes from</div>
+  <table class="t"><thead><tr><th>Field</th><th>Primary source</th><th>Fallback</th><th>Note</th></tr></thead><tbody>
+    <tr><td><b>Rpm, speed</b></td><td>OBD PID 010C / 010D</td><td>Canbox frame, if the dialect carries it</td><td>The stock UI shows both, so the Canbox probably does. Confirm from a capture.</td></tr>
+    <tr><td><b>Boost</b></td><td>OBD: MAP (010B) minus BARO (0133)</td><td>None</td><td>The Canbox cannot provide it. Needs an adapter.</td></tr>
+    <tr><td><b>Coolant, intake, load, throttle, battery, fuel</b></td><td>OBD Mode 01</td><td>Canbox fuel level</td><td>Fuel level PID 012F; verify the car reports it.</td></tr>
+    <tr><td><b>Gear</b></td><td>Estimated from rpm ÷ speed</td><td>—</td><td>Always labelled <code>EST</code>.</td></tr>
+    <tr><td><b>Fuel use, range, consumption</b></td><td>Estimated from fuel-level change</td><td>—</td><td>No fuel-rate PID on this engine. Labelled <code>EST</code> everywhere.</td></tr>
+    <tr><td><b>Doors, tailgate, bonnet, radar, climate, outside temp, lights, steering angle</b></td><td>Canbox UART tap</td><td>None</td><td>Dialect unknown. Each field is optional and hidden if the car never sends it.</td></tr>
+    <tr><td><b>Tyre pressure</b></td><td>Canbox, if present</td><td>None</td><td>Marked ◇ on the Car screen; may not exist on a 2015 EcoSport.</td></tr>
+    <tr><td><b>Media, calls, contacts</b></td><td>Android MediaSession and Bluetooth HFP</td><td>—</td><td>Standard APIs, no vendor dependency.</td></tr>
+    <tr><td><b>Radio, DSP, camera</b></td><td>Vendor service</td><td>Launch the stock app</td><td>Highest risk. Design assumes an API; fall back to shortcuts if none exists.</td></tr>
+  </tbody></table>
+
+  <div class="cap">Overlay priority (1 wins)</div>
+  <table class="t"><thead><tr><th>P</th><th>Overlay</th><th>Blocks input</th><th>Dismiss</th></tr></thead><tbody>
+    <tr><td>1</td><td>Reverse engaged · Coolant high</td><td>Yes</td><td>Gear change · tap (returns if still high after 60 s)</td></tr>
+    <tr><td>2</td><td>Incoming call · Low battery</td><td>No</td><td>Answer or decline · automatic</td></tr>
+    <tr><td>3</td><td>Door open while moving</td><td>No</td><td>Door closed</td></tr>
+    <tr><td>4</td><td>Shift light</td><td>No</td><td>0.4 s</td></tr>
+    <tr><td>5</td><td>Volume · Climate change</td><td>No</td><td>1.5–2 s</td></tr>
+  </tbody></table>
+
+  <div class="cap">Performance rules for the Compose build</div>
+  <div class="two">
+    <div class="pnl"><h3>Budget</h3><ul><li>Frame cost p99 ≤ 10 ms, zero missed vsyncs over a 10 minute drive cycle. Stretch: 5 ms.</li><li>No allocation in the draw phase of a gauge.</li><li>Cold start to interactive ≤ 4 s.</li><li>Measured with <code>dumpsys gfxinfo</code> on the real unit, not on the emulator.</li></ul></div>
+    <div class="pnl"><h3>Technique</h3><ul><li>Read gauge state inside <code>drawBehind</code>, so a new rpm redraws one layer and never recomposes.</li><li>Pre-build segment <code>Path</code>s once per size; per frame only choose the fill colour.</li><li>One <code>StateFlow&lt;VehicleSample&gt;</code>, sampled at display rate, shared by all screens.</li><li>Static backgrounds (grid, vignette) are one cached bitmap. No blur, no shadows.</li></ul></div>
+  </div>
+
+  <div class="cap">Open questions that change the design</div>
+  <table class="t"><thead><tr><th>#</th><th>Question</th><th>Who can answer</th><th>Design impact</th></tr></thead><tbody>
+    <tr><td>1</td><td>Canbox version string and live values under Settings → Car info</td><td>Owner, at the unit</td><td>Decides every field on the Car screen</td></tr>
+    <tr><td>2</td><td>Does the vendor tuner or DSP expose a control API?</td><td>adb recon on the unit</td><td>Radio and Sound become real screens or launch shortcuts</td></tr>
+    <tr><td>3</td><td>Which OBD adapter, and does the car report fuel level (012F)?</td><td>Owner</td><td>Boost, fuel and range accuracy</td></tr>
+    <tr><td>4</td><td>Real GPU frame times on the unit</td><td>Measurement, milestone 5</td><td>Whether 60 fps gauges are on by default</td></tr>
+  </tbody></table>
+  <div class="foot">Source: <code>vehicle/</code> (data layer), <code>docs/PERF.md</code>, <code>docs/CANBOX-FRAMES.md</code>.</div>
+</div>
+<script>
+var h = ''; SCREENS.forEach(function (s) {
+  h += '<tr><td><a href="screens/' + s.id + '.html"><b>' + s.t + '</b></a><br><span class="mono">' + s.g + '</span></td><td>' + s.src.map(function (x) { return '<span class="tag">' + x + '</span>'; }).join('') + '</td><td><span class="tag ' + (s.risk === 'High' ? 'hi' : s.risk === 'Med' ? 'md' : '') + '">' + s.risk + '</span></td><td><code>' + s.comp + '</code></td><td>' + s.states + '</td></tr>';
+});
+document.querySelector('#inv tbody').innerHTML = h;
+</script></body></html>
