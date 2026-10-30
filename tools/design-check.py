@@ -15,7 +15,7 @@ for f in list(root.rglob("*.html")) + list(root.rglob("*.css")) + list(root.rglo
         if not (f.parent / u).resolve().exists(): bad.append((str(f.relative_to(root)), u))
     for m in re.finditer(r'url\(([^)]+)\)', s):
         u = m.group(1).strip("'\"")
-        if u.startswith(("data:", "http")): continue
+        if u.startswith(("data:", "http", "#")): continue
         n += 1
         if not (f.parent / u).resolve().exists(): bad.append((str(f.relative_to(root)), u))
 ids = re.findall(r"id: '([^']+)'", (root / "assets/screens.js").read_text())

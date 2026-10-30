@@ -56,7 +56,7 @@ UI.onready = function () {
       var d = UI.Sim.at(UI.Sim.snapT - 20 + j * 0.5);
       pts.push(typeof k === 'string' ? (k === 'cool' ? 92 : k === 'iat' ? d.iat : d[k]) : k + Math.sin(j * .4 + i) * (k === 100 ? .25 : k === 62 ? .15 : .12));
     }
-    UI.spark(document.getElementById('sp' + i), pts, { w: 150, h: 30, min: r[4], max: r[5], c: r[6] > 1 ? '#C8FF00' : '#3D6BFF' });
+    UI.spark(document.getElementById('sp' + i), pts, { w: 150, h: 30, min: r[4], max: r[5], fill: r[6] > 1, c: r[6] > 1 ? 'var(--lime)' : 'var(--cobalt-lt)' });
   });
 };
 </script></body></html>

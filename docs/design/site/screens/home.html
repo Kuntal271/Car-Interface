@@ -14,7 +14,7 @@
 <main class="main row g24" data-od-id="home">
   <section class="col g16" style="width:690px" data-od-id="home-left">
     <div class="row c jb" style="height:40px">
-      <div class="row c g12"><span class="mark"></span><span class="h2">Cockpit</span></div>
+      <div class="row c g12"><span class="mark cp-only"></span><span class="h2 cp-only">Cockpit</span><span class="ford-only c g16" id="hl"></span></div>
       <span class="lbl">Engine on · Trip A <b class="white">42.8 km</b></span>
     </div>
     <div class="card row g24" style="height:310px;padding:20px" data-od-id="now-playing">
@@ -77,6 +77,7 @@
 <script>
 UI.onready = function () {
   var $ = function (i) { return document.getElementById(i); };
+  if (UI.theme === 'ford') $('hl').innerHTML = UI.logo(38) + '<span class="h2">EcoSport</span>';
   UI.live(function (s) {
     $('speed').textContent = Math.round(s.speed); $('gear').textContent = s.gear; UI.setSeg($('spdbar'), s.speed / 200);
     $('rpm').textContent = Math.round(s.rpm).toLocaleString('en-US');

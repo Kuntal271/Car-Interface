@@ -13,10 +13,15 @@ Static HTML/CSS/JS, no build step, no network calls. Everything is relative, so 
 - `specs.html`            data sources, integration risk, Compose structure, overlay priorities, open questions
 - `screens/<name>.html`   each screen at 1280x800 (add `?live=1` to animate, `?t=<seconds>` to pick a point in the 100 s drive cycle)
 
+## Themes
+
+`?theme=ford` (default) or `?theme=cockpit`; the switch at the top right of every doc page and the prototype does the same and remembers it. Boot animation: `screens/boot.html` (click to replay); `?bt=1.7` freezes it at 1.7 s for screenshots (`tools/design.sh shotq boot boot-1.7 "bt=1.7&noanim=0"`).
+
 ## Check it
 
     tools/design.sh shotall      # screenshots every screen into site/shots (headless Chrome)
     tools/design.sh qaall        # overflow / clipping check on every screen (prints QA-CLEAN or the offenders)
+    tools/design.sh bench drive  # scripting cost of one frame's update (not GPU raster)
     python3 tools/design-check.py   # every local link resolves, no external URLs, registry matches files
 
 ## Add a screen

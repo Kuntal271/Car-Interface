@@ -19,7 +19,7 @@
       <svg id="arc" viewBox="0 0 640 350" width="632" height="348"></svg>
     </div>
     <div class="card col" style="height:248px" data-od-id="spool-chart">
-      <div class="row jb c"><span class="lbl">Last 25 seconds</span><span class="row g16 c mono"><span class="lime">■ boost</span><span class="cobalt">■ rpm</span></span></div>
+      <div class="row jb c"><span class="lbl">Last 25 seconds</span><span class="row g16 c mono"><span class="lime">■ boost</span><span style="color:var(--cobalt)">■ rpm</span></span></div>
       <svg id="chart" viewBox="0 0 616 170" width="616" height="170" style="margin-top:10px"></svg>
     </div>
   </section>
@@ -49,29 +49,29 @@ UI.onready = function () {
   /* semicircle bipolar boost gauge: -1.0 .. +1.5 bar over 200deg */
   var peak = 1.04;
   function arc(b) {
-    var cx = 320, cy = 318, r1 = 238, r2 = 292, a0 = -100, a1 = 100, n = 50, step = (a1 - a0) / n, zero = .4, v = (b + 1) / 2.5, s = '';
+    var cx = 320, cy = 292, r1 = 226, r2 = 278, a0 = -100, a1 = 100, n = 50, step = (a1 - a0) / n, zero = .4, v = (b + 1) / 2.5, s = '';
     for (var i = 0; i < n; i++) {
       var f = (i + .5) / n, lit = v >= zero ? (f >= zero && f <= v) : (f <= zero && f >= v);
-      var fill = lit ? (f >= zero ? '#C8FF00' : '#2457FF') : 'rgba(36,87,255,.24)';
+      var fill = lit ? (f >= zero ? 'var(--lime)' : 'var(--cobalt)') : 'rgba(var(--cobalt-rgb),.24)';
       s += '<path d="' + UI.sector(cx, cy, r1, r2, a0 + i * step + .6, a0 + (i + 1) * step - .6) + '" fill="' + fill + '"/>';
     }
     [[-1, '−1.0'], [-.5, '−0.5'], [0, '0'], [.5, '+0.5'], [1, '+1.0'], [1.5, '+1.5']].forEach(function (t) {
       var a = a0 + ((t[0] + 1) / 2.5) * (a1 - a0), p1 = UI.pol(cx, cy, r1 - 10, a), p2 = UI.pol(cx, cy, r1 - 26, a), tp = UI.pol(cx, cy, r1 - 52, a);
-      s += '<line x1="' + p1[0] + '" y1="' + p1[1] + '" x2="' + p2[0] + '" y2="' + p2[1] + '" stroke="' + (t[0] > 0 ? '#C8FF00' : '#3D6BFF') + '" stroke-width="3"/>' +
-        '<text x="' + tp[0] + '" y="' + (tp[1] + 8) + '" text-anchor="middle" font-family="Space Grotesk" font-weight="600" font-size="21" fill="#8190B8">' + t[1] + '</text>';
+      s += '<line x1="' + p1[0] + '" y1="' + p1[1] + '" x2="' + p2[0] + '" y2="' + p2[1] + '" stroke="' + (t[0] > 0 ? 'var(--lime)' : 'var(--cobalt-lt)') + '" stroke-width="3"/>' +
+        '<text x="' + tp[0] + '" y="' + (tp[1] + 8) + '" text-anchor="middle" font-family="var(--f-ui)" font-weight="600" font-size="21" fill="var(--dim)">' + t[1] + '</text>';
     });
     var pa = a0 + ((peak + 1) / 2.5) * (a1 - a0), q = [UI.pol(cx, cy, r2 + 4, pa), UI.pol(cx, cy, r2 + 24, pa - 2.2), UI.pol(cx, cy, r2 + 24, pa + 2.2)];
-    s += '<polygon points="' + q.join(' ') + '" fill="#C8FF00"/>';
-    s += '<text x="' + cx + '" y="' + (cy - 112) + '" text-anchor="middle" font-family="Big Shoulders Display" font-weight="800" font-size="150" fill="' + (b >= 0 ? '#C8FF00' : '#3D6BFF') + '">' + (b >= 0 ? '+' : '−') + Math.abs(b).toFixed(2) + '</text>';
-    s += '<text x="' + cx + '" y="' + (cy - 62) + '" text-anchor="middle" font-family="Space Grotesk" font-weight="600" font-size="24" letter-spacing="4" fill="#8190B8">BAR · GAUGE</text>';
+    s += '<polygon points="' + q.join(' ') + '" fill="var(--lime)"/>';
+    s += '<text x="' + cx + '" y="' + (cy - 14) + '" text-anchor="middle" font-family="var(--f-display)" font-weight="800" font-size="118" fill="' + (b >= 0 ? 'var(--lime)' : 'var(--cobalt-lt)') + '">' + (b >= 0 ? '+' : '−') + Math.abs(b).toFixed(2) + '</text>';
+    s += '<text x="' + cx + '" y="' + (cy + 34) + '" text-anchor="middle" font-family="var(--f-ui)" font-weight="600" font-size="24" letter-spacing="4" fill="var(--dim)">bar · gauge</text>';
     $('arc').innerHTML = s;
   }
   function chart(t0) {
     var W = 616, H = 170, s = '', pb = [], pr = [];
     for (var i = 0; i <= 50; i++) { var d = UI.Sim.at(Math.max(0, t0 - 25 + i * .5)); pb.push((i / 50 * W).toFixed(1) + ',' + (H - ((d.boost + 1) / 2.5) * H).toFixed(1)); pr.push((i / 50 * W).toFixed(1) + ',' + (H - (d.rpm / 7000) * H).toFixed(1)); }
-    for (var g = 0; g <= 4; g++) s += '<line x1="0" x2="' + W + '" y1="' + (g * H / 4) + '" y2="' + (g * H / 4) + '" stroke="rgba(36,87,255,.22)"/>';
-    s += '<line x1="0" x2="' + W + '" y1="' + (H - .4 * H) + '" y2="' + (H - .4 * H) + '" stroke="#3D6BFF" stroke-dasharray="6 6"/>';
-    s += '<polyline points="' + pr.join(' ') + '" fill="none" stroke="#3D6BFF" stroke-width="2.5"/><polyline points="' + pb.join(' ') + '" fill="none" stroke="#C8FF00" stroke-width="3"/>';
+    for (var g = 0; g <= 4; g++) s += '<line x1="0" x2="' + W + '" y1="' + (g * H / 4) + '" y2="' + (g * H / 4) + '" stroke="rgba(var(--cobalt-rgb),.22)"/>';
+    s += '<line x1="0" x2="' + W + '" y1="' + (H - .4 * H) + '" y2="' + (H - .4 * H) + '" stroke="var(--cobalt-lt)" stroke-dasharray="6 6"/>';
+    s += '<polyline points="' + pr.join(' ') + '" fill="none" stroke="var(--cobalt)" stroke-width="2.5"/><polyline points="' + pb.join(' ') + '" fill="none" stroke="var(--lime)" stroke-width="3"/>';
     $('chart').innerHTML = s;
   }
   UI.live(function (s) {

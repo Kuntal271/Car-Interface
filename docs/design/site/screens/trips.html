@@ -7,7 +7,7 @@
 .tr{display:grid;grid-template-columns:1fr auto auto;gap:18px;align-items:center;height:76px;padding:0 14px;border-bottom:1px solid var(--hair-soft)}
 .tr .d{font:600 22px var(--f-ui)} .tr .s{font:400 18px var(--f-ui);color:var(--dim)}
 .tr .k{font:800 34px var(--f-display);text-align:right;min-width:92px}
-.tr.on{background:linear-gradient(90deg,var(--l12),transparent);box-shadow:inset 4px 0 0 var(--lime)}
+.tr.on{background:linear-gradient(90deg,var(--l12),transparent);box-shadow:inset 4px 0 0 var(--accent)}
 .st{padding:0 18px;border-right:1px solid var(--hair-soft);display:flex;flex-direction:column;gap:8px;justify-content:center;flex:1}
 .st:last-child{border:0}
 .st .v{font:800 46px/.9 var(--f-display)}
@@ -48,7 +48,7 @@
       </div>
     </div>
     <div class="card col" style="flex:none;height:176px;padding-top:12px;padding-bottom:10px" data-od-id="trip-chart">
-      <div class="row jb c"><span class="lbl">Speed &amp; boost</span><span class="row g16 mono"><span class="cobalt">■ speed</span><span class="lime">■ boost</span></span></div>
+      <div class="row jb c"><span class="lbl">Speed &amp; boost</span><span class="row g16 mono"><span style="color:var(--cobalt)">■ speed</span><span class="lime">■ boost</span></span></div>
       <svg id="chart" viewBox="0 0 560 150" width="100%" height="82" preserveAspectRatio="none" style="margin-top:8px"></svg>
       <div class="row jb mono" style="margin-top:8px"><span>18:12</span><span>18:30</span><span>18:48</span><span>19:06</span><span>19:20</span></div>
     </div>
@@ -65,9 +65,9 @@
 UI.onready = function () {
   var W = 560, H = 150, sp = [], bo = [], s = '';
   for (var i = 0; i <= 80; i++) { var d = UI.Sim.at(i * 1.25); sp.push((i / 80 * W).toFixed(1) + ',' + (H - d.speed / 140 * H).toFixed(1)); bo.push((i / 80 * W).toFixed(1) + ',' + (H - ((d.boost + 1) / 2.5) * H).toFixed(1)); }
-  for (var g = 0; g <= 3; g++) s += '<line x1="0" x2="' + W + '" y1="' + (g * H / 3) + '" y2="' + (g * H / 3) + '" stroke="rgba(36,87,255,.25)"/>';
-  s += '<polygon points="0,' + H + ' ' + sp.join(' ') + ' ' + W + ',' + H + '" fill="#2457FF" opacity=".2"/><polyline points="' + sp.join(' ') + '" fill="none" stroke="#3D6BFF" stroke-width="2.5" vector-effect="non-scaling-stroke"/>';
-  s += '<polyline points="' + bo.join(' ') + '" fill="none" stroke="#C8FF00" stroke-width="2.5" vector-effect="non-scaling-stroke"/>';
+  for (var g = 0; g <= 3; g++) s += '<line x1="0" x2="' + W + '" y1="' + (g * H / 3) + '" y2="' + (g * H / 3) + '" stroke="rgba(var(--cobalt-rgb),.25)"/>';
+  s += '<polygon points="0,' + H + ' ' + sp.join(' ') + ' ' + W + ',' + H + '" fill="var(--cobalt)" opacity=".2"/><polyline points="' + sp.join(' ') + '" fill="none" stroke="var(--cobalt)" stroke-width="2.5" vector-effect="non-scaling-stroke"/>';
+  s += '<polyline points="' + bo.join(' ') + '" fill="none" stroke="var(--lime)" stroke-width="3.5" vector-effect="non-scaling-stroke"/>';
   document.getElementById('chart').innerHTML = s;
 };
 </script></body></html>

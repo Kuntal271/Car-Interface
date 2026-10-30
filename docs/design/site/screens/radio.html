@@ -52,12 +52,12 @@ UI.onready = function () {
   var lo = 87.5, hi = 108, W = 1076, s = '', st = [91.1, 92.7, 93.5, 94.3, 95.0, 98.3, 101.9, 104.0];
   for (var f = lo; f <= hi + .001; f += 0.5) {
     var x = (f - lo) / (hi - lo) * (W - 2) + 1, maj = Math.abs(f - Math.round(f)) < .01, big = maj && Math.round(f) % 2 === 0;
-    s += '<line x1="' + x + '" x2="' + x + '" y1="' + (big ? 26 : maj ? 32 : 40) + '" y2="62" stroke="' + (f > 93.4 && f < 93.6 ? '#C8FF00' : '#3D6BFF') + '" stroke-width="' + (maj ? 2 : 1.2) + '"/>';
-    if (big) s += '<text x="' + x + '" y="20" text-anchor="middle" font-family="JetBrains Mono" font-weight="500" font-size="18" fill="#8190B8">' + Math.round(f) + '</text>';
+    s += '<line x1="' + x + '" x2="' + x + '" y1="' + (big ? 26 : maj ? 32 : 40) + '" y2="62" stroke="' + (f > 93.4 && f < 93.6 ? 'var(--lime)' : 'var(--cobalt-lt)') + '" stroke-width="' + (maj ? 2 : 1.2) + '"/>';
+    if (big) s += '<text x="' + x + '" y="20" text-anchor="middle" font-family="var(--f-mono)" font-weight="500" font-size="18" fill="var(--dim)">' + Math.round(f) + '</text>';
   }
-  st.forEach(function (f) { var x = (f - lo) / (hi - lo) * (W - 2) + 1; s += '<path d="M' + (x - 6) + ' 68l6-8 6 8z" fill="#2457FF"/>'; });
+  st.forEach(function (f) { var x = (f - lo) / (hi - lo) * (W - 2) + 1; s += '<path d="M' + (x - 6) + ' 68l6-8 6 8z" fill="var(--cobalt)"/>'; });
   var nx = (93.5 - lo) / (hi - lo) * (W - 2) + 1;
-  s += '<line x1="' + nx + '" x2="' + nx + '" y1="4" y2="66" stroke="#C8FF00" stroke-width="4"/><path d="M' + (nx - 9) + ' 0h18l-9 12z" fill="#C8FF00"/>';
+  s += '<line x1="' + nx + '" x2="' + nx + '" y1="4" y2="66" stroke="var(--lime)" stroke-width="4"/><path d="M' + (nx - 9) + ' 0h18l-9 12z" fill="var(--lime)"/>';
   document.getElementById('ruler').innerHTML = s;
 };
 </script></body></html>

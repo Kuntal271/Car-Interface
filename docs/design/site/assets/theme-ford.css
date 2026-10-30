@@ -1,0 +1,132 @@
+/* Ford theme — layered over ui.css. Only active when <html data-theme="ford">.
+   Look: SYNC 4 / Mach-E inspired. Deep blue-black, Ford blue, ice-cyan highlights, amber warnings, rounded glass cards, white numerals.
+   Smoothness rules baked in: no blur, no box-shadow glows on moving things, animation limited to transform + opacity. */
+
+html[data-theme="ford"]{
+  --bg:#050A14; --bg-rgb:5,10,20; --s1:#0C1628; --s1-rgb:12,22,40; --s2:#13213C; --s3:#1A2C50;
+  --text:#F4F8FF; --dim:#93A7CE; --dim-rgb:147,167,206;
+  --cobalt:#2B72FF; --cobalt-rgb:43,114,255; --cobalt-lt:#6AA6FF; --cobalt-lt-rgb:106,166,255;
+  --lime:#5CD8FF; --lime-rgb:92,216,255;
+  --accent:#1F63F0; --on-accent:#FFFFFF; --warn:#FFB81C; --warn-rgb:255,184,28; --on-warn:#1A1200;
+  --hair:rgba(150,180,255,.20); --hair-soft:rgba(150,180,255,.10);
+  --sel-bg:#0F2447; --knob-off:#6E82AD; --vf1:#0A1730; --vf2:#0C1D40;
+  --f-display:'Barlow Condensed','Big Shoulders Display',sans-serif;
+  --f-ui:'Barlow','Space Grotesk',system-ui,sans-serif;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+html.noanim *,html.noanim *::before,html.noanim *::after{animation:none !important;transition:none !important}
+
+/* ---------- ambience ---------- */
+html[data-theme="ford"] .frame{background:linear-gradient(180deg,#071122 0%,#050A14 70%)}
+html[data-theme="ford"] .frame::before{background:
+  radial-gradient(1000px 560px at 10% 112%,rgba(31,99,240,.34),transparent 70%),
+  radial-gradient(900px 520px at 104% -10%,rgba(0,52,120,.46),transparent 72%)}
+html[data-theme="ford"] .frame::after{content:"";position:absolute;left:-10%;top:30%;width:70%;height:70%;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(43,114,255,.14),transparent);animation:f-drift 16s ease-in-out infinite alternate}
+@keyframes f-drift{from{transform:translate3d(0,0,0)}to{transform:translate3d(36%,-14%,0)}}
+html[data-theme="ford"] .frame *{letter-spacing:.012em;text-transform:none !important}
+
+/* ---------- shell ---------- */
+html[data-theme="ford"] .sb{background:linear-gradient(180deg,rgba(var(--bg-rgb),.94),rgba(var(--bg-rgb),.5));border-bottom:1px solid var(--hair-soft)}
+html[data-theme="ford"] .sb .clock{font-weight:600;letter-spacing:.03em;font-size:36px}
+html[data-theme="ford"] .sb .date{font-size:19px;letter-spacing:.02em}
+html[data-theme="ford"] .sb-logo{margin-right:8px;flex:none}
+html[data-theme="ford"] .sb .link{font-size:18px;font-weight:600}
+html[data-theme="ford"] .sb .link::before{width:9px;height:9px;border-radius:50%;transform:none}
+html[data-theme="ford"] .dock{background:rgba(var(--s1-rgb),.72);border-left:1px solid var(--hair-soft);padding:8px 0}
+html[data-theme="ford"] .dock a{margin:3px 10px;border-radius:20px;border:0;font-family:var(--f-ui);font-weight:600;font-size:18px;
+  transition:transform .12s var(--ease),background .2s}
+html[data-theme="ford"] .dock a.on{background:linear-gradient(180deg,rgba(43,114,255,.34),rgba(43,114,255,.16));box-shadow:inset 0 0 0 1px rgba(var(--cobalt-lt-rgb),.5)}
+html[data-theme="ford"] .dock a.on::before{display:none}
+html[data-theme="ford"] .dock a.on .ic{color:#fff}
+html[data-theme="ford"] .dock a:active{transform:scale(.95)}
+
+/* ---------- surfaces ---------- */
+html[data-theme="ford"] .card{--n:0px;padding:20px 24px;border-radius:24px;clip-path:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.015) 45%),var(--s1);
+  box-shadow:inset 0 0 0 1px var(--hair),inset 0 1px 0 rgba(255,255,255,.08)}
+html[data-theme="ford"] .card::before{display:none}
+html[data-theme="ford"] .card.s2{background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02) 45%),var(--s2)}
+html[data-theme="ford"] .card.flat{background:rgba(var(--s1-rgb),.55)}
+html[data-theme="ford"] .card.sel{background:linear-gradient(180deg,rgba(43,114,255,.30),rgba(43,114,255,.10)),var(--sel-bg);box-shadow:inset 0 0 0 2px var(--accent)}
+html[data-theme="ford"] .card.hi{background:var(--warn);box-shadow:none}
+html[data-theme="ford"] .osd,html[data-theme="ford"] .key,html[data-theme="ford"] .rc,html[data-theme="ford"] .app,html[data-theme="ford"] .qt,html[data-theme="ford"] .ctl,
+html[data-theme="ford"] .avatar,html[data-theme="ford"] .pr .av,html[data-theme="ford"] .ph,html[data-theme="ford"] .pre{clip-path:none}
+html[data-theme="ford"] .osd{border-radius:24px;background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02)),var(--s2)}
+html[data-theme="ford"] .key{border-radius:20px;background:rgba(var(--cobalt-lt-rgb),.12)}
+html[data-theme="ford"] .rc,html[data-theme="ford"] .app,html[data-theme="ford"] .qt{border-radius:22px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02)),var(--s1);
+  box-shadow:inset 0 0 0 1px var(--hair-soft);font-family:var(--f-ui);font-weight:600;font-size:19px}
+html[data-theme="ford"] .qt.on{background:var(--accent);box-shadow:none}
+html[data-theme="ford"] .ctl{border-radius:24px;background:rgba(var(--cobalt-lt-rgb),.12);font-family:var(--f-ui);font-weight:600;font-size:20px}
+html[data-theme="ford"] .ctl.on{background:var(--accent)}
+html[data-theme="ford"] .avatar{border-radius:30px}
+html[data-theme="ford"] .pr .av{border-radius:50%}
+html[data-theme="ford"] .art{border-radius:22px}
+html[data-theme="ford"] .art::after{clip-path:none;border-radius:50%}
+html[data-theme="ford"] .vf{border-radius:inherit}
+html[data-theme="ford"] .li .ico{border-radius:14px}
+html[data-theme="ford"] .li.on,html[data-theme="ford"] .tr.on,html[data-theme="ford"] .q.on{border-radius:14px}
+html[data-theme="ford"] .cat{font-family:var(--f-ui);font-weight:600;font-size:22px}
+html[data-theme="ford"] .cat.on{border-radius:0 18px 18px 0}
+
+/* ---------- controls ---------- */
+html[data-theme="ford"] .btn{clip-path:none;border-radius:999px;background:rgba(var(--cobalt-lt-rgb),.14);box-shadow:inset 0 0 0 1px var(--hair);
+  font-weight:600;font-size:21px;transition:transform .12s var(--ease)}
+html[data-theme="ford"] .btn.pri{background:var(--accent);color:var(--on-accent);box-shadow:none}
+html[data-theme="ford"] .btn.ghost{background:transparent}
+html[data-theme="ford"] .btn.sq{border-radius:26px}
+html[data-theme="ford"] .btn.on{background:rgba(var(--lime-rgb),.16);box-shadow:inset 0 0 0 2px var(--lime);color:var(--lime)}
+html[data-theme="ford"] .btn:active,html[data-theme="ford"] .chip:active,html[data-theme="ford"] .app:active,html[data-theme="ford"] .rc:active,
+html[data-theme="ford"] .key:active,html[data-theme="ford"] .qt:active,html[data-theme="ford"] .ctl:active{transform:scale(.96)}
+html[data-theme="ford"] .chip{clip-path:none;border-radius:999px;font-size:19px;font-weight:600;background:rgba(var(--cobalt-lt-rgb),.12)}
+html[data-theme="ford"] .chip.on{background:var(--accent);color:var(--on-accent)}
+html[data-theme="ford"] .chip.c{background:rgba(var(--cobalt-rgb),.30);color:var(--text)}
+html[data-theme="ford"] .badge{border-radius:8px;font-size:16px;font-weight:600}
+html[data-theme="ford"] .badge.fill{background:var(--accent);color:var(--on-accent)}
+html[data-theme="ford"] .seg{gap:3px}
+html[data-theme="ford"] .seg i{border-radius:3px;background:rgba(var(--cobalt-lt-rgb),.18)}
+html[data-theme="ford"] .seg.sk i{transform:none}
+html[data-theme="ford"] .seg i.c{background:var(--cobalt)}
+html[data-theme="ford"] .seg i.l{background:var(--lime)}
+html[data-theme="ford"] .seg i.w{background:var(--text)}
+html[data-theme="ford"] .slider .knob{clip-path:none;border-radius:50%;width:34px;height:34px;margin:-17px 0 0 -17px;background:#fff;box-shadow:0 0 0 7px rgba(var(--lime-rgb),.22)}
+html[data-theme="ford"] .tg{clip-path:none;border-radius:999px;background:rgba(var(--cobalt-lt-rgb),.2);box-shadow:inset 0 0 0 1px var(--hair)}
+html[data-theme="ford"] .tg::after{border-radius:50%;background:#C6D3EE;transition:left .2s var(--ease)}
+html[data-theme="ford"] .tg.on{background:var(--accent);box-shadow:none}
+html[data-theme="ford"] .tg.on::after{background:#fff}
+html[data-theme="ford"] .warn{border-radius:18px;font-weight:700;font-size:30px}
+html[data-theme="ford"] .tbl td.v,html[data-theme="ford"] .tr .k{font-weight:600}
+
+/* ---------- type ---------- */
+html[data-theme="ford"] .lbl{font-size:19px;font-weight:500;color:var(--dim)}
+html[data-theme="ford"] .unit{font-size:21px;font-weight:500}
+html[data-theme="ford"] .h1,html[data-theme="ford"] .h2,html[data-theme="ford"] .h3{font-weight:600}
+html[data-theme="ford"] .num{font-weight:600;letter-spacing:0}
+html[data-theme="ford"] .np-title,html[data-theme="ford"] .title{font-weight:600}
+
+/* ---------- entrance motion: transform + opacity only ---------- */
+@keyframes f-enter{from{opacity:0;transform:translate3d(0,14px,0) scale(.985)}to{opacity:1;transform:none}}
+@keyframes f-pop{from{opacity:0;transform:translate3d(0,10px,0)}to{opacity:1;transform:none}}
+html[data-theme="ford"] .main>*{animation:f-enter .46s var(--ease) both}
+html[data-theme="ford"] .main>*:nth-child(2){animation-delay:.04s}
+html[data-theme="ford"] .main>*:nth-child(3){animation-delay:.08s}
+html[data-theme="ford"] .main>*:nth-child(4){animation-delay:.12s}
+html[data-theme="ford"] .main .card{animation:f-pop .5s var(--ease) both;animation-delay:calc(60ms + var(--i,0) * 38ms)}
+html[data-theme="ford"] .dock a{animation:f-pop .4s var(--ease) both}
+html[data-theme="ford"] .dock a:nth-child(2){animation-delay:.03s}html[data-theme="ford"] .dock a:nth-child(3){animation-delay:.06s}html[data-theme="ford"] .dock a:nth-child(4){animation-delay:.09s}
+html[data-theme="ford"] .dock a:nth-child(5){animation-delay:.12s}html[data-theme="ford"] .dock a:nth-child(6){animation-delay:.15s}html[data-theme="ford"] .dock a:nth-child(7){animation-delay:.18s}html[data-theme="ford"] .dock a:nth-child(8){animation-delay:.21s}
+
+/* ---------- theme-conditional bits ---------- */
+.ford-only{display:none}
+html[data-theme="ford"] .ford-only{display:flex}
+html[data-theme="ford"] .cp-only{display:none !important}
+.flogo .fo-oval{fill:#08399A}.flogo .fo-ring,.flogo .fo-script{fill:#fff}
+.logo-layers{position:relative}.logo-layers .fl{position:absolute;left:0;top:0}
+.logo-layers .l-oval path{fill:#08399A}.logo-layers .l-ring path,.logo-layers .l-script path{fill:#fff}
+
+html[data-theme="ford"] .kicker{color:var(--cobalt-lt)}
+html[data-theme="ford"] .nav .brand i{border-radius:50%;transform:none}
+html[data-theme="ford"] .frame [style*="clip-path"]{clip-path:none !important}
+html[data-theme="ford"] .badge{border-radius:999px;padding:0 14px}
+/* speed is the primary reading: white; cyan is reserved for secondary live values */
+html[data-theme="ford"] #speed{color:var(--text)}

@@ -3,19 +3,72 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="stylesheet" href="../assets/ui.css"><script src="../assets/ui.js"></script>
 <style>
+/* ---- Cockpit theme ---- */
 .scan{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--lime),transparent);opacity:.55;animation:sc 3s linear infinite}
 @keyframes sc{from{top:0}to{top:800px}}
 .mk{width:56px;height:56px;background:var(--lime);transform:rotate(45deg)}
 .word{font:800 190px/.85 var(--f-display);letter-spacing:.06em;text-transform:uppercase}
+html[data-theme="ford"] .boot-cp{display:none}
+.boot-ford{display:none}
+html[data-theme="ford"] .boot-ford{display:flex}
+
+/* ---- Ford theme: oval draws on, script wipes in, sheen, welcome. Only transform, opacity, clip and mask animate. ---- */
+@property --p{syntax:'<number>';inherits:false;initial-value:0}
+.boot-ford{position:absolute;inset:0;flex-direction:column;align-items:center;justify-content:center;cursor:pointer}
+.boot-ford .halo{position:absolute;left:50%;top:44%;width:900px;height:620px;margin:-310px 0 0 -450px;
+  background:radial-gradient(closest-side,rgba(43,114,255,.42),rgba(0,52,120,.16) 55%,transparent);animation:b-halo 2.4s var(--ease) both;animation-delay:calc(0s - var(--bt,0s))}
+@keyframes b-halo{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}
+.boot-ford .logo-layers{width:560px !important;height:201.6px !important}
+.boot-ford .logo-layers .fl{width:560px;height:201.6px}
+.boot-ford .l-oval{animation:b-oval 1.1s var(--ease) both;animation-delay:calc(.2s - var(--bt,0s))}
+@keyframes b-oval{from{opacity:0;transform:scale(.86)}to{opacity:1;transform:none}}
+.boot-ford .l-ring{--p:1;-webkit-mask-image:conic-gradient(from 0deg at 50% 50%,#000 calc(var(--p) * 360deg),transparent 0);mask-image:conic-gradient(from 0deg at 50% 50%,#000 calc(var(--p) * 360deg),transparent 0);
+  animation:b-ring 1.3s cubic-bezier(.5,0,.2,1) both;animation-delay:calc(.5s - var(--bt,0s))}
+@keyframes b-ring{from{--p:0}}
+.boot-ford .l-script{animation:b-script .95s cubic-bezier(.6,0,.2,1) both;animation-delay:calc(1.35s - var(--bt,0s))}
+@keyframes b-script{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+.boot-ford .sheen{opacity:0;animation:b-sheen 1.1s cubic-bezier(.5,0,.3,1) both;animation-delay:calc(2.3s - var(--bt,0s))}
+@keyframes b-sheen{from{opacity:1;transform:translateX(-90px) skewX(-20deg)}to{opacity:1;transform:translateX(330px) skewX(-20deg)}}
+.boot-ford .sheen-svg{position:absolute;left:0;top:0;width:560px;height:201.6px}
+.boot-ford .hello{margin-top:46px;font:600 68px/1 var(--f-display);animation:b-up .8s var(--ease) both;animation-delay:calc(2.5s - var(--bt,0s))}
+.boot-ford .sub{margin-top:12px;font:500 24px var(--f-ui);color:var(--dim);animation:b-up .8s var(--ease) both;animation-delay:calc(2.7s - var(--bt,0s))}
+@keyframes b-up{from{opacity:0;transform:translate3d(0,16px,0)}to{opacity:1;transform:none}}
+.boot-ford .bar{margin-top:44px;width:420px;height:4px;border-radius:2px;background:rgba(var(--cobalt-lt-rgb),.2);overflow:hidden;animation:b-up .6s var(--ease) both;animation-delay:calc(2.9s - var(--bt,0s))}
+.boot-ford .bar i{display:block;width:38%;height:100%;border-radius:2px;background:linear-gradient(90deg,transparent,var(--lime),transparent);animation:b-load 1.5s cubic-bezier(.4,0,.2,1) infinite;animation-delay:calc(3s - var(--bt,0s))}
+@keyframes b-load{from{transform:translateX(-100%)}to{transform:translateX(280%)}}
+.paused *{animation-play-state:paused !important}
 </style></head>
 <body><div class="stage"><div class="frame" data-shell="0" data-active="">
-<div class="scan"></div>
-<div class="abs col c jc" style="inset:0;gap:28px" data-od-id="boot">
-  <div class="row c g24"><span class="mk"></span><span class="word">Cockpit</span></div>
-  <div class="lbl" style="font-size:22px;letter-spacing:.4em">EcoSport · 1.0 EcoBoost</div>
-  <div class="seg sk" data-n="48" data-v=".62" data-c="l" style="width:560px;height:12px;margin-top:40px"></div>
-  <div class="mono">Starting vehicle services…</div>
+
+<div class="boot-cp"><div class="scan"></div>
+  <div class="abs col c jc" style="inset:0;gap:28px" data-od-id="boot">
+    <div class="row c g24"><span class="mk"></span><span class="word">Cockpit</span></div>
+    <div class="lbl" style="font-size:22px;letter-spacing:.4em">EcoSport · 1.0 EcoBoost</div>
+    <div class="seg sk" data-n="48" data-v=".62" data-c="l" style="width:560px;height:12px;margin-top:40px"></div>
+    <div class="mono">Starting vehicle services…</div>
+  </div>
 </div>
+
+<div class="boot-ford" id="bf" data-od-id="boot-ford" title="Click to replay">
+  <div class="halo"></div>
+  <div style="position:relative;width:560px;height:201.6px" id="lg"></div>
+  <div class="hello">Welcome</div>
+  <div class="sub">EcoSport · 1.0 EcoBoost</div>
+  <div class="bar"><i></i></div>
+</div>
+
 <div class="abs mono" style="left:28px;bottom:22px">v0.1 · design preview</div>
-<div class="abs mono" style="right:28px;bottom:22px">Midnight · Cobalt · Lime</div>
-</div></div></body></html>
+<div class="abs mono" style="right:28px;bottom:22px" id="foot">Midnight · Cobalt · Lime</div>
+</div></div>
+<script>
+UI.onready = function () {
+  if (UI.theme === 'ford') {
+    var lg = document.getElementById('lg'); lg.innerHTML = UI.logoLayers(201.6) +
+      '<svg class="sheen-svg" viewBox="' + FORD_LOGO.vb + '"><defs><clipPath id="oc"><path d="' + FORD_LOGO.oval + '"/></clipPath><linearGradient id="sg" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><g clip-path="url(#oc)"><rect class="sheen" x="0" y="-10" width="46" height="120" fill="url(#sg)"/></g></svg>';
+    document.getElementById('foot').textContent = 'Ford theme · tap to replay';
+    document.getElementById('bf').onclick = function () { location.reload(); };
+    var bt = UI.q.get('bt');
+    if (bt !== null) { document.documentElement.style.setProperty('--bt', parseFloat(bt) + 's'); document.querySelector('.frame').classList.add('paused'); }
+  }
+};
+</script></body></html>

@@ -3,6 +3,15 @@
   'use strict';
   var UI = (window.UI = {});
   var Q = (UI.q = new URLSearchParams(location.search));
+  /* theme: ?theme= wins, then localStorage, default 'ford'. Set before first paint. */
+  UI.theme = Q.get('theme') || (function () { try { return localStorage.getItem('cockpit-theme'); } catch (e) { return null; } })() || 'ford';
+  if (UI.theme !== 'ford' && UI.theme !== 'cockpit') UI.theme = 'ford';
+  try { if (Q.get('theme')) localStorage.setItem('cockpit-theme', UI.theme); } catch (e) {}
+  document.documentElement.setAttribute('data-theme', UI.theme);
+  if (Q.has('noanim') && Q.get('noanim') !== '0') document.documentElement.classList.add('noanim');
+  var BASE = document.currentScript ? document.currentScript.src.replace(/[^/]*$/, '') : '';
+  document.write('<link rel="stylesheet" href="' + BASE + 'theme-ford.css"><script src="' + BASE + 'brand.js"><\/script>');
+  UI.setTheme = function (t) { try { localStorage.setItem('cockpit-theme', t); } catch (e) {} var u = new URL(location.href); u.searchParams.set('theme', t); location.href = u.toString(); };
   UI.embed = Q.has('embed') || Q.has('raw');
   if (UI.embed) document.documentElement.classList.add('raw');
   document.addEventListener('DOMContentLoaded', function () { if (UI.embed) document.body.classList.add('raw'); });
@@ -107,9 +116,28 @@
   };
   UI.live = function (cb) {
     var snap = UI.Sim.snapT; if (Q.has('t')) snap = parseFloat(Q.get('t'));
+    if (Q.has('bench')) {                         /* scripting cost of one frame's update (not rasterisation): tools/design.sh bench drive */
+      var n = 600, tt = [], i; for (i = 0; i < 30; i++) cb(UI.Sim.at(snap + i * .016));
+      for (i = 0; i < n; i++) { var a = performance.now(); cb(UI.Sim.at(snap + i * .016)); tt.push(performance.now() - a); }
+      tt.sort(function (x, y) { return x - y; });
+      var pre = document.createElement('pre'); pre.id = 'bench-out';
+      pre.textContent = 'frames=' + n + ' mean=' + (tt.reduce(function (x, y) { return x + y; }, 0) / n).toFixed(3) + 'ms p50=' + tt[n >> 1].toFixed(3) + 'ms p99=' + tt[Math.floor(n * .99)].toFixed(3) + 'ms max=' + tt[n - 1].toFixed(3) + 'ms';
+      document.body.appendChild(pre); return;
+    }
     if (!Q.has('live')) { cb(UI.Sim.at(snap)); return; }
-    var t0 = performance.now(), last = 0;
-    (function f(now) { if (now - last > 45) { last = now; cb(UI.Sim.at(snap + (now - t0) / 1000)); } requestAnimationFrame(f); })(t0);
+    var t0 = performance.now(), last = t0, cur = null, ford = UI.theme === 'ford';
+    var KEYS = ['speed', 'rpm', 'boost', 'map', 'throttle', 'load', 'iat', 'fuel'];
+    (function f(now) {
+      if (!ford && now - last < 45) { requestAnimationFrame(f); return; }
+      var dt = Math.min(.1, (now - last) / 1000); last = now;
+      var tgt = UI.Sim.at(snap + (now - t0) / 1000);
+      if (!ford) { cb(tgt); requestAnimationFrame(f); return; }
+      if (!cur) cur = Object.assign({}, tgt);
+      var a = 1 - Math.exp(-dt / .055);                       /* ~55 ms time constant, frame-rate independent */
+      KEYS.forEach(function (k) { cur[k] = cur[k] + (tgt[k] - cur[k]) * a; });
+      cur.gear = tgt.gear; cur.t = tgt.t; cur.coolant = tgt.coolant; cur.volt = tgt.volt; cur.accel = tgt.accel; cur.decel = tgt.decel;
+      cb(cur); requestAnimationFrame(f);
+    })(t0);
   };
 
   /* ---------------- helpers ---------------- */
@@ -124,34 +152,71 @@
     var step = (o.a1 - o.a0) / o.n, out = '';
     for (var i = 0; i < o.n; i++) {
       var f = (i + 0.5) / o.n, lit = f <= o.v, hi = f >= o.split, fill;
-      if (lit) fill = hi ? '#C8FF00' : '#2457FF';
-      else fill = (o.red != null && f >= o.red) ? 'rgba(200,255,0,.20)' : 'rgba(36,87,255,.24)';
+      if (lit) fill = hi ? 'var(--lime)' : 'var(--cobalt)';
+      else fill = (o.red != null && f >= o.red) ? 'rgba(var(--lime-rgb),.20)' : 'rgba(var(--cobalt-rgb),.24)';
       out += '<path d="' + UI.sector(o.cx, o.cy, o.r1, o.r2, o.a0 + i * step + o.gap / 2, o.a0 + (i + 1) * step - o.gap / 2) + '" fill="' + fill + '"/>';
     }
     return out;
   };
   /* tachometer: 270deg, numerals, ticks, tip marker */
   UI.tach = function (el, o) {
+    if (UI.theme === 'ford') return UI.tachFord(el, o);
     o = Object.assign({ w: 700, h: 700, cx: 350, cy: 350, r2: 318, r1: 270, max: 7000, split: 4500, red: 6000, rpm: 0, n: 70 }, o);
     var a0 = -135, a1 = 135, fr = o.rpm / o.max, s = '';
     s += UI.arcSegs({ cx: o.cx, cy: o.cy, r1: o.r1, r2: o.r2, a0: a0, a1: a1, n: o.n, gap: 1.1, v: fr, split: o.split / o.max, red: o.red / o.max });
     for (var k = 0; k <= o.max / 500; k++) {
       var f = k * 500 / o.max, a = a0 + f * (a1 - a0), maj = k % 2 === 0, p1 = UI.pol(o.cx, o.cy, o.r1 - 12, a), p2 = UI.pol(o.cx, o.cy, o.r1 - (maj ? 30 : 20), a);
-      s += '<line x1="' + p1[0] + '" y1="' + p1[1] + '" x2="' + p2[0] + '" y2="' + p2[1] + '" stroke="' + (k * 500 >= o.red ? '#C8FF00' : '#3D6BFF') + '" stroke-width="' + (maj ? 3 : 1.5) + '"/>';
-      if (maj) { var t = UI.pol(o.cx, o.cy, o.r1 - 58, a); s += '<text x="' + t[0] + '" y="' + (t[1] + 11) + '" text-anchor="middle" font-family="Big Shoulders Display" font-weight="800" font-size="34" fill="' + (k * 500 >= o.red ? '#C8FF00' : '#EAF0FF') + '">' + (k / 2) + '</text>'; }
+      s += '<line x1="' + p1[0] + '" y1="' + p1[1] + '" x2="' + p2[0] + '" y2="' + p2[1] + '" stroke="' + (k * 500 >= o.red ? 'var(--lime)' : 'var(--cobalt-lt)') + '" stroke-width="' + (maj ? 3 : 1.5) + '"/>';
+      if (maj) { var t = UI.pol(o.cx, o.cy, o.r1 - 58, a); s += '<text x="' + t[0] + '" y="' + (t[1] + 11) + '" text-anchor="middle" font-family="var(--f-display)" font-weight="800" font-size="34" fill="' + (k * 500 >= o.red ? 'var(--lime)' : 'var(--text)') + '">' + (k / 2) + '</text>'; }
     }
     var ta = a0 + Math.min(1, fr) * (a1 - a0), tip = [UI.pol(o.cx, o.cy, o.r2 + 4, ta), UI.pol(o.cx, o.cy, o.r2 + 26, ta - 2.4), UI.pol(o.cx, o.cy, o.r2 + 26, ta + 2.4)];
-    s += '<polygon points="' + tip.join(' ') + '" fill="#C8FF00"/>';
-    s += '<text x="' + o.cx + '" y="' + (o.cy + 262) + '" text-anchor="middle" font-family="Space Grotesk" font-weight="500" font-size="18" letter-spacing="3" fill="#8190B8">x1000 RPM</text>';
+    s += '<polygon points="' + tip.join(' ') + '" fill="var(--lime)"/>';
+    s += '<text x="' + o.cx + '" y="' + (o.cy + 262) + '" text-anchor="middle" font-family="var(--f-ui)" font-weight="500" font-size="18" letter-spacing="3" fill="var(--dim)">x1000 RPM</text>';
     el.setAttribute('viewBox', '0 0 ' + o.w + ' ' + o.h); el.innerHTML = s;
   };
+
+  /* Ford tachometer. The arc is two masked conic-gradient layers (track + lit), so the ramp is perfectly smooth and each frame only changes one
+     custom property (--p). In Compose this is Brush.sweepGradient + drawArc: one draw call, no per-segment work. */
+  UI.tachFord = function (el, o) {
+    o = Object.assign({ w: 700, h: 700, cx: 350, cy: 350, r2: 322, r1: 262, max: 7000, red: 6000, rpm: 0 }, o);
+    var a0 = -135, a1 = 135;
+    if (!el._ford) {
+      var host = el.parentNode, sc = (parseFloat(el.getAttribute('width')) || o.w) / o.w, size = o.w * sc;
+      var ring = 'radial-gradient(circle at 50% 50%,transparent ' + (o.r1 * sc) + 'px,#000 ' + (o.r1 * sc + 1) + 'px,#000 ' + (o.r2 * sc - 1) + 'px,transparent ' + (o.r2 * sc) + 'px)';
+      var mk = function (cls, bg, extra) {
+        var d = document.createElement('div'); d.className = cls;
+        d.style.cssText = 'position:absolute;left:0;top:0;width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:' + bg + ';-webkit-mask-image:' + ring + ',' + extra + ';mask-image:' + ring + ',' + extra + ';-webkit-mask-composite:source-in;mask-composite:intersect';
+        host.insertBefore(d, el); return d;
+      };
+      var fr = o.red / o.max * 270, lo = UI.rgb('--cobalt-rgb').map(function (x) { return x * .62; }), hi = UI.rgb('--lime-rgb');
+      var track = 'conic-gradient(from -135deg at 50% 50%,rgba(var(--dim-rgb),.13) 0deg,rgba(var(--dim-rgb),.13) ' + fr + 'deg,rgba(var(--warn-rgb),.42) ' + fr + 'deg,rgba(var(--warn-rgb),.42) 270deg)';
+      var lit = 'conic-gradient(from -135deg at 50% 50%,rgb(' + lo.map(Math.round) + ') 0deg,rgb(' + hi + ') ' + (fr * .72) + 'deg,rgb(' + hi + ') ' + fr + 'deg,var(--warn) ' + fr + 'deg,var(--warn) 270deg)';
+      mk('ttrack', track, 'conic-gradient(from -135deg at 50% 50%,#000 0deg,#000 270deg,transparent 270deg)');
+      var litEl = mk('tlit', lit, 'conic-gradient(from -135deg at 50% 50%,#000 0deg,#000 calc(var(--p,0) * 270deg),transparent calc(var(--p,0) * 270deg))');
+      var s = '', rm = (o.r1 + o.r2) / 2;
+      s += '<defs><radialGradient id="tipglow"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset=".3" stop-color="var(--lime)" stop-opacity=".45"/><stop offset="1" stop-color="var(--lime)" stop-opacity="0"/></radialGradient></defs>';
+      for (var k = 0; k <= o.max / 500; k++) {
+        var ff = k * 500 / o.max, a = a0 + ff * (a1 - a0), maj = k % 2 === 0, red = k * 500 >= o.red, p1 = UI.pol(o.cx, o.cy, o.r1 - 14, a), p2 = UI.pol(o.cx, o.cy, o.r1 - (maj ? 34 : 24), a);
+        s += '<line x1="' + p1[0] + '" y1="' + p1[1] + '" x2="' + p2[0] + '" y2="' + p2[1] + '" stroke="' + (red ? 'var(--warn)' : 'var(--dim)') + '" stroke-width="' + (maj ? 3 : 1.5) + '" stroke-linecap="round"/>';
+        if (maj) { var t = UI.pol(o.cx, o.cy, o.r1 - 62, a); s += '<text x="' + t[0] + '" y="' + (t[1] + 13) + '" text-anchor="middle" font-family="var(--f-display)" font-weight="600" font-size="40" fill="' + (red ? 'var(--warn)' : 'var(--text)') + '">' + (k / 2) + '</text>'; }
+      }
+      s += '<g class="tip"><circle cx="' + o.cx + '" cy="' + (o.cy - rm) + '" r="46" fill="url(#tipglow)"/><circle cx="' + o.cx + '" cy="' + (o.cy - rm) + '" r="12" fill="#fff"/></g>';
+      s += '<text x="' + o.cx + '" y="' + (o.cy + 262) + '" text-anchor="middle" font-family="var(--f-ui)" font-weight="500" font-size="21" fill="var(--dim)">x1000 rpm</text>';
+      el.setAttribute('viewBox', '0 0 ' + o.w + ' ' + o.h); el.innerHTML = s;
+      el._ford = { lit: litEl, tip: el.querySelector('.tip') };
+    }
+    var v = Math.max(0, Math.min(1, o.rpm / o.max));
+    el._ford.lit.style.setProperty('--p', v.toFixed(4));
+    el._ford.tip.setAttribute('transform', 'rotate(' + (a0 + v * (a1 - a0)).toFixed(2) + ' ' + o.cx + ' ' + o.cy + ')');
+  };
+
   UI.spark = function (el, pts, o) {
-    o = Object.assign({ w: 160, h: 40, c: '#3D6BFF', fill: true }, o);
+    o = Object.assign({ w: 160, h: 40, c: 'var(--cobalt-lt)', fill: true }, o);
     var mn = o.min != null ? o.min : Math.min.apply(0, pts), mx = o.max != null ? o.max : Math.max.apply(0, pts), r = (mx - mn) || 1, n = pts.length;
     var xy = pts.map(function (p, i) { return [(i / (n - 1)) * o.w, o.h - 3 - ((p - mn) / r) * (o.h - 6)]; });
     var line = xy.map(function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' ');
     el.setAttribute('viewBox', '0 0 ' + o.w + ' ' + o.h); el.setAttribute('preserveAspectRatio', 'none');
-    el.innerHTML = (o.fill ? '<polygon points="0,' + o.h + ' ' + line + ' ' + o.w + ',' + o.h + '" fill="' + o.c + '" opacity=".16"/>' : '') +
+    el.innerHTML = (o.fill ? '<polygon points="0,' + o.h + ' ' + line + ' ' + o.w + ',' + o.h + '" fill="' + o.c + '" opacity=".10"/>' : '') +
       '<polyline points="' + line + '" fill="none" stroke="' + o.c + '" stroke-width="2"/>';
   };
   /* deterministic pseudo-series for sparklines / charts */
@@ -171,24 +236,24 @@
     var gate = s.trunk ? ' transform="rotate(-70 236 490)"' : '';
     var bon = s.bonnet ? ' transform="translate(0 -16)"' : '';
     return '<svg viewBox="' + (s.vb || '0 0 320 600') + '" class="carsvg"><style>' +
-      '.carsvg .body{fill:#0B1124;stroke:#3D6BFF;stroke-width:2.5}.carsvg .glass{fill:rgba(61,107,255,.30);stroke:#3D6BFF;stroke-width:1.5}' +
-      '.carsvg .dr.shut{fill:#2457FF;stroke:#3D6BFF;stroke-width:1}.carsvg .dr.open{fill:#C8FF00;stroke:#C8FF00;stroke-width:1}.carsvg .ghost{fill:rgba(200,255,0,.14);stroke:#C8FF00;stroke-width:1.5;stroke-dasharray:4 4}' +
-      '.carsvg .wh{fill:#1E2F66;stroke:#6F92FF;stroke-width:2.5}.carsvg .roof{fill:rgba(36,87,255,.16);stroke:#2457FF;stroke-width:1.5}' +
-      '.carsvg .gate.shut{fill:rgba(36,87,255,.22);stroke:#3D6BFF;stroke-width:1.5}.carsvg .gate.open{fill:rgba(200,255,0,.35);stroke:#C8FF00;stroke-width:2.5}' +
-      '.carsvg .bon.shut{fill:rgba(36,87,255,.10);stroke:#2457FF;stroke-width:1.5}.carsvg .bon.open{fill:rgba(200,255,0,.35);stroke:#C8FF00;stroke-width:2.5}' +
-      '.carsvg .lamp{fill:#3D6BFF}' +
+      '.carsvg .body{fill:var(--s1);stroke:var(--cobalt-lt);stroke-width:2.5}.carsvg .glass{fill:rgba(var(--cobalt-lt-rgb),.30);stroke:var(--cobalt-lt);stroke-width:1.5}' +
+      '.carsvg .dr.shut{fill:var(--cobalt);stroke:var(--cobalt-lt);stroke-width:1}.carsvg .dr.open{fill:var(--lime);stroke:var(--lime);stroke-width:1}.carsvg .ghost{fill:rgba(var(--lime-rgb),.14);stroke:var(--lime);stroke-width:1.5;stroke-dasharray:4 4}' +
+      '.carsvg .wh{fill:var(--s3);stroke:var(--cobalt-lt);stroke-width:2.5}.carsvg .roof{fill:rgba(var(--cobalt-rgb),.16);stroke:var(--cobalt);stroke-width:1.5}' +
+      '.carsvg .gate.shut{fill:rgba(var(--cobalt-rgb),.22);stroke:var(--cobalt-lt);stroke-width:1.5}.carsvg .gate.open{fill:rgba(var(--lime-rgb),.35);stroke:var(--lime);stroke-width:2.5}' +
+      '.carsvg .bon.shut{fill:rgba(var(--cobalt-rgb),.10);stroke:var(--cobalt);stroke-width:1.5}.carsvg .bon.open{fill:rgba(var(--lime-rgb),.35);stroke:var(--lime);stroke-width:2.5}' +
+      '.carsvg .lamp{fill:var(--cobalt-lt)}' +
       '</style>' +
       '<rect class="wh" x="52" y="84" width="22" height="66" rx="7"/><rect class="wh" x="246" y="84" width="22" height="66" rx="7"/>' +
       '<rect class="wh" x="52" y="368" width="22" height="66" rx="7"/><rect class="wh" x="246" y="368" width="22" height="66" rx="7"/>' +
       '<path class="body" d="M70 96Q70 40 124 40H196Q250 40 250 96V468Q250 490 228 490H92Q70 490 70 468Z"/>' +
       '<rect class="lamp" x="82" y="46" width="30" height="6" rx="2"/><rect class="lamp" x="208" y="46" width="30" height="6" rx="2"/>' +
-      '<path class="bon ' + cls(s.bonnet) + '" d="M90 64Q90 58 98 58H222Q230 58 230 64V158H90Z"' + bon + '/><path d="M160 62V156" stroke="#2457FF" stroke-width="1.5"' + bon + '/>' +
+      '<path class="bon ' + cls(s.bonnet) + '" d="M90 64Q90 58 98 58H222Q230 58 230 64V158H90Z"' + bon + '/><path d="M160 62V156" stroke="var(--cobalt)" stroke-width="1.5"' + bon + '/>' +
       '<path class="glass" d="M94 166H226L216 214H104Z"/><rect class="roof" x="104" y="214" width="112" height="190" rx="8"/>' +
       '<path class="glass" d="M104 404H216L224 438H96Z"/>' +
       door(s.fl, 60, 190, true) + door(s.rl, 60, 300, true) + door(s.fr, 250, 190, false) + door(s.rr, 250, 300, false) +
-      '<path d="M52 196l-14 7 6 10 12-4zM268 196l14 7-6 10-12-4z" fill="#162244" stroke="#3D6BFF" stroke-width="1.5"/>' +
+      '<path d="M52 196l-14 7 6 10 12-4zM268 196l14 7-6 10-12-4z" fill="var(--s3)" stroke="var(--cobalt-lt)" stroke-width="1.5"/>' +
       '<g' + gate + '><rect class="gate ' + cls(s.trunk) + '" x="84" y="456" width="152" height="34" rx="6"/>' +
-      '<circle cx="160" cy="514" r="30" fill="#162244" stroke="#3D6BFF" stroke-width="3"/><circle cx="160" cy="514" r="13" fill="none" stroke="#2457FF" stroke-width="2.5"/><path d="M160 484v-4" stroke="#3D6BFF" stroke-width="3"/></g>' +
+      '<circle cx="160" cy="514" r="30" fill="var(--s3)" stroke="var(--cobalt-lt)" stroke-width="3"/><circle cx="160" cy="514" r="13" fill="none" stroke="var(--cobalt)" stroke-width="2.5"/><path d="M160 484v-4" stroke="var(--cobalt-lt)" stroke-width="3"/></g>' +
       (s.extra || '') + '</svg>';
   };
   /* parking-radar arcs hugging a bumper. levels: 4 values 0..3 (left to right). y: bumper line, dir: -1 front (up), +1 rear (down) */
@@ -197,12 +262,26 @@
     levels.forEach(function (lv, i) {
       for (var k = 1; k <= 3; k++) {
         var r = 8 + k * 17, a = (dir < 0 ? 0 : 180) + angs[i] * (dir < 0 ? 1 : -1), p1 = UI.pol(xs[i], y, r, a - 17), p2 = UI.pol(xs[i], y, r, a + 17);
-        var col = k > lv ? 'rgba(36,87,255,.22)' : (k === 3 ? '#C8FF00' : k === 2 ? '#3D6BFF' : '#2457FF');
+        var col = k > lv ? 'rgba(var(--cobalt-rgb),.22)' : (k === 3 ? 'var(--lime)' : k === 2 ? 'var(--cobalt-lt)' : 'var(--cobalt)');
         out += '<path d="M' + p1[0].toFixed(1) + ' ' + p1[1].toFixed(1) + 'A' + r + ' ' + r + ' 0 0 1 ' + p2[0].toFixed(1) + ' ' + p2[1].toFixed(1) + '" fill="none" stroke="' + col + '" stroke-width="9"/>';
       }
     });
     return out;
   };
+
+
+  /* ---------------- Ford oval (trademark; personal use) ---------------- */
+  UI.logo = function (h, cls) {
+    var L = window.FORD_LOGO; if (!L) return '';
+    return '<svg class="flogo ' + (cls || '') + '" viewBox="' + L.vb + '" height="' + h + '" width="' + (h * 2.7782) + '" aria-label="Ford"><path class="fo-oval" d="' + L.oval + '"/><path class="fo-ring" d="' + L.ring + '"/><path class="fo-script" d="' + L.script + '"/></svg>';
+  };
+  /* three stacked layers so the boot animation can reveal oval, ring and script independently */
+  UI.logoLayers = function (h) {
+    var L = window.FORD_LOGO, w = h * 2.7782, one = function (c, d) { return '<svg class="fl ' + c + '" viewBox="' + L.vb + '" width="' + w + '" height="' + h + '"><path d="' + d + '"/></svg>'; };
+    return '<div class="logo-layers" style="width:' + w + 'px;height:' + h + 'px">' + one('l-oval', L.oval) + one('l-ring', L.ring) + one('l-script', L.script) + '</div>';
+  };
+  UI.rgb = function (name) { return getComputedStyle(document.documentElement).getPropertyValue(name).split(',').map(function (x) { return parseFloat(x); }); };
+  UI.mix = function (a, b, t) { return 'rgb(' + a.map(function (x, i) { return Math.round(x + (b[i] - x) * t); }).join(',') + ')'; };
 
   /* ---------------- hydrators ---------------- */
   /* segmented bar: value v in 0..1 (or position for bipolar bars: lit between zero and v) */
@@ -228,7 +307,7 @@
       e.innerHTML = h + '</div><div class="knob" style="left:' + (v * 100) + '%"></div>'; e.removeAttribute('data-v');
     });
     root.querySelectorAll('svg[data-spark]').forEach(function (e) {
-      var pts = e.dataset.spark.split(',').map(parseFloat); UI.spark(e, pts, { w: +(e.dataset.w || 160), h: +(e.dataset.h || 40), c: e.dataset.c === 'l' ? '#C8FF00' : '#3D6BFF' });
+      var pts = e.dataset.spark.split(',').map(parseFloat); UI.spark(e, pts, { w: +(e.dataset.w || 160), h: +(e.dataset.h || 40), c: e.dataset.c === 'l' ? 'var(--lime)' : 'var(--cobalt-lt)' });
       e.removeAttribute('data-spark');
     });
   }
@@ -239,7 +318,7 @@
   function shell(fr) {
     var active = fr.dataset.active || '', qs = location.search;
     if (fr.dataset.shell !== '0') {
-      var sb = '<header class="sb"><div class="sbl"><span class="clock">21:47</span><span class="date">FRI 30 OCT</span></div>' +
+      var sb = '<header class="sb"><div class="sbl">' + (UI.theme === 'ford' ? UI.logo(30, 'sb-logo') : '') + '<span class="clock">21:47</span><span class="date">' + (UI.theme === 'ford' ? 'Fri 30 Oct' : 'FRI 30 OCT') + '</span></div>' +
         '<div class="sbc"><span class="link on">OBD</span><span class="link on">Canbox</span><span class="link on">BT</span><span class="link on">Android Auto</span></div>' +
         '<div class="sbr"><span class="sbs">' + UI.icon('thermo', 22) + '31°</span><span class="sbs">' + UI.icon('batt', 22) + '14.2 V</span><span class="sbs">' + UI.icon('vol', 22) + '18</span></div></header>';
       fr.insertAdjacentHTML('afterbegin', sb);
@@ -253,7 +332,7 @@
     var m = fr.querySelector('.main'); if (m && (fr.dataset.dock === '0')) m.classList.add('full');
   }
   UI.qa = function () {
-    var out = [];
+    var out = []; document.documentElement.classList.add('noanim');
     document.querySelectorAll('.frame').forEach(function (fr, fi) {
     var fb = fr.getBoundingClientRect();
     var nm = function (e) { return e.tagName.toLowerCase() + (e.id ? '#' + e.id : '') + (e.className && e.className.baseVal === undefined ? '.' + String(e.className).trim().split(/\s+/).join('.') : '') + ' "' + (e.textContent || '').trim().slice(0, 28).replace(/\s+/g, ' ') + '"'; };
@@ -269,14 +348,23 @@
         if (cr.right > r.right + 4 || cr.bottom > r.bottom + 4) out.push('[f' + fi + '] OVERFLOW child ' + nm(c) + ' beyond parent ' + nm(e) + ' dx=' + Math.round(cr.right - r.right) + ' dy=' + Math.round(cr.bottom - r.bottom));
       });
       if (e.scrollWidth > e.clientWidth + 2 && cs.overflowX !== 'visible') out.push('SCROLLX ' + nm(e));
+      if (e.classList.contains('seg') && !e.classList.contains('v') && e.scrollWidth > e.clientWidth + 7) out.push('[f' + fi + '] SEG-OVERFLOW ' + nm(e) + ' +' + (e.scrollWidth - e.clientWidth) + 'px');
     });
     });
     var pre = document.createElement('pre'); pre.id = 'qa-out'; pre.textContent = out.length ? out.join('\n') : 'QA-CLEAN'; document.body.appendChild(pre);
   };
   function fit() { if (UI.embed) return; var k = Math.min(innerWidth / 1280, innerHeight / 800); document.documentElement.style.setProperty('--k', k); document.querySelectorAll('.frame').forEach(function (f) { f.style.setProperty('--k', k); }); }
   document.addEventListener('DOMContentLoaded', function () {
+    var bar = document.querySelector('.nav .wrap, .top');
+    if (bar && !bar.querySelector('.themesw')) {
+      var sw = document.createElement('span'); sw.className = 'themesw';
+      sw.innerHTML = '<button data-th="ford">Ford</button><button data-th="cockpit">Cockpit</button>';
+      sw.querySelectorAll('button').forEach(function (b) { if (b.dataset.th === UI.theme) b.className = 'on'; b.onclick = function () { UI.setTheme(b.dataset.th); }; });
+      bar.appendChild(sw);
+    }
     var st = document.querySelector('.stage'); if (!st) return;
     document.querySelectorAll('.frame').forEach(shell);
+    document.querySelectorAll('.main .card').forEach(function (c, i) { c.style.setProperty('--i', i); });
     hydrate(document); fit(); addEventListener('resize', fit);
     if (UI.onready) UI.onready();
     if (Q.has('qa')) setTimeout(UI.qa, 50);

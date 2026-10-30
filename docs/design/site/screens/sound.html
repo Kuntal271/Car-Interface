@@ -20,7 +20,7 @@
     </div>
     <div class="card col g12" style="height:150px" data-od-id="volume-block">
       <div class="row jb c"><span class="lbl row c g8"><i data-i="vol" data-s="22"></i>Volume</span><span class="num n-m lime">18</span></div>
-      <div class="slider" data-v=".36" data-n="40"></div>
+      <div class="slider" data-v=".6" data-n="40"></div>
     </div>
   </section>
   <section class="col g12 grow">
@@ -46,13 +46,13 @@ UI.onready = function () {
   });
   document.getElementById('eq').innerHTML = h;
   var s = '', x0 = 20, y0 = 10, w = 360, hh = 300;
-  s += '<rect x="' + x0 + '" y="' + y0 + '" width="' + w + '" height="' + hh + '" fill="#0A0F1E" stroke="#2457FF" stroke-opacity=".5"/>';
-  for (var i = 1; i < 6; i++) s += '<line x1="' + (x0 + w * i / 6) + '" x2="' + (x0 + w * i / 6) + '" y1="' + y0 + '" y2="' + (y0 + hh) + '" stroke="#2457FF" stroke-opacity=".25"/>';
-  for (var j = 1; j < 5; j++) s += '<line y1="' + (y0 + hh * j / 5) + '" y2="' + (y0 + hh * j / 5) + '" x1="' + x0 + '" x2="' + (x0 + w) + '" stroke="#2457FF" stroke-opacity=".25"/>';
+  s += '<rect x="' + x0 + '" y="' + y0 + '" width="' + w + '" height="' + hh + '" fill="var(--s1)" stroke="var(--cobalt)" stroke-opacity=".5"/>';
+  for (var i = 1; i < 6; i++) s += '<line x1="' + (x0 + w * i / 6) + '" x2="' + (x0 + w * i / 6) + '" y1="' + y0 + '" y2="' + (y0 + hh) + '" stroke="var(--cobalt)" stroke-opacity=".25"/>';
+  for (var j = 1; j < 5; j++) s += '<line y1="' + (y0 + hh * j / 5) + '" y2="' + (y0 + hh * j / 5) + '" x1="' + x0 + '" x2="' + (x0 + w) + '" stroke="var(--cobalt)" stroke-opacity=".25"/>';
   var px = x0 + w * .42, py = y0 + hh * .36;
-  s += '<line x1="' + px + '" x2="' + px + '" y1="' + y0 + '" y2="' + (y0 + hh) + '" stroke="#C8FF00" stroke-opacity=".5"/><line y1="' + py + '" y2="' + py + '" x1="' + x0 + '" x2="' + (x0 + w) + '" stroke="#C8FF00" stroke-opacity=".5"/>';
-  s += '<path d="M' + px + ' ' + (py - 20) + 'L' + (px + 20) + ' ' + py + 'L' + px + ' ' + (py + 20) + 'L' + (px - 20) + ' ' + py + 'Z" fill="#C8FF00"/>';
-  s += '<text x="' + (x0 + 12) + '" y="' + (y0 + 28) + '" font-family="Space Grotesk" font-weight="600" font-size="20" letter-spacing="3" fill="#8190B8">FRONT</text><text x="' + (x0 + 12) + '" y="' + (y0 + hh - 12) + '" font-family="Space Grotesk" font-weight="600" font-size="20" letter-spacing="3" fill="#8190B8">REAR</text>';
+  s += '<line x1="' + px + '" x2="' + px + '" y1="' + y0 + '" y2="' + (y0 + hh) + '" stroke="var(--lime)" stroke-opacity=".5"/><line y1="' + py + '" y2="' + py + '" x1="' + x0 + '" x2="' + (x0 + w) + '" stroke="var(--lime)" stroke-opacity=".5"/>';
+  s += '<path d="M' + px + ' ' + (py - 20) + 'L' + (px + 20) + ' ' + py + 'L' + px + ' ' + (py + 20) + 'L' + (px - 20) + ' ' + py + 'Z" fill="var(--lime)"/>';
+  s += '<text x="' + (x0 + 12) + '" y="' + (y0 + 28) + '" font-family="var(--f-ui)" font-weight="600" font-size="20" letter-spacing="3" fill="var(--dim)" class="uc">Front</text><text x="' + (x0 + 12) + '" y="' + (y0 + hh - 12) + '" font-family="var(--f-ui)" font-weight="600" font-size="20" letter-spacing="3" fill="var(--dim)" class="uc">Rear</text>';
   document.getElementById('pad').innerHTML = s;
 };
 </script></body></html>

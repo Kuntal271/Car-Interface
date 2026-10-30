@@ -50,6 +50,27 @@ Built as a navigable static site: `docs/design/site/` (open `index.html` via `to
 - Tach lime zone starts at 4,500 rpm, redline 6,000, scale 7,000, shift light from 5,200 (all editable in Settings > Vehicle).
 - Owner confirmed the font reading of the brief ("it's right"), though the wording was ambiguous. Bundled fonts are OFL: Big Shoulders Display, Space Grotesk, JetBrains Mono.
 
+## 3c. Ford theme (default since the owner asked for a Ford look)
+
+Two themes share one token set (`docs/design/site/assets/ui.css` :root) and the Ford theme overrides it (`theme-ford.css`, active when `<html data-theme="ford">`). Switch with the Ford / Cockpit buttons on any page, or `?theme=ford|cockpit`. The choice is remembered in localStorage.
+
+| token | Cockpit | Ford |
+|-------|---------|------|
+| background | #05070D | #050A14 midnight blue |
+| structure (`--cobalt`) | #2457FF | #2B72FF Ford blue |
+| icons (`--cobalt-lt`) | #3D6BFF | #6AA6FF sky blue |
+| live highlight (`--lime`) | #C8FF00 lime | #5CD8FF ice cyan |
+| selected / primary fill (`--accent`) | lime | #1F63F0 with white text (5.1:1) |
+| warning (`--warn`) | lime block | #FFB81C amber block with dark text (10.7:1) |
+| display / UI type | Big Shoulders Display / Space Grotesk | Barlow Condensed / Barlow (OFL stand-ins for the proprietary FordAntenna) |
+| shapes | 14 px chamfer, skewed segments | 24 px rounded glass, pill buttons, straight segments |
+
+Ford rules: speed is white (primary reading); cyan only for values that are live; amber is the only alarm colour and always comes with an icon and words; no red. Sentence case, no tracked all-caps. The Blue Oval (Wikimedia flat vector, navy lifted to #08399A) appears in the status bar, Home, Standby and the boot animation. It is a Ford trademark: personal use on the owner's own car only, never publish the site or app with it.
+
+Motion (Ford only): screen enter 460 ms ease-out-expo with 38 ms card stagger; press scale 0.96 in 120 ms; ambient light drifts over 16 s; boot sequence about 4 s (oval scales in, ring sweeps clockwise via a conic mask, script wipes in, sheen crosses, "Welcome" rises, load bar). All of it is transform and opacity only. See docs/PERF.md for the smoothness rules and tiers.
+
+Any new colour in a screen must be a token (`var(--lime)` etc., also inside inline SVG attributes, which accept `var()` in Chrome and Android WebView 120+). Hard-coded hex breaks the theme switch.
+
 ## 4. Screen sketches (1280x800)
 
 Drive: tach arc 270 degrees, cobalt track, lime progress after the threshold (default 4500 rpm), shift-light segments across the top; centre speed numerals (lime); right column: boost bar (vacuum = cobalt segments below zero, positive boost = lime segments), coolant, intake, battery, fuel as segmented tiles; bottom strip: trip km / avg / max / max boost / 0-100 timer.

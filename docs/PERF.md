@@ -55,3 +55,20 @@ Pick the lightest option that passes. Emulator numbers do not count (host GPU, n
 ## 6. Toolchain if C is needed
 
 NDK + CMake via `sdkmanager "ndk;<version>" "cmake;3.22.1"` (about 1.5-2 GB; the Mac has ~18 GB free), `externalNativeBuild { cmake }` in :app, `minSdk 28`. Rust alternative: `cargo-ndk` + `android-activity`; skip unless the owner prefers it. Nothing is installed yet; the `:vehicle` module stays pure Kotlin because OBD parsing is not on the render path.
+
+## Ford theme: what "super smooth" means in code (added with the Ford design pass)
+
+The Ford theme adds gradients, glass, a tip glow, an ambient light and a boot animation. These are the rules that keep them inside the 10 ms frame budget:
+
+1. Animate only transform and opacity, on layers that are already rasterised. Never animate blur, shadow, size, layout or clip paths per frame.
+2. Gradients and glows are drawn once into bitmaps (`ImageBitmap` / cached `Brush`) and then only moved. The tach arc is one `drawArc` with a cached `sweepGradient`; per frame only the sweep angle and the tip rotation change.
+3. Rpm, speed and boost are smoothed with a frame-rate-independent exponential filter (about 55 ms time constant) in the frame callback, not with animation objects. State is read in the draw phase (`drawBehind`), so a new value redraws one layer and never recomposes.
+4. Entrance motion is capped: 460 ms, cards staggered 38 ms, first six columns only. No animation runs while a gauge is changing except the gauge itself.
+5. Boot animation is pre-rendered (animated vector or frame sequence), never computed at runtime. It must not delay the launcher becoming interactive.
+6. Quality tiers: Rich (all of the above) and Lite (no stagger, no ambient drift, solid cards, no tip glow). `FrameMetrics` samples the last 30 s; if more than 2 % of frames exceed 12 ms the app switches to Lite and says so in Diagnose.
+7. Escape ladder if Compose still misses the gate on the real unit: gauge as a Kotlin `SurfaceView`, then NDK GLES for the Drive screen only. Decided by measurement, not before.
+
+What the design site proves and does not prove:
+
+- Measured: scripting cost of one frame's data update, `tools/design.sh bench drive` (drive 0.03 ms mean, boost 0.16 ms mean, p99 0.5 ms in headless Chrome). It says the data-to-pixels logic is not the bottleneck.
+- Not measured: GPU raster and compositing on the unit's SoC. Only `dumpsys gfxinfo` / Perfetto on the real Palm Bay 1000 can show that. The emulator (software GL) cannot.
