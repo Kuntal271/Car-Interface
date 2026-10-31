@@ -66,7 +66,8 @@ i[data-i]{display:inline-flex}
 .h1{font:800 54px/1 var(--f-display);letter-spacing:.03em;text-transform:uppercase}
 .h2{font:800 34px/1 var(--f-display);letter-spacing:.05em;text-transform:uppercase}
 .h3{font:700 26px/1.1 var(--f-display);letter-spacing:.06em;text-transform:uppercase}
-.mono{font:500 16px var(--f-mono);color:var(--dim)}
+.mono{font:500 18px var(--f-mono);color:var(--dim)}
+.hit{position:relative}.hit::after{content:"";position:absolute;inset:calc((56px - 100%) / -2) -12px}   /* grows the touch area to 56 px without changing the look */
 .lime{color:var(--lime)} .cobalt{color:var(--cobalt-lt)} .dim{color:var(--dim)} .white{color:var(--text)}
 .n-xxl{font-size:200px} .n-xl{font-size:120px} .n-l{font-size:72px} .n-m{font-size:56px} .n-s{font-size:40px}
 .tnum{font-variant-numeric:tabular-nums}
@@ -108,7 +109,7 @@ i[data-i]{display:inline-flex}
 .chip.on{background:var(--accent);color:var(--on-accent);box-shadow:none}
 .chip.c{background:var(--c40);color:var(--text)}
 .tabs{display:flex;gap:6px}
-.badge{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px;font:700 16px var(--f-ui);letter-spacing:.1em;text-transform:uppercase;
+.badge{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 12px;font:700 18px var(--f-ui);letter-spacing:.1em;text-transform:uppercase;
   color:var(--cobalt-lt);box-shadow:inset 0 0 0 1px var(--hair)}
 .badge.lime{color:var(--lime);box-shadow:inset 0 0 0 1px rgba(var(--lime-rgb),.5)}
 .badge.fill{background:var(--accent);color:var(--on-accent);box-shadow:none}
@@ -140,12 +141,12 @@ i[data-i]{display:inline-flex}
 .tbl{width:100%;border-collapse:collapse}
 .tbl th{font:500 18px var(--f-ui);letter-spacing:.12em;text-transform:uppercase;color:var(--dim);text-align:left;padding:8px 10px;border-bottom:1px solid var(--hair)}
 .tbl td{padding:0 10px;height:46px;border-bottom:1px solid var(--hair-soft);font:500 20px var(--f-ui)}
-.tbl td.m{font:500 17px var(--f-mono);color:var(--dim)}
+.tbl td.m{font:500 18px var(--f-mono);color:var(--dim)}
 .tbl td.v{font:800 28px var(--f-display);letter-spacing:.02em}
 
 .key{display:flex;flex-direction:column;align-items:center;justify-content:center;height:84px;background:var(--c25);box-shadow:inset 0 0 0 1px var(--hair);
   clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%)}
-.key b{font:800 44px/1 var(--f-display)} .key small{font:500 15px var(--f-ui);letter-spacing:.2em;color:var(--dim)}
+.key b{font:800 44px/1 var(--f-display)} .key small{font:500 18px var(--f-ui);letter-spacing:.1em;color:var(--dim)}
 
 .warn{display:flex;align-items:center;gap:18px;padding:14px 26px;background:var(--warn);color:var(--on-warn);font:800 28px var(--f-display);
   letter-spacing:.06em;text-transform:uppercase;animation:wp 1s steps(2) infinite}

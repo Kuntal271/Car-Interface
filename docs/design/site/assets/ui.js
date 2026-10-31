@@ -318,9 +318,9 @@
   function shell(fr) {
     var active = fr.dataset.active || '', qs = location.search;
     if (fr.dataset.shell !== '0') {
-      var sb = '<header class="sb"><div class="sbl">' + (UI.theme === 'ford' ? UI.logo(30, 'sb-logo') : '') + '<span class="clock">21:47</span><span class="date">' + (UI.theme === 'ford' ? 'Fri 30 Oct' : 'FRI 30 OCT') + '</span></div>' +
+      var sb = '<header class="sb"><div class="sbl"><span class="clock">21:47</span><span class="date">' + (UI.theme === 'ford' ? 'Fri 30 Oct' : 'FRI 30 OCT') + '</span></div>' +
         '<div class="sbc"><span class="link on">OBD</span><span class="link on">Canbox</span><span class="link on">BT</span><span class="link on">Android Auto</span></div>' +
-        '<div class="sbr"><span class="sbs">' + UI.icon('thermo', 22) + '31°</span><span class="sbs">' + UI.icon('batt', 22) + '14.2 V</span><span class="sbs">' + UI.icon('vol', 22) + '18</span></div></header>';
+        '<div class="sbr"><span class="sbs">' + UI.icon('sun', 22) + '31°</span><span class="sbs">' + UI.icon('batt', 22) + '14.2 V</span><span class="sbs">' + UI.icon('vol', 22) + '18</span></div></header>';
       fr.insertAdjacentHTML('afterbegin', sb);
     }
     if (fr.dataset.dock !== '0' && fr.dataset.shell !== '0') {
@@ -365,9 +365,22 @@
     var st = document.querySelector('.stage'); if (!st) return;
     document.querySelectorAll('.frame').forEach(shell);
     document.querySelectorAll('.main .card').forEach(function (c, i) { c.style.setProperty('--i', i); });
+    document.querySelectorAll('.chip, .btn, [onclick]').forEach(function (e) { if (e.closest('svg')) return; var p = getComputedStyle(e).position; if (e.offsetHeight && e.offsetHeight < 56 && (p === 'static' || p === 'relative')) e.classList.add('hit'); });
     hydrate(document); fit(); addEventListener('resize', fit);
     if (UI.onready) UI.onready();
     if (Q.has('qa')) setTimeout(UI.qa, 50);
+    if (Q.has('probe')) setTimeout(function () {                       /* measurements for design critiques: small touch targets and small text */
+      var o = [], seen = {};
+      document.querySelectorAll('a, button, [onclick], .btn, .chip, .tog, .sl').forEach(function (e) {
+        var r = e.getBoundingClientRect(); if (!r.width || e.closest('svg, .scaled')) return;
+        if (e.classList.contains('hit')) return;
+        if (Math.min(r.width, r.height) < 56) o.push('TARGET ' + Math.round(r.width) + 'x' + Math.round(r.height) + ' ' + (e.className && e.className.baseVal === undefined ? e.className : '') + ' "' + (e.textContent || '').trim().slice(0, 24) + '"');
+      });
+      var w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      while (w.nextNode()) { var n = w.currentNode, t = n.textContent.trim(); if (!t || n.parentElement.closest('svg, script, style, pre, figcaption')) continue;
+        var f = parseFloat(getComputedStyle(n.parentElement).fontSize); if (f < 18) { var k = Math.round(f) + 'px ' + t.slice(0, 30); if (!seen[k]) { seen[k] = 1; o.push('TEXT ' + k); } } }
+      var pre = document.createElement('pre'); pre.id = 'probe-out'; pre.textContent = o.length ? o.join('\n') : 'PROBE-CLEAN'; document.body.appendChild(pre);
+    }, 120);
     document.documentElement.setAttribute('data-ready', '1');
   });
 })();

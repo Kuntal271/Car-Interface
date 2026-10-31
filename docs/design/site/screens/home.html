@@ -20,7 +20,7 @@
     <div class="card row g24" style="height:310px;padding:20px" data-od-id="now-playing">
       <div class="art" style="width:270px;height:270px;flex:none"></div>
       <div class="col grow jb">
-        <div class="row jb c"><span class="chip c" style="height:40px">Bluetooth audio</span><a href="media.html" class="lbl white">Queue ›</a></div>
+        <div class="row jb c"><a href="media.html" class="chip c hit" style="height:40px">Bluetooth audio</a><a href="media.html" class="lbl white hit">Queue ›</a></div>
         <div><div class="np-title">Midnight City</div><div class="h3 dim np-sub" style="margin-top:8px">M83 · Hurry Up, We're Dreaming</div></div>
         <div>
           <div class="seg thin sk" data-n="64" data-v=".38" data-c="l"></div>
@@ -69,7 +69,7 @@
     </div>
     <div class="row g12" style="height:110px">
       <div class="card grow col jb tight" data-od-id="vital-coolant"><span class="lbl row c g8"><i data-i="thermo" data-s="22"></i>Coolant</span><span class="num n-m"><span id="cool">92</span><span class="unit">°C</span></span></div>
-      <div class="card grow col jb tight" data-od-id="vital-volt"><span class="lbl row c g8"><i data-i="batt" data-s="22"></i>Battery</span><span class="num n-m">14.2<span class="unit">V</span></span></div>
+      <div class="card grow col jb tight" data-od-id="vital-load"><span class="lbl row c g8"><i data-i="pulse" data-s="22"></i>Engine load</span><span class="num n-m"><span id="load">38</span><span class="unit">%</span></span></div>
     </div>
   </section>
 </main>
@@ -84,7 +84,7 @@ UI.onready = function () {
     UI.setSeg($('rpmbar'), s.rpm / 7000);
     $('boost').textContent = (s.boost >= 0 ? '+' : '') + s.boost.toFixed(2);
     UI.setSeg($('boostbar'), (s.boost + 1) / 2.5);
-    $('cool').textContent = Math.round(s.coolant); $('fuel').textContent = Math.round(s.fuel);
+    $('cool').textContent = Math.round(s.coolant); $('load').textContent = Math.round(s.load); $('fuel').textContent = Math.round(s.fuel);
   });
 };
 </script></body></html>
