@@ -30,7 +30,6 @@ html[data-theme="ford"] .frame *{letter-spacing:.012em;text-transform:none !impo
 html[data-theme="ford"] .sb{background:linear-gradient(180deg,rgba(var(--bg-rgb),.94),rgba(var(--bg-rgb),.5));border-bottom:1px solid var(--hair-soft)}
 html[data-theme="ford"] .sb .clock{font-weight:600;letter-spacing:.03em;font-size:36px}
 html[data-theme="ford"] .sb .date{font-size:19px;letter-spacing:.02em}
-html[data-theme="ford"] .sb-logo{margin-right:8px;flex:none}
 html[data-theme="ford"] .sb .link{font-size:18px;font-weight:600}
 html[data-theme="ford"] .sb .link::before{width:9px;height:9px;border-radius:50%;transform:none}
 html[data-theme="ford"] .dock{background:rgba(var(--s1-rgb),.72);border-left:1px solid var(--hair-soft);padding:8px 0}
@@ -81,7 +80,7 @@ html[data-theme="ford"] .key:active,html[data-theme="ford"] .qt:active,html[data
 html[data-theme="ford"] .chip{clip-path:none;border-radius:999px;font-size:19px;font-weight:600;background:rgba(var(--cobalt-lt-rgb),.12)}
 html[data-theme="ford"] .chip.on{background:var(--accent);color:var(--on-accent)}
 html[data-theme="ford"] .chip.c{background:rgba(var(--cobalt-rgb),.30);color:var(--text)}
-html[data-theme="ford"] .badge{border-radius:8px;font-size:16px;font-weight:600}
+html[data-theme="ford"] .badge{border-radius:8px;font-size:18px;font-weight:600}
 html[data-theme="ford"] .badge.fill{background:var(--accent);color:var(--on-accent)}
 html[data-theme="ford"] .seg{gap:3px}
 html[data-theme="ford"] .seg i{border-radius:3px;background:rgba(var(--cobalt-lt-rgb),.18)}

@@ -65,7 +65,7 @@ Two themes share one token set (`docs/design/site/assets/ui.css` :root) and the 
 | display / UI type | Big Shoulders Display / Space Grotesk | Barlow Condensed / Barlow (OFL stand-ins for the proprietary FordAntenna) |
 | shapes | 14 px chamfer, skewed segments | 24 px rounded glass, pill buttons, straight segments |
 
-Ford rules: speed is white (primary reading); cyan only for values that are live; amber is the only alarm colour and always comes with an icon and words; no red. Sentence case, no tracked all-caps. The Blue Oval (Wikimedia flat vector, navy lifted to #08399A) appears in the status bar, Home, Standby and the boot animation. It is a Ford trademark: personal use on the owner's own car only, never publish the site or app with it.
+Ford rules: speed is white (primary reading); cyan only for live values and connected links; amber is the only alarm colour and always comes with an icon and words; no red. Sentence case, no tracked all-caps. The Blue Oval (Wikimedia flat vector, navy lifted to #08399A) appears once per screen: in the Home header lockup next to the model name, on Standby, and in the boot animation. The status bar carries no logo (one mark per screen; the status bar is already dense). It is a Ford trademark: personal use on the owner's own car only, never publish the site or app with it.
 
 Motion (Ford only): screen enter 460 ms ease-out-expo with 38 ms card stagger; press scale 0.96 in 120 ms; ambient light drifts over 16 s; boot sequence about 4 s (oval scales in, ring sweeps clockwise via a conic mask, script wipes in, sheen crosses, "Welcome" rises, load bar). All of it is transform and opacity only. See docs/PERF.md for the smoothness rules and tiers.
 

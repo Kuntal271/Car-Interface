@@ -25,6 +25,11 @@ for i in ids:
         if not (root / p).exists(): bad.append(("screens.js", p))
 files = {p.stem for p in (root / "screens").glob("*.html")}
 extra = files - set(ids); missing = set(ids) - files
+logo = {f.name: len(re.findall(r"UI\.logo\(", f.read_text())) for f in (root / "screens").glob("*.html")}
+logo_bad = sorted(k for k, v in logo.items() if v > 1)
+shell_logo = len(re.findall(r"UI\.logo\(", (root / "assets/ui.js").read_text()))
+bad += [("logo x2+", k) for k in logo_bad] + ([("ui.js shell", "UI.logo call")] if shell_logo else [])
+print("one-mark rule: screens with >1 logo:", logo_bad or "none", "| logo calls in shell:", shell_logo)
 print(f"checked {n} references, {len(ids)} registry entries, {len(files)} screen files")
 print("BROKEN:", bad or "none"); print("EXTERNAL:", ext or "none"); print("unregistered screens:", sorted(extra) or "none", "| registry without file:", sorted(missing) or "none")
 sys.exit(1 if bad or ext or missing else 0)
