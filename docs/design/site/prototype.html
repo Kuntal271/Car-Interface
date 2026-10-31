@@ -30,6 +30,9 @@ html[data-theme="ford"] .side .it{border-radius:12px;border-left:0;font-size:18p
 html[data-theme="ford"] .side .it.on{background:rgba(43,114,255,.22);box-shadow:inset 0 0 0 1px rgba(var(--cobalt-lt-rgb),.4)}
 html[data-theme="ford"] .side h4{text-transform:none;letter-spacing:.04em;font-size:15px}
 html[data-theme="ford"] .top a.l{text-transform:none;font-family:var(--f-ui);font-weight:600;letter-spacing:.01em;font-size:17px}
+html[data-theme="ford"] .top .hint{font:500 15px var(--f-ui);color:#b6c4e6}
+html[data-theme="ford"] .side{padding-bottom:56px}
+html[data-theme="ford"] .side .it .k,html[data-theme="ford"] .side .it small{font-size:14px;color:#b6c4e6}
 </style></head>
 <body class="doc proto">
 <div class="top"><span class="brand"><i></i>Cockpit prototype</span><a class="l" href="index.html">Overview</a><a class="l" href="design-system.html">Design system</a><a class="l" href="specs.html">Specs</a><span class="sp"></span><span class="hint">1–9 jump · [ ] prev/next · L live · S scenario</span></div>
@@ -40,7 +43,7 @@ var fr = document.getElementById('fr'), bez = document.getElementById('bezel'), 
 var state = { id: 'home', live: true, t: 25.6 };
 var SC = [['Parked', 92], ['Launch', 2], ['Pulling', 25.6], ['Cruise', 50], ['Braking', 64]];
 var KEYS = ['home', 'drive', 'car', 'media', 'phone', 'projection', 'apps', 'settings', 'trips'];
-function src() { return 'screens/' + state.id + '.html?embed=1&theme=' + UI.theme + (state.live ? '&live=1' : '') + '&t=' + state.t; }
+function src() { return 'screens/' + state.id + '.html?embed=1&theme=' + UI.theme + (new URLSearchParams(location.search).has('noanim') ? '&noanim=1' : '') + (state.live ? '&live=1' : '') + '&t=' + state.t; }
 function go(id) { state.id = id; fr.src = src(); mark(); }
 function mark() {
   document.querySelectorAll('.it').forEach(function (e) { e.classList.toggle('on', e.dataset.id === state.id); });

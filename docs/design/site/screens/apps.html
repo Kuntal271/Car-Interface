@@ -8,11 +8,16 @@
 .app .ic{color:var(--cobalt-lt)}
 .app.rec .ic{color:var(--lime)} .app.rec::after{content:"";position:absolute;left:14px;top:14px;width:10px;height:10px;background:var(--lime);transform:rotate(45deg)}
 .find{display:flex;align-items:center;gap:14px;height:56px;padding:0 20px;width:520px;background:var(--s1);box-shadow:inset 0 0 0 1px var(--hair);color:var(--dim);font:500 22px var(--f-ui)}
+/* ---- Ford theme: search field and Edit layout share one 56 px pill height; the grid fills to the 24 px bottom margin (4 rows of 148 + 3 gaps of 12) ---- */
+html[data-theme="ford"] .find{border-radius:999px}
+html[data-theme="ford"] .edit{min-height:56px;height:56px}
+html[data-theme="ford"] .apps-grid{flex:1;min-height:0;grid-template-rows:repeat(4,1fr)}
+html[data-theme="ford"] .apps-grid .app{height:auto}
 </style></head>
 <body><div class="stage"><div class="frame" data-active="apps">
 <main class="main col g12" data-od-id="apps">
-  <div class="row jb c" style="height:56px"><div class="find"><i data-i="search" data-s="26"></i>Search apps</div><div class="row c g16"><span class="lbl row c g8"><span style="width:10px;height:10px;background:var(--lime);transform:rotate(45deg);display:inline-block"></span>Recent</span><span class="lbl">24 apps</span><a class="btn ghost" style="min-height:52px;padding:0 22px">Edit layout</a></div></div>
-  <div class="grid" style="grid-template-columns:repeat(6,1fr);gap:12px">
+  <div class="row jb c" style="height:56px"><div class="find"><i data-i="search" data-s="26"></i>Search apps</div><div class="row c g16"><span class="lbl row c g8"><span style="width:10px;height:10px;background:var(--lime);transform:rotate(45deg);display:inline-block"></span>Recent</span><span class="lbl">24 apps</span><a class="btn ghost edit" style="min-height:52px;padding:0 22px">Edit layout</a></div></div>
+  <div class="grid apps-grid" style="grid-template-columns:repeat(6,1fr);gap:12px">
     <a href="radio.html" class="app rec"><i data-i="radio" data-s="44"></i>Radio</a>
     <a href="media.html" class="app rec"><i data-i="music" data-s="44"></i>Music</a>
     <a class="app"><i data-i="video" data-s="44"></i>Video</a>
@@ -23,7 +28,7 @@
     <a class="app"><i data-i="user" data-s="44"></i>Contacts</a>
     <a class="app"><i data-i="chat" data-s="44"></i>Messages</a>
     <a href="parking.html" class="app"><i data-i="camera" data-s="44"></i>Camera</a>
-    <a class="app"><i data-i="video" data-s="44"></i>Gallery</a>
+    <a class="app"><i data-i="image" data-s="44"></i>Gallery</a>
     <a class="app"><i data-i="clock" data-s="44"></i>Clock</a>
     <a class="app"><i data-i="cloud" data-s="44"></i>Weather</a>
     <a class="app"><i data-i="calc" data-s="44"></i>Calculator</a>

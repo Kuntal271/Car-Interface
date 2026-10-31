@@ -6,41 +6,57 @@
 .pre{height:102px;padding:12px 16px;display:flex;flex-direction:column;justify-content:space-between}
 .pre b{font:800 44px/.9 var(--f-display)} .pre .p{font:700 18px var(--f-mono);color:var(--dim)}
 .pre .n{font:600 18px var(--f-ui);color:var(--dim);letter-spacing:.04em}
+/* Ford-only variants (.fx shown in Ford, .cx shown in Cockpit); the Cockpit theme renders exactly as before */
+#freq{margin-top:8px}
+.fx{display:none} html[data-theme="ford"] .fx{display:inline} html[data-theme="ford"] .cx{display:none}
+html[data-theme="ford"] .chip.c.fm{background:var(--accent);color:var(--on-accent)}            /* selected band: blue fill, white text */
+html[data-theme="ford"] .sg{font:600 20px var(--f-ui);color:var(--text);white-space:nowrap}      /* signal strength value */
+html[data-theme="ford"] .sg .unit{font-size:18px}
+html[data-theme="ford"] #fcol{align-self:flex-start} html[data-theme="ford"] #freq{line-height:.82;margin-top:-5px}                                   /* tighter numeral box so the ruler keeps its full 70 px */
+html[data-theme="ford"] #ruler{flex:none}
+html[data-theme="ford"] .btn .unit{font-size:19px}
+html[data-theme="ford"] .btn.pri.sv{background:rgba(var(--cobalt-lt-rgb),.14);color:var(--text);box-shadow:inset 0 0 0 1px var(--hair)}   /* Save preset is secondary */
+html[data-theme="ford"] .pre{height:98px;padding:10px 16px}                                      /* two rows + 24 px bottom margin */
+html[data-theme="ford"] .pre b{line-height:.8}
+html[data-theme="ford"] .pre .p{line-height:1} html[data-theme="ford"] .pre .n{line-height:1.1}
+html[data-theme="ford"] .pre b .unit{font-size:18px;margin-left:5px}
+html[data-theme="ford"] .pre.sel{background:var(--accent);box-shadow:none}                         /* selected preset: blue fill, white text */
+html[data-theme="ford"] .pre.sel .p,html[data-theme="ford"] .pre.sel b,html[data-theme="ford"] .pre.sel .n,html[data-theme="ford"] .pre.sel b .unit{color:var(--text)}
 </style></head>
 <body><div class="stage"><div class="frame" data-active="media">
 <main class="main col g12" data-od-id="radio">
   <div class="row jb c" style="height:48px">
     <div class="tabs"><a href="media.html" class="chip">Bluetooth</a><a href="media.html" class="chip">USB</a><span class="chip on">Radio</span><a class="chip">Streaming</a></div>
-    <div class="row g12 c"><span class="chip c" style="height:40px">FM</span><span class="chip" style="height:40px">AM</span><span class="badge lime">Stereo</span><span class="badge">RDS</span><span class="row c g8 lime"><i data-i="signal" data-s="26"></i><span class="lbl white">Strong</span></span></div>
+    <div class="row g12 c"><span class="chip c fm" style="height:40px">FM</span><span class="chip" style="height:40px">AM</span><span class="badge lime">Stereo</span><span class="badge">RDS</span><span class="row c g8 lime"><i data-i="signal" data-s="26"></i><span class="lbl white">Strong</span><span class="sg fx">48<span class="unit">dBµV</span></span></span></div>
   </div>
   <div class="card col" style="height:308px;padding:16px 22px" data-od-id="tuner">
     <div class="row g24 c" style="flex:1">
-      <div class="col"><span class="lbl">FM · MHz</span><span class="num lime" style="font-size:210px;margin-top:8px">93.5</span></div>
+      <div class="col" id="fcol"><span class="lbl">FM · MHz</span><span class="num lime" id="freq" style="font-size:210px">93.5</span></div>
       <div class="col grow" style="min-width:0;gap:10px">
         <span class="h1">Red FM</span>
         <span class="h3 dim">Preset 3 · Bajao!</span>
-        <div class="osd" style="margin-top:12px;padding:12px 16px"><span class="lbl">RDS</span><div class="mono" style="font-size:20px;color:var(--text);margin-top:6px">NOW · Tum Hi Ho — Arijit Singh</div></div>
+        <div class="osd" style="margin-top:12px;padding:12px 16px"><span class="lbl">RDS</span><div class="mono" style="font-size:20px;color:var(--text);margin-top:6px"><span class="cx">NOW</span><span class="fx">Now</span> · Tum Hi Ho — Arijit Singh</div></div>
       </div>
     </div>
     <svg id="ruler" viewBox="0 0 1076 70" width="1076" height="70"></svg>
   </div>
   <div class="row g12" style="height:96px">
     <a class="btn big grow"><i data-i="prev" data-s="30"></i>Seek</a>
-    <a class="btn big grow"><i data-i="minus" data-s="30"></i>0.1</a>
-    <a class="btn big grow"><i data-i="plus" data-s="30"></i>0.1</a>
+    <a class="btn big grow"><i data-i="minus" data-s="30"></i><span>0.1<span class="unit fx">MHz</span></span></a>
+    <a class="btn big grow"><i data-i="plus" data-s="30"></i><span>0.1<span class="unit fx">MHz</span></span></a>
     <a class="btn big grow">Seek<i data-i="next" data-s="30"></i></a>
-    <a class="btn big pri" style="width:290px"><i data-i="plus" data-s="26"></i>Save preset</a>
+    <a class="btn big pri sv" style="width:290px"><i data-i="plus" data-s="26"></i>Save preset</a>
   </div>
   <div class="grid g12" style="grid-template-columns:repeat(6,1fr);gap:12px">
-    <a class="card pre"><span class="p">P1</span><b>98.3</b><span class="n">Radio Mirchi</span></a>
-    <a class="card pre"><span class="p">P2</span><b>91.1</b><span class="n">Radio City</span></a>
-    <a class="card pre sel"><span class="p lime">P3</span><b class="lime">93.5</b><span class="n">Red FM</span></a>
-    <a class="card pre"><span class="p">P4</span><b>92.7</b><span class="n">Big FM</span></a>
-    <a class="card pre"><span class="p">P5</span><b>104.0</b><span class="n">Fever</span></a>
-    <a class="card pre"><span class="p">P6</span><b>94.3</b><span class="n">Radio One</span></a>
-    <a class="card pre"><span class="p">P7</span><b>95.0</b><span class="n">Ishq</span></a>
-    <a class="card pre"><span class="p">P8</span><b>101.9</b><span class="n">Vividh Bharati</span></a>
-    <a class="card pre"><span class="p">P9</span><b>89.4</b><span class="n">Unnamed</span></a>
+    <a class="card pre"><span class="p">P1</span><b>98.3<span class="unit fx">MHz</span></b><span class="n">Radio Mirchi</span></a>
+    <a class="card pre"><span class="p">P2</span><b>91.1<span class="unit fx">MHz</span></b><span class="n">Radio City</span></a>
+    <a class="card pre sel"><span class="p lime">P3</span><b class="lime">93.5<span class="unit fx">MHz</span></b><span class="n">Red FM</span></a>
+    <a class="card pre"><span class="p">P4</span><b>92.7<span class="unit fx">MHz</span></b><span class="n">Big FM</span></a>
+    <a class="card pre"><span class="p">P5</span><b>104.0<span class="unit fx">MHz</span></b><span class="n">Fever</span></a>
+    <a class="card pre"><span class="p">P6</span><b>94.3<span class="unit fx">MHz</span></b><span class="n">Radio One</span></a>
+    <a class="card pre"><span class="p">P7</span><b>95.0<span class="unit fx">MHz</span></b><span class="n">Ishq</span></a>
+    <a class="card pre"><span class="p">P8</span><b>101.9<span class="unit fx">MHz</span></b><span class="n">Vividh Bharati</span></a>
+    <a class="card pre"><span class="p">P9</span><b>89.4<span class="unit fx">MHz</span></b><span class="n">Unnamed</span></a>
     <a class="card pre"><span class="p">P10</span><b>—</b><span class="n">Empty</span></a>
     <a class="card pre"><span class="p">P11</span><b>—</b><span class="n">Empty</span></a>
     <a class="card pre"><span class="p">P12</span><b>—</b><span class="n">Empty</span></a>
@@ -49,15 +65,18 @@
 </div></div>
 <script>
 UI.onready = function () {
-  var lo = 87.5, hi = 108, W = 1076, s = '', st = [91.1, 92.7, 93.5, 94.3, 95.0, 98.3, 101.9, 104.0];
+  var rl = document.getElementById('ruler'), lo = 87.5, hi = 108, W = 1076, pad = 0, s = '', st = [91.1, 92.7, 93.5, 94.3, 95.0, 98.3, 101.9, 104.0];
+  if (UI.theme === 'ford') st.unshift(89.4);   /* P9 preset marker (kept Ford-only so the Cockpit render stays unchanged) */
+  if (UI.theme === 'ford') { var pc = getComputedStyle(rl.parentNode); W = Math.round(rl.parentNode.clientWidth - parseFloat(pc.paddingLeft) - parseFloat(pc.paddingRight)); rl.setAttribute('viewBox', '0 0 ' + W + ' 70'); rl.setAttribute('width', W); pad = 16; }   /* fit the card's inner width; inset the scale so the 108 label is not clipped */
+  var X = function (f) { return pad + 1 + (f - lo) / (hi - lo) * (W - 2 - 2 * pad); };
   for (var f = lo; f <= hi + .001; f += 0.5) {
-    var x = (f - lo) / (hi - lo) * (W - 2) + 1, maj = Math.abs(f - Math.round(f)) < .01, big = maj && Math.round(f) % 2 === 0;
+    var x = X(f), maj = Math.abs(f - Math.round(f)) < .01, big = maj && Math.round(f) % 2 === 0;
     s += '<line x1="' + x + '" x2="' + x + '" y1="' + (big ? 26 : maj ? 32 : 40) + '" y2="62" stroke="' + (f > 93.4 && f < 93.6 ? 'var(--lime)' : 'var(--cobalt-lt)') + '" stroke-width="' + (maj ? 2 : 1.2) + '"/>';
     if (big) s += '<text x="' + x + '" y="20" text-anchor="middle" font-family="var(--f-mono)" font-weight="500" font-size="18" fill="var(--dim)">' + Math.round(f) + '</text>';
   }
-  st.forEach(function (f) { var x = (f - lo) / (hi - lo) * (W - 2) + 1; s += '<path d="M' + (x - 6) + ' 68l6-8 6 8z" fill="var(--cobalt)"/>'; });
-  var nx = (93.5 - lo) / (hi - lo) * (W - 2) + 1;
+  st.forEach(function (f) { var x = X(f); s += '<path d="M' + (x - 6) + ' 68l6-8 6 8z" fill="var(--cobalt)"/>'; });
+  var nx = X(93.5);
   s += '<line x1="' + nx + '" x2="' + nx + '" y1="4" y2="66" stroke="var(--lime)" stroke-width="4"/><path d="M' + (nx - 9) + ' 0h18l-9 12z" fill="var(--lime)"/>';
-  document.getElementById('ruler').innerHTML = s;
+  rl.innerHTML = s;
 };
 </script></body></html>

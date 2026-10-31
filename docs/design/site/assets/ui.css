@@ -167,3 +167,8 @@ html[data-theme="cockpit"] .uc{text-transform:uppercase}
 .themesw button.on{background:var(--accent);color:var(--on-accent);box-shadow:none}
 .only-ford{display:none}.only-cp{display:block}
 html[data-theme="ford"] .only-ford{display:block}html[data-theme="ford"] .only-cp{display:none}
+
+/* inline theme-specific wording: .ci = Cockpit only, .fi = Ford only */
+.fi{display:none}
+html[data-theme="ford"] .fi{display:inline}
+html[data-theme="ford"] .ci{display:none}

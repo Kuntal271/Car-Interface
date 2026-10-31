@@ -3,10 +3,31 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="stylesheet" href="../assets/ui.css"><script src="../assets/ui.js"></script>
 <style>
-.tile{display:flex;flex-direction:column;justify-content:space-between;height:132px}
+.tile{display:flex;flex-direction:column;justify-content:space-between;height:132px;padding-top:16px;padding-bottom:16px}
 .tile .v{font:800 60px/.9 var(--f-display)}
-.run{display:flex;justify-content:space-between;align-items:center;height:44px;border-bottom:1px solid var(--hair-soft);font:500 20px var(--f-ui)}
+.tile>.mono{height:18px;line-height:18px}
+.tile>.seg{margin:2px 0}
+.run{display:flex;justify-content:space-between;align-items:center;flex:1;min-height:44px;border-bottom:1px solid var(--hair-soft);font:500 20px var(--f-ui)}
 .run b{font:800 30px var(--f-display)}
+/* chart + gauge graphics: classes, so each theme can colour them */
+.gl{fill:var(--lime)} .gl.neg{fill:var(--cobalt)}
+.gn{fill:var(--lime)} .gn.neg{fill:var(--cobalt-lt)}
+.zl{stroke:var(--cobalt-lt);stroke-dasharray:6 6}
+.gridl{stroke:rgba(var(--cobalt-rgb),.22)}
+.s-boost{stroke:var(--lime);stroke-width:3}
+.s-rpm{stroke:var(--cobalt);stroke-width:2.5}
+.ax{fill:var(--dim);font:500 18px var(--f-ui)}
+.pk{fill:var(--lime);font:600 20px var(--f-ui)}
+html[data-theme="ford"] .gl.neg{fill:var(--lime)}
+html[data-theme="ford"] .gn,html[data-theme="ford"] .gn.neg{fill:var(--text)}
+html[data-theme="ford"] .gcap{letter-spacing:0}
+html[data-theme="ford"] .zl{stroke:var(--dim);stroke-dasharray:5 5;stroke-width:1.5}
+html[data-theme="ford"] .gridl{stroke:var(--hair)}
+html[data-theme="ford"] .s-rpm{stroke:var(--text);stroke-dasharray:10 6;stroke-width:2.5}
+html[data-theme="ford"] .lbl.ttl{color:var(--text);font-weight:600}
+html[data-theme="ford"] .badge.armed{background:transparent;color:var(--lime);box-shadow:inset 0 0 0 1px rgba(var(--lime-rgb),.5)}
+html[data-theme="ford"] .best,html[data-theme="ford"] .best b.white,html[data-theme="ford"] .best .unit{color:var(--lime)}
+html[data-theme="ford"] .best{font-size:22px;font-weight:600}
 </style></head>
 <body><div class="stage"><div class="frame" data-active="drive">
 <main class="main row g24" data-od-id="drive-boost">
@@ -18,27 +39,34 @@
     <div class="card col" style="height:372px;padding:10px 14px" data-od-id="boost-arc">
       <svg id="arc" viewBox="0 0 640 350" width="632" height="348"></svg>
     </div>
-    <div class="card col" style="height:248px" data-od-id="spool-chart">
-      <div class="row jb c"><span class="lbl">Last 25 seconds</span><span class="row g16 c mono"><span class="lime">■ boost</span><span style="color:var(--cobalt)">■ rpm</span></span></div>
-      <svg id="chart" viewBox="0 0 616 170" width="616" height="170" style="margin-top:10px"></svg>
+    <div class="card col" style="height:256px" data-od-id="spool-chart">
+      <div class="row jb c" style="height:28px"><span class="lbl ttl">Last 25 seconds</span><span class="row g24 c mono">
+        <span class="cp-only lime">■ boost</span><span class="cp-only" style="color:var(--cobalt)">■ rpm</span>
+        <span class="ford-only c g8"><svg width="28" height="8" viewBox="0 0 28 8"><line x1="0" y1="4" x2="28" y2="4" stroke="var(--lime)" stroke-width="3"/></svg>boost</span>
+        <span class="ford-only c g8"><svg width="28" height="8" viewBox="0 0 28 8"><line x1="0" y1="4" x2="28" y2="4" stroke="var(--text)" stroke-width="3" stroke-dasharray="8 4"/></svg>rpm</span>
+      </span></div>
+      <svg id="chart" viewBox="0 0 612 182" width="612" height="182" style="margin-top:6px"></svg>
     </div>
   </section>
 
   <section class="col g12 grow">
     <div class="row g12">
-      <div class="card tile grow" data-od-id="throttle"><span class="lbl">Throttle</span><div class="v"><span id="thr">78</span><span class="unit">%</span></div><div id="thrbar" class="seg sk" data-n="16" data-v=".78" data-split=".85" style="height:14px"></div></div>
-      <div class="card tile grow" data-od-id="load"><span class="lbl">Engine load</span><div class="v"><span id="load">88</span><span class="unit">%</span></div><div id="loadbar" class="seg sk" data-n="16" data-v=".88" data-split=".85" style="height:14px"></div></div>
+      <div class="card tile grow" data-od-id="throttle"><span class="lbl">Throttle</span><div class="v"><span id="thr">78</span><span class="unit t">%</span></div><div id="thrbar" class="seg sk" data-n="16" data-v=".78" data-split=".85" style="height:14px"></div></div>
+      <div class="card tile grow" data-od-id="load"><span class="lbl">Engine load</span><div class="v"><span id="load">88</span><span class="unit t">%</span></div><div id="loadbar" class="seg sk" data-n="16" data-v=".88" data-split=".85" style="height:14px"></div></div>
     </div>
     <div class="row g12">
       <div class="card tile grow" data-od-id="map"><span class="lbl">Manifold abs.</span><div class="v"><span id="map">195</span><span class="unit">kPa</span></div><span class="mono">baro 100 kPa</span></div>
-      <div class="card tile grow" data-od-id="iat"><span class="lbl">Intake air</span><div class="v"><span id="iat">44</span><span class="unit">°C</span></div><span class="mono">ambient 31 °C</span></div>
+      <div class="card tile grow" data-od-id="iat"><span class="lbl">Intake air</span><div class="v"><span id="iat">44</span><span class="unit t">°C</span></div><div id="iatbar" class="seg sk" data-n="16" data-v=".4" data-split=".8" style="height:14px"></div></div>
     </div>
     <div class="card col grow" data-od-id="timer">
-      <div class="row jb c"><span class="lbl row c g8"><i data-i="flag" data-s="22"></i>0–100 km/h</span><span class="badge fill">Armed</span></div>
-      <div class="row" style="align-items:baseline;gap:10px;margin:8px 0 8px"><span class="num lime" style="font-size:92px">0.0</span><span class="unit">s</span><span class="grow"></span><span class="lbl">Best <b class="white">12.3</b></span></div>
-      <div class="run"><span class="dim">Run 3 · today</span><b>12.8</b></div>
-      <div class="run"><span class="dim">Run 2 · today</span><b>12.5</b></div>
-      <div class="run" style="border:0"><span class="dim">Run 1 · yesterday</span><b class="lime">12.3</b></div>
+      <div class="row jb c"><span class="lbl ttl row c g8"><i data-i="flag" data-s="22"></i>0–100 km/h</span><span class="badge fill armed">Armed</span></div>
+      <div class="row" style="align-items:baseline;gap:6px;margin:12px 0 10px"><span class="num lime" style="font-size:64px">0.0</span><span class="unit">s</span><span class="grow"></span><span class="lbl best">Best <b class="white">12.3</b> <span class="unit">s</span></span></div>
+      <div class="col grow">
+        <div class="run"><span class="dim">Run 4 · today</span><span><b>12.6</b><span class="unit"> s</span></span></div>
+        <div class="run"><span class="dim">Run 3 · today</span><span><b>12.8</b><span class="unit"> s</span></span></div>
+        <div class="run"><span class="dim">Run 2 · today</span><span><b>12.5</b><span class="unit"> s</span></span></div>
+        <div class="run" style="border:0"><span class="dim">Run 1 · yesterday</span><span><b class="lime">12.3</b><span class="unit"> s</span></span></div>
+      </div>
     </div>
   </section>
 </main>
@@ -46,39 +74,60 @@
 <script>
 UI.onready = function () {
   var $ = function (i) { return document.getElementById(i); };
-  /* semicircle bipolar boost gauge: -1.0 .. +1.5 bar over 200deg */
   var peak = 1.04;
+  /* semicircle bipolar boost gauge: -1.0 .. +1.5 bar over 200deg, 50 segments of 0.05 bar.
+     The lit part is clipped to the exact value, so the fill ends where the printed scale says it does. */
   function arc(b) {
-    var cx = 320, cy = 292, r1 = 226, r2 = 278, a0 = -100, a1 = 100, n = 50, step = (a1 - a0) / n, zero = .4, v = (b + 1) / 2.5, s = '';
+    var cx = 304, cy = 292, r1 = 226, r2 = 278, a0 = -100, a1 = 100, n = 50, zero = .4, v = Math.max(0, Math.min(1, (b + 1) / 2.5)), s = '', eps = 1e-6;
+    var ang = function (f) { return a0 + f * (a1 - a0); }, A0 = ang(Math.min(zero, v)), A1 = ang(Math.max(zero, v)), neg = b < 0 ? ' neg' : '';
     for (var i = 0; i < n; i++) {
-      var f = (i + .5) / n, lit = v >= zero ? (f >= zero && f <= v) : (f <= zero && f >= v);
-      var fill = lit ? (f >= zero ? 'var(--lime)' : 'var(--cobalt)') : 'rgba(var(--cobalt-rgb),.24)';
-      s += '<path d="' + UI.sector(cx, cy, r1, r2, a0 + i * step + .6, a0 + (i + 1) * step - .6) + '" fill="' + fill + '"/>';
+      var S0 = ang(i / n), S1 = ang((i + 1) / n);
+      s += '<path d="' + UI.sector(cx, cy, r1, r2, S0 + .6, S1 - .6) + '" fill="rgba(var(--cobalt-rgb),.24)"/>';
+      if (Math.min(S1, A1) - Math.max(S0, A0) > .05) {
+        var l0 = A0 > S0 + eps ? A0 : (A0 < S0 - eps ? S0 + .6 : S0), l1 = A1 < S1 - eps ? A1 : (A1 > S1 + eps ? S1 - .6 : S1);
+        s += '<path class="gl' + neg + '" d="' + UI.sector(cx, cy, r1, r2, l0, l1) + '"/>';
+      }
     }
     [[-1, '−1.0'], [-.5, '−0.5'], [0, '0'], [.5, '+0.5'], [1, '+1.0'], [1.5, '+1.5']].forEach(function (t) {
-      var a = a0 + ((t[0] + 1) / 2.5) * (a1 - a0), p1 = UI.pol(cx, cy, r1 - 10, a), p2 = UI.pol(cx, cy, r1 - 26, a), tp = UI.pol(cx, cy, r1 - 52, a);
+      var a = ang((t[0] + 1) / 2.5), p1 = UI.pol(cx, cy, r1 - 10, a), p2 = UI.pol(cx, cy, r1 - 26, a), tp = UI.pol(cx, cy, r1 - 52, a);
       s += '<line x1="' + p1[0] + '" y1="' + p1[1] + '" x2="' + p2[0] + '" y2="' + p2[1] + '" stroke="' + (t[0] > 0 ? 'var(--lime)' : 'var(--cobalt-lt)') + '" stroke-width="3"/>' +
         '<text x="' + tp[0] + '" y="' + (tp[1] + 8) + '" text-anchor="middle" font-family="var(--f-ui)" font-weight="600" font-size="21" fill="var(--dim)">' + t[1] + '</text>';
     });
-    var pa = a0 + ((peak + 1) / 2.5) * (a1 - a0), q = [UI.pol(cx, cy, r2 + 4, pa), UI.pol(cx, cy, r2 + 24, pa - 2.2), UI.pol(cx, cy, r2 + 24, pa + 2.2)];
+    var pa = ang((peak + 1) / 2.5), q = [UI.pol(cx, cy, r2 + 4, pa), UI.pol(cx, cy, r2 + 24, pa - 2.2), UI.pol(cx, cy, r2 + 24, pa + 2.2)];
     s += '<polygon points="' + q.join(' ') + '" fill="var(--lime)"/>';
-    s += '<text x="' + cx + '" y="' + (cy - 14) + '" text-anchor="middle" font-family="var(--f-display)" font-weight="800" font-size="118" fill="' + (b >= 0 ? 'var(--lime)' : 'var(--cobalt-lt)') + '">' + (b >= 0 ? '+' : '−') + Math.abs(b).toFixed(2) + '</text>';
-    s += '<text x="' + cx + '" y="' + (cy + 34) + '" text-anchor="middle" font-family="var(--f-ui)" font-weight="600" font-size="24" letter-spacing="4" fill="var(--dim)">bar · gauge</text>';
+    s += '<text class="pk" x="632" y="104" text-anchor="end">Peak</text><text class="pk" x="632" y="128" text-anchor="end">+' + peak.toFixed(2) + ' bar</text>';
+    s += '<text class="gn' + neg + '" x="' + cx + '" y="' + (cy - 14) + '" text-anchor="middle" font-family="var(--f-display)" font-weight="800" font-size="118">' + (b >= 0 ? '+' : '−') + Math.abs(b).toFixed(2) + '</text>';
+    s += '<text class="gcap" x="' + cx + '" y="' + (cy + 34) + '" text-anchor="middle" font-family="var(--f-ui)" font-weight="600" font-size="24" letter-spacing="4" fill="var(--dim)">bar · gauge</text>';
     $('arc').innerHTML = s;
   }
+  /* 25 s history: boost on the left axis (-1.0..+1.5 bar, same scale as the gauge), rpm on the right axis (0..7,500), time along the bottom */
   function chart(t0) {
-    var W = 616, H = 170, s = '', pb = [], pr = [];
-    for (var i = 0; i <= 50; i++) { var d = UI.Sim.at(Math.max(0, t0 - 25 + i * .5)); pb.push((i / 50 * W).toFixed(1) + ',' + (H - ((d.boost + 1) / 2.5) * H).toFixed(1)); pr.push((i / 50 * W).toFixed(1) + ',' + (H - (d.rpm / 7000) * H).toFixed(1)); }
-    for (var g = 0; g <= 4; g++) s += '<line x1="0" x2="' + W + '" y1="' + (g * H / 4) + '" y2="' + (g * H / 4) + '" stroke="rgba(var(--cobalt-rgb),.22)"/>';
-    s += '<line x1="0" x2="' + W + '" y1="' + (H - .4 * H) + '" y2="' + (H - .4 * H) + '" stroke="var(--cobalt-lt)" stroke-dasharray="6 6"/>';
-    s += '<polyline points="' + pr.join(' ') + '" fill="none" stroke="var(--cobalt)" stroke-width="2.5"/><polyline points="' + pb.join(' ') + '" fill="none" stroke="var(--lime)" stroke-width="3"/>';
+    var X0 = 52, W = 504, Y0 = 34, H = 120, s = '', pb = [], pr = [], i, k, d;
+    var yb = function (b) { return Y0 + H - (Math.max(-1, Math.min(1.5, b)) + 1) / 2.5 * H; }, yr = function (r) { return Y0 + H - Math.min(1, r / 7500) * H; };
+    for (i = 0; i <= 50; i++) {
+      d = UI.Sim.at(Math.max(0, t0 - 25 + i * .5)); var x = (X0 + i / 50 * W).toFixed(1);
+      pb.push(x + ',' + yb(d.boost).toFixed(1)); pr.push(x + ',' + yr(d.rpm).toFixed(1));
+    }
+    var bl = ['+1.5', '+1.0', '+0.5', '0 bar', '−0.5', '−1.0'], rl = ['7,500', '6,000', '4,500', '3,000', '1,500', '0'];
+    for (k = 0; k <= 5; k++) {
+      var y = Y0 + k * H / 5;
+      s += '<line class="gridl" x1="' + X0 + '" x2="' + (X0 + W) + '" y1="' + y + '" y2="' + y + '"/>' +
+        '<text class="ax" x="44" y="' + (y + 6) + '" text-anchor="end">' + bl[k] + '</text><text class="ax" x="564" y="' + (y + 6) + '" text-anchor="start">' + rl[k] + '</text>';
+    }
+    s += '<text class="ax" x="44" y="16" text-anchor="end">bar</text><text class="ax" x="564" y="16" text-anchor="start">rpm</text>';
+    for (k = 0; k <= 5; k++) {
+      var tx = X0 + k * W / 5;
+      s += '<line class="gridl" x1="' + tx + '" x2="' + tx + '" y1="' + (Y0 + H) + '" y2="' + (Y0 + H + 6) + '"/><text class="ax" x="' + tx + '" y="178" text-anchor="middle">' + (k < 5 ? '−' + (25 - 5 * k) : '0') + ' s</text>';
+    }
+    s += '<line class="zl" x1="' + X0 + '" x2="' + (X0 + W) + '" y1="' + yb(0) + '" y2="' + yb(0) + '"/>';
+    s += '<polyline class="s-rpm" fill="none" points="' + pr.join(' ') + '"/><polyline class="s-boost" fill="none" points="' + pb.join(' ') + '"/>';
     $('chart').innerHTML = s;
   }
   UI.live(function (s) {
     peak = Math.max(peak, s.boost); arc(s.boost); chart(s.t);
     $('thr').textContent = Math.round(s.throttle); UI.setSeg($('thrbar'), s.throttle / 100);
     $('load').textContent = Math.round(s.load); UI.setSeg($('loadbar'), s.load / 100);
-    $('map').textContent = Math.round(s.map); $('iat').textContent = Math.round(s.iat);
+    $('map').textContent = Math.round(s.map); $('iat').textContent = Math.round(s.iat); UI.setSeg($('iatbar'), s.iat / 110);
   });
 };
 </script></body></html>

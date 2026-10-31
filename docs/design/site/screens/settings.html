@@ -8,6 +8,10 @@
 .cat{display:flex;align-items:center;gap:16px;height:76px;padding:0 18px;font:700 22px var(--f-display);letter-spacing:.1em;text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--hair-soft)}
 .cat .ic{color:var(--cobalt-lt)} .cat.on{color:var(--text);background:linear-gradient(90deg,var(--l12),transparent);box-shadow:inset 4px 0 0 var(--accent)} .cat.on .ic{color:var(--lime)}
 .cat .ch{margin-left:auto}
+/* Ford theme: selected category = solid Ford-blue pill with white text (no gradient, no accent bar) */
+html[data-theme="ford"] .cat{margin:0 10px;border-radius:18px}
+html[data-theme="ford"] .cat.on{background:var(--accent);box-shadow:none;color:var(--on-accent);border-radius:18px;border-bottom-color:transparent}
+html[data-theme="ford"] .cat.on .ic{color:var(--on-accent)}
 </style></head>
 <body><div class="stage"><div class="frame" data-active="settings">
 <main class="main row g24" data-od-id="settings">
@@ -18,19 +22,19 @@
     <a href="settings-vehicle.html" class="cat"><i data-i="car" data-s="28"></i>Vehicle<i class="ch" data-i="chevr" data-s="20"></i></a>
     <a class="cat"><i data-i="grid" data-s="28"></i>Shortcuts<i class="ch" data-i="chevr" data-s="20"></i></a>
     <a class="cat"><i data-i="clock" data-s="28"></i>Time &amp; language<i class="ch" data-i="chevr" data-s="20"></i></a>
-    <a class="cat"><i data-i="usb" data-s="28"></i>Storage<i class="ch" data-i="chevr" data-s="20"></i></a>
+    <a class="cat"><i data-i="storage" data-s="28"></i>Storage<i class="ch" data-i="chevr" data-s="20"></i></a>
     <a class="cat" style="border:0"><i data-i="flag" data-s="28"></i>About<i class="ch" data-i="chevr" data-s="20"></i></a>
   </section>
   <section class="card col grow" data-od-id="display-settings" style="padding-top:14px">
     <div class="h2" style="margin-bottom:6px">Display</div>
-    <div class="set"><div class="grow">Brightness</div><div class="slider" style="width:360px" data-v=".7" data-n="22"></div><span class="num n-s" style="width:60px;text-align:right">70</span></div>
+    <div class="set"><div class="grow">Brightness</div><div class="slider" style="width:360px" data-v=".7" data-n="22"></div><span class="num n-s" style="width:84px;text-align:right">70<span class="unit t">%</span></span></div>
     <div class="set"><div class="grow">Automatic day / night<div class="s">Follows headlights from Canbox, falls back to clock</div></div><span class="tg on"></span></div>
-    <div class="set"><div class="grow">Night brightness</div><div class="slider" style="width:360px" data-v=".3" data-n="22"></div><span class="num n-s" style="width:60px;text-align:right">30</span></div>
+    <div class="set"><div class="grow">Night brightness</div><div class="slider" style="width:360px" data-v=".3" data-n="22"></div><span class="num n-s" style="width:84px;text-align:right">30<span class="unit t">%</span></span></div>
     <div class="set"><div class="grow">Screen off when parked</div><div class="tabs"><span class="chip">1 min</span><span class="chip on">5 min</span><span class="chip">10 min</span><span class="chip">Never</span></div></div>
     <div class="set"><div class="grow">Clock</div><div class="tabs"><span class="chip on">24 h</span><span class="chip">12 h</span></div></div>
     <div class="set"><div class="grow">Dock position<div class="s">Right edge keeps it under the driver's hand in RHD</div></div><div class="tabs"><span class="chip on">Right</span><span class="chip">Left</span></div></div>
     <div class="set"><div class="grow">Motion</div><div class="tabs"><span class="chip on">Full</span><span class="chip">Reduced</span></div></div>
-    <div class="set"><div class="grow">Gauge refresh<div class="s">60 fps needs the GPU headroom check in Diagnose</div></div><div class="tabs"><span class="chip">30</span><span class="chip on">60</span></div></div>
+    <div class="set"><div class="grow">Gauge refresh<div class="s">60 fps needs the GPU headroom check in Diagnose</div></div><div class="tabs"><span class="chip">30 fps</span><span class="chip on">60 fps</span></div></div>
   </section>
 </main>
 </div></div></body></html>

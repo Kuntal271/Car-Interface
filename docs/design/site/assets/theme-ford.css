@@ -129,3 +129,27 @@ html[data-theme="ford"] .frame [style*="clip-path"]{clip-path:none !important}
 html[data-theme="ford"] .badge{border-radius:999px;padding:0 14px}
 /* speed is the primary reading: white; cyan is reserved for secondary live values */
 html[data-theme="ford"] #speed{color:var(--text)}
+
+/* ---------- review loop, system level ----------
+   Colour roles: white = every measured value; ice-cyan = data fills, links/actions, selected/armed state, peak/best callouts.
+   Type: no monospace in this theme; numerals are tabular Barlow. Units: one style, 6 px gap, tight (2 px) for % and degrees. */
+html[data-theme="ford"]{--f-mono:'Barlow','Space Grotesk',system-ui,sans-serif}
+html[data-theme="ford"] .mono,html[data-theme="ford"] .num,html[data-theme="ford"] .val,html[data-theme="ford"] .v{font-variant-numeric:tabular-nums}
+html[data-theme="ford"] .mono{font-weight:500;letter-spacing:.01em}
+html[data-theme="ford"] .num.lime,html[data-theme="ford"] .v.lime,html[data-theme="ford"] .val.lime,html[data-theme="ford"] .big.lime:not(.act){color:var(--text)}
+html[data-theme="ford"] .unit{font-size:21px;font-weight:500;letter-spacing:.01em;margin-left:6px;vertical-align:baseline}
+html[data-theme="ford"] .unit.t{margin-left:2px}
+html[data-theme="ford"] .np-title{line-height:1.08;padding-bottom:6px}
+html[data-theme="ford"] .tabs{gap:12px}
+html[data-theme="ford"] .dock a.on{background:var(--accent);box-shadow:none;color:#fff}
+html[data-theme="ford"] .dock a.on .ic{color:#fff}
+html[data-theme="ford"] .warn{border-radius:24px}
+html[data-theme="ford"] .lbl.lime{color:var(--lime)}
+html[data-theme="ford"] .lbl.white{color:var(--text)}
+/* ---------- review round 2, shared ---------- */
+html[data-theme="ford"] .badge:not(.lime):not(.fill):not(.warn){color:var(--text)}
+html[data-theme="ford"] .mono{font-family:var(--f-display);font-size:20px;letter-spacing:.02em}
+html[data-theme="ford"] .unit{font-family:var(--f-display);font-size:23px}
+html[data-theme="ford"] .v.lime.best,html[data-theme="ford"] .num.lime.best{color:var(--lime)}
+html[data-theme="ford"] .carsvg .dr.open{fill:var(--warn);stroke:var(--warn)}
+html[data-theme="ford"] .carsvg .gate.open,html[data-theme="ford"] .carsvg .bon.open{fill:rgba(var(--warn-rgb),.35);stroke:var(--warn)}

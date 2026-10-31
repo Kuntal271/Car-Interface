@@ -10,11 +10,16 @@
 .opt:last-child{border:0} .opt .t{font:600 22px var(--f-ui)} .opt .s{font:400 18px/1.25 var(--f-ui);color:var(--dim)}
 .pst{display:flex;flex-direction:column;gap:6px;padding:0 20px;border-right:1px solid var(--hair-soft);flex:1}
 .pst:last-child{border:0} .pst b{font:800 40px/.9 var(--f-display)}
+.lnk{display:inline-flex;align-items:center}
+/* Ford theme: link-up pill = ice-cyan outline (like Active), + Add is an ice-cyan link, throughput is a white measured value */
+html[data-theme="ford"] .badge.fill.live{background:transparent;color:var(--lime);box-shadow:inset 0 0 0 1px rgba(var(--lime-rgb),.5)}
+html[data-theme="ford"] .lnk{color:var(--lime)}
+html[data-theme="ford"] .pst b.lime{color:var(--text)}
 </style></head>
 <body><div class="stage"><div class="frame" data-active="projection">
 <main class="main row g24" data-od-id="projection">
   <section class="card col jb" style="width:650px" data-od-id="link-card">
-    <div class="row jb c"><span class="h2">Maps · Projection</span><span class="badge fill">Connected</span></div>
+    <div class="row jb c"><span class="h2">Maps · Projection</span><span class="badge fill live">Connected</span></div>
     <svg viewBox="0 0 600 240" width="602" height="240" style="margin:6px 0">
       <g fill="none" stroke="var(--cobalt-lt)" stroke-width="2.5">
         <rect x="40" y="30" width="110" height="190" rx="14" fill="var(--s1)"/><rect x="52" y="46" width="86" height="150" fill="rgba(var(--cobalt-rgb),.16)" stroke="none"/><path d="M82 210h26"/>
@@ -39,7 +44,7 @@
   </section>
   <section class="col g12 grow">
     <div class="card col" style="height:292px" data-od-id="paired">
-      <div class="row jb c" style="margin-bottom:6px"><span class="lbl">Paired phones</span><span class="lbl cobalt">+ Add</span></div>
+      <div class="row jb c" style="margin-bottom:6px"><span class="lbl">Paired phones</span><a class="lbl cobalt lnk hit">+ Add</a></div>
       <div class="ph"><i data-i="phone" data-s="30" class="lime"></i><div class="grow"><div class="t">Pixel 8</div><div class="s">Android Auto · connected now</div></div><span class="badge lime">Active</span></div>
       <div class="ph"><i data-i="phone" data-s="30" class="cobalt"></i><div class="grow"><div class="t">iPhone 13</div><div class="s">CarPlay · last used 3 days ago</div></div><i data-i="chevr" data-s="24" class="dim"></i></div>
       <div class="ph"><i data-i="phone" data-s="30" class="cobalt"></i><div class="grow"><div class="t">Moto G84</div><div class="s">Bluetooth only</div></div><i data-i="chevr" data-s="24" class="dim"></i></div>

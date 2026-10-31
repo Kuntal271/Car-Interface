@@ -61,18 +61,18 @@
       <p style="font:600 22px/1.3 var(--f-ui);color:var(--text);margin:10px 0 4px">List item title at 22 px</p>
       <p style="font:400 18px/1.4 var(--f-ui);color:var(--dim);margin:0 0 14px">Secondary line at 18 px, the smallest text on any screen.</p>
       <div class="lbl">Label · 18 px · tracked 12 %</div>
-      <div class="lbl" style="margin-top:22px">JetBrains Mono · data and provenance</div>
+      <div class="lbl" style="margin-top:22px"><span class="ci">JetBrains Mono · data and provenance</span><span class="fi">Barlow tabular figures · data and provenance</span></div>
       <p class="mono" style="margin:8px 0 0;font-size:18px">010C  41 0C 1A F8  ·  5,054 rpm</p>
       <div class="lbl" style="margin-top:26px">Numerals · tabular figures</div><div class="num" style="font-size:64px;letter-spacing:.04em;margin-top:8px">0123456789</div>
       <div class="lbl" style="margin-top:22px">Units</div><div class="unit" style="font-size:20px;margin-top:6px">km/h · rpm · bar · °C · V · kPa · L/100</div></div>
   </div>
   <table class="t" style="margin-top:20px"><thead><tr><th>Role</th><th>Face</th><th>Size</th><th>Weight</th><th>Notes</th></tr></thead><tbody>
-    <tr><td>Hero numeral</td><td data-fn="displayshort"></td><td style="white-space:nowrap">236 / 200 px</td><td>800</td><td>Speed. Tabular figures, lime.</td></tr>
-    <tr><td>Value</td><td data-fn="displayshort"></td><td>40–120 px</td><td>800</td><td>Card values, units in 20 px Space Grotesk.</td></tr>
+    <tr><td>Hero numeral</td><td data-fn="displayshort"></td><td style="white-space:nowrap">236 / 200 px</td><td>800</td><td>Speed. Tabular figures<span class="ci">, lime</span><span class="fi">, white</span>.</td></tr>
+    <tr><td>Value</td><td data-fn="displayshort"></td><td>40–120 px</td><td>800</td><td>Card values, units in 20 px <span class="ci">Space Grotesk</span><span class="fi">Barlow</span>.</td></tr>
     <tr><td>Heading</td><td data-fn="displayshort"></td><td style="white-space:nowrap">26–54 px</td><td style="white-space:nowrap">700–800</td><td>Uppercase, tracked 3–6 %.</td></tr>
     <tr><td>Body / list</td><td data-fn="uishort"></td><td>21–23 px</td><td>600</td><td>Readable at arm's length in a moving car.</td></tr>
     <tr><td>Label</td><td data-fn="uishort"></td><td>18 px</td><td>500</td><td>Uppercase, tracked 12 %. <b>Minimum size for anything a driver must read.</b></td></tr>
-    <tr><td>Caption / data</td><td>JetBrains Mono</td><td>16 px</td><td>500</td><td>Only for non-critical provenance and ids. The one allowed exception to the 18 px floor.</td></tr>
+    <tr><td>Caption / data</td><td><span class="ci">JetBrains Mono</span><span class="fi">Barlow</span></td><td>18 px</td><td>500</td><td>Provenance, ids and timestamps. Never below the 18 px floor.</td></tr>
   </tbody></table>
 
   <div class="cap">Layout (1280 × 800, 160 dpi so 1 dp = 1 px)</div>
@@ -81,14 +81,24 @@
       <div style="position:absolute;left:0;top:0;width:640px;height:28px;background:rgba(36,87,255,.25);font:600 12px var(--f-mono);display:flex;align-items:center;padding-left:8px">STATUS BAR · 1280 × 56</div>
       <div style="position:absolute;right:0;top:28px;width:56px;bottom:0;background:rgba(200,255,0,.14);font:600 12px var(--f-mono);writing-mode:vertical-rl;display:flex;align-items:center;justify-content:center">DOCK · 112 × 744</div>
       <div style="position:absolute;left:12px;top:40px;right:68px;bottom:12px;border:1px dashed #3D6BFF;font:600 12px var(--f-mono);padding:6px;color:#8190B8">CONTENT · 1168 × 744 · 24 px padding</div></div></div>
-    <div class="pnl"><h3>Rules</h3><ul><li>The dock lives on the <b>right</b> edge: the car is right-hand drive, so it sits under the driver's hand. Settings can mirror it.</li><li>Touch targets are 64 px or larger; primary actions 80–96 px.</li><li>Gaps are 12 px between related cards, 24 px between columns.</li><li>Cards align to a shared top and bottom edge in each column.</li><li>Nothing important sits in the bottom 24 px.</li></ul></div>
+    <div class="pnl"><h3>Rules</h3><ul><li>The dock lives on the <b>right</b> edge: the car is right-hand drive, so it sits under the driver's hand. Settings can mirror it.</li><li>Touch targets are 56 px or larger (a smaller visible control gets a hit area that reaches 56 px); primary actions 80–96 px.</li><li>Gaps are 12 px between related cards, 24 px between columns.</li><li>Cards align to a shared top and bottom edge in each column.</li><li>Nothing important sits in the bottom 24 px.</li></ul></div>
   </div>
 
+  <div class="only-cp">
   <div class="cap">Shape language</div>
   <div class="three">
     <div class="pnl"><h3>Chamfer</h3><div class="card" style="margin:6px 0 14px;padding:14px 18px"><span class="lbl">Sample</span><div class="num n-s">14 px cut</div></div><p>Cards cut the top-right corner by 14 px. Buttons cut 12 px. It is the signature shape and costs nothing to draw: one clip path.</p></div>
     <div class="pnl"><h3>Segments</h3><div style="margin:6px 0 14px;padding-top:12px"><div class="seg sk" data-n="22" data-v=".7" data-split=".6"></div></div><div style="height:12px"></div><p>Bars are separate slanted blocks, never a smooth fill. They read faster, and the slant echoes the chamfer.</p></div>
     <div class="pnl"><h3>Hairlines</h3><div style="margin:6px 0 14px"><div class="li" style="min-height:44px;border-top:1px solid var(--hair-soft)"><span class="grow">Row</span><span class="dim">value</span></div><div class="li" style="min-height:44px"><span class="grow">Row</span><span class="dim">value</span></div></div><p>1 px cobalt at 34 % separates everything. No shadows, no blur: both are expensive on a head-unit GPU.</p></div>
+  </div>
+  </div>
+  <div class="only-ford">
+  <div class="cap">Shape language</div>
+  <div class="three">
+    <div class="pnl"><h3>Radius</h3><div class="card" style="margin:6px 0 14px;padding:14px 18px"><span class="lbl">Sample</span><div class="num n-s">24 px radius</div></div><p>Cards use a 24 px radius, tiles 20–22 px, buttons and chips are fully round. A rounded rectangle is one draw call.</p></div>
+    <div class="pnl"><h3>Segments</h3><div style="margin:6px 0 14px;padding-top:12px"><div class="seg" data-n="22" data-v=".7"></div></div><div style="height:12px"></div><p>Bars are separate straight blocks with a 3 px radius, never a smooth fill. Lit segments are ice-cyan, unlit segments a blue tint.</p></div>
+    <div class="pnl"><h3>Hairlines</h3><div style="margin:6px 0 14px"><div class="li" style="min-height:44px;border-top:1px solid var(--hair-soft)"><span class="grow">Row</span><span class="dim">value</span></div><div class="li" style="min-height:44px"><span class="grow">Row</span><span class="dim">value</span></div></div><p>1 px sky blue at 20 % separates everything. The soft highlight on a card's top edge is static. No blur and no glow on anything that moves.</p></div>
+  </div>
   </div>
 
   <div class="cap">Iconography · 24 px grid, 1.8 px stroke, square caps</div>
@@ -131,14 +141,14 @@ Object.keys(N).forEach(function (k) {
   var hex = V(k), dark = lum(hex) > .35;
   P += '<div class="c" style="background:' + hex + ';' + (dark ? 'color:#05070D;box-shadow:none;' : '') + '"><b>' + N[k][0] + '</b><span>' + hex.toUpperCase() + ' · ' + N[k][1] + '</span></div>';
 });
-document.getElementById('pal').innerHTML = P;
+document.getElementById('pal').innerHTML = P; document.getElementById('pal').style.gridTemplateColumns = 'repeat(' + (Object.keys(N).length > 8 ? 5 : 4) + ',1fr)';
 var rows = [['Text', '--text', 'All text'], ['Highlight', '--lime', F ? 'Live values, peaks. Text and graphics.' : 'All text and graphics'], ['Dim', '--dim', 'Labels and captions (18 px and up)'],
   ['Sky / light blue', '--cobalt-lt', F ? 'Icons and graphics; readable as text too' : '<b>Icons and graphics</b>, or text of 24 px and larger'], ['Blue', '--cobalt', 'Graphics and fills only']];
 if (F) rows.push(['Amber', '--warn', 'Warnings, redline. Always with an icon and words.']);
 var T = '';
 rows.forEach(function (r) { var f = V(r[1]); T += '<tr><td><b>' + r[0] + '</b> ' + f.toUpperCase() + '</td>' + ['--bg', '--s1', '--s2'].map(function (b) { var v = cr(f, V(b)); return '<td>' + v.toFixed(1) + (v >= 4.5 ? '' : ' <span class="dim">(graphics)</span>') + '</td>'; }).join('') + '<td>' + r[2] + '</td></tr>'; });
-T += '<tr><td><b>On accent</b></td><td colspan="3">' + cr(V('--on-accent'), V('--accent')).toFixed(1) + ' : 1 (' + V('--on-accent') + ' on ' + V('--accent') + ')</td><td>Text on selected and primary fills</td></tr>';
-T += '<tr><td><b>On warning</b></td><td colspan="3">' + cr(V('--on-warn'), V('--warn')).toFixed(1) + ' : 1 (' + V('--on-warn') + ' on ' + V('--warn') + ')</td><td>Text on warning blocks</td></tr>';
+T += '<tr><td><b>On accent</b> ' + V('--on-accent').toUpperCase() + '</td><td>' + cr(V('--on-accent'), V('--accent')).toFixed(1) + '</td><td colspan="2" class="dim">on accent ' + V('--accent').toUpperCase() + '</td><td>Text on selected and primary fills</td></tr>';
+T += '<tr><td><b>On warning</b> ' + V('--on-warn').toUpperCase() + '</td><td>' + cr(V('--on-warn'), V('--warn')).toFixed(1) + '</td><td colspan="2" class="dim">on warning ' + V('--warn').toUpperCase() + '</td><td>Text on warning blocks</td></tr>';
 document.getElementById('ctr').innerHTML = T;
 document.getElementById('ctrnote').textContent = F ? 'Unlit bar segments are sky blue at 18 %: a track, not information. Every lit segment is also readable from its position and a printed value.' : 'Unlit bar segments are cobalt at 25 %, which sits at 1.2:1 against the background. They are a track, not information, so every lit segment is also readable from its position and a printed value.';
 document.querySelectorAll('[data-fn]').forEach(function (e) { var k = e.dataset.fn; e.textContent = k === 'display' ? (F ? 'Barlow Condensed' : 'Big Shoulders Display') : k === 'ui' ? (F ? 'Barlow' : 'Space Grotesk') : k === 'displayshort' ? (F ? 'Barlow Condensed' : 'Big Shoulders') : (F ? 'Barlow' : 'Space Grotesk'); });

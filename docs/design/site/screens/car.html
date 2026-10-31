@@ -3,53 +3,55 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="stylesheet" href="../assets/ui.css"><script src="../assets/ui.js"></script>
 <style>
-.row-s{display:flex;align-items:center;justify-content:space-between;height:58px;border-bottom:1px solid var(--hair);font:600 21px var(--f-ui)}
+.row-s{display:flex;align-items:center;justify-content:space-between;flex:1 1 0;min-height:58px;border-bottom:1px solid var(--hair);font:600 21px var(--f-ui)}
 .row-s:last-child{border:0}
 .row-s .k{display:flex;align-items:center;gap:12px} .row-s .k .ic{color:var(--cobalt-lt)}
 .st{font:700 18px var(--f-ui);letter-spacing:.1em;text-transform:uppercase;color:var(--text)}
 .st.off{color:var(--dim)} .st.alert{color:var(--lime)}
 .prov{font:500 18px var(--f-mono);color:var(--dim)}
-.vent{width:64px;height:56px;display:grid;place-items:center;color:var(--dim);background:var(--c12);box-shadow:inset 0 0 0 1px var(--hair)}
+.vent{height:56px;display:grid;place-items:center;color:var(--dim);background:var(--c12);box-shadow:inset 0 0 0 1px var(--hair)}
+.vents{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+html[data-theme="ford"] .vent{border-radius:20px}
+html[data-theme="ford"] .st .sv{color:var(--text)}
 .vent.on{background:var(--accent);color:var(--on-accent);box-shadow:none}
 </style></head>
 <body><div class="stage"><div class="frame" data-active="car">
 <main class="main row g24" data-od-id="car">
   <section class="col g12" style="width:318px">
-    <div class="card col" data-od-id="odometer" style="height:146px"><span class="lbl">Odometer</span><div class="num n-l" style="margin-top:12px">48,213<span class="unit"> km</span></div><span class="prov" style="margin-top:auto">◇ source · Canbox or OBD</span></div>
+    <div class="card col" data-od-id="odometer" style="height:124px"><span class="lbl">Odometer</span><div class="num n-m" style="margin-top:12px">48,213<span class="unit"> km</span></div></div>
     <div class="card col grow" data-od-id="status-list" style="padding-top:6px;padding-bottom:6px">
       <div class="row-s"><span class="k"><i data-i="lights" data-s="26"></i>Headlights</span><span class="st">Low beam</span></div>
-      <div class="row-s"><span class="k"><i data-i="lights" data-s="26"></i>Fog lights</span><span class="st off">Off</span></div>
+      <div class="row-s"><span class="k"><i data-i="fog" data-s="26"></i>Fog lights</span><span class="st off">Off</span></div>
       <div class="row-s"><span class="k"><i data-i="brake" data-s="26"></i>Handbrake</span><span class="st off">Released</span></div>
       <div class="row-s"><span class="k"><i data-i="belt" data-s="26"></i>Seat belts</span><span class="st">Driver ✓</span></div>
       <div class="row-s"><span class="k"><i data-i="key" data-s="26"></i>Ignition</span><span class="st">On</span></div>
-      <div class="row-s"><span class="k"><i data-i="steer" data-s="26"></i>Steering</span><span class="st off">−4° left</span></div>
+      <div class="row-s"><span class="k"><i data-i="steer" data-s="26"></i>Steering</span><span class="st off"><span class="sv">−4°</span> left</span></div>
     </div>
-    <div class="card col tight" data-od-id="legend" style="height:104px;justify-content:center"><span class="lbl">Data source</span><span class="prov" style="margin-top:6px;font-size:18px;line-height:1.3">◇ Depends on the unit's Canbox dialect</span></div>
+    <div class="card col tight" data-od-id="legend" style="justify-content:center"><span class="lbl">Data source</span><span class="prov" style="margin-top:6px;font-size:18px;line-height:1.3">Canbox or OBD, depending on the unit's dialect. Climate is view only; controls stay on the dash.</span></div>
   </section>
 
-  <section class="grow col g8" data-od-id="car-top">
+  <section class="grow col g12" data-od-id="car-top">
     <div class="row jb c" style="height:44px"><span class="lbl">Vehicle · top view</span><span class="badge lime">1 open</span></div>
     <div id="carbox" class="grow" style="position:relative"></div>
     <div class="warn" style="justify-content:center;font-size:26px;padding:10px 20px;height:56px"><i data-i="warn" data-s="30"></i>Rear left door open</div>
   </section>
 
   <section class="col g12" style="width:318px">
-    <div class="card col" style="height:150px" data-od-id="outside">
+    <div class="card col" style="height:124px" data-od-id="outside">
       <span class="lbl row c g8"><i data-i="thermo" data-s="22"></i>Outside</span>
-      <div class="num n-xl" style="margin-top:10px;font-size:96px">31<span class="unit" style="font-size:28px">°C</span></div>
+      <div class="num n-m" style="margin-top:12px">31<span class="unit t">°C</span></div>
     </div>
     <div class="card col grow jb" data-od-id="climate">
       <div class="row jb c"><span class="lbl row c g8"><i data-i="snow" data-s="22"></i>Climate</span><span class="badge fill">A/C on</span></div>
-      <div class="row" style="align-items:baseline;gap:6px"><span class="num n-xl">22.0</span><span class="unit" style="font-size:28px">°C</span></div>
+      <div class="row" style="align-items:baseline"><span class="num n-xl">22.0</span><span class="unit t" style="font-size:28px">°C</span></div>
       <div>
         <div class="row jb c" style="margin-bottom:8px"><span class="lbl">Fan</span><span class="lbl white">3 / 7</span></div>
         <div class="seg sk" data-n="7" data-v=".43" data-c="c" style="height:20px"></div>
       </div>
       <div>
         <div class="lbl" style="margin-bottom:8px">Airflow</div>
-        <div class="row g8"><span class="vent on"><i data-i="user" data-s="28"></i></span><span class="vent"><i data-i="chevd" data-s="28"></i></span><span class="vent"><i data-i="defrost" data-s="28"></i></span><span class="vent on"><i data-i="recirc" data-s="28"></i></span></div>
+        <div class="vents"><span class="vent on"><i data-i="user" data-s="28"></i></span><span class="vent"><i data-i="chevd" data-s="28"></i></span><span class="vent"><i data-i="defrost" data-s="28"></i></span><span class="vent on"><i data-i="recirc" data-s="28"></i></span></div>
       </div>
-      <span class="prov">◇ Canbox · view only; controls stay on the dash</span>
     </div>
   </section>
 </main>
@@ -57,9 +59,11 @@
 <script>
 UI.onready = function () {
   var t = function (x, y, anchor, v) { return '<text x="' + x + '" y="' + y + '" text-anchor="' + anchor + '" font-family="var(--f-display)" font-weight="800" font-size="40" fill="var(--text)">' + v + '</text><text x="' + x + '" y="' + (y + 22) + '" text-anchor="' + anchor + '" font-family="var(--f-ui)" font-weight="600" font-size="19" letter-spacing="2" fill="var(--dim)" class="uc">bar</text>'; };
-  var extra = UI.radar([0, 1, 1, 0], 38, -1) + UI.radar([1, 2, 3, 1], 548, 1) +
+  var amber = function (svg) { return svg.replace(/stroke="var\(--lime\)"/g, 'stroke="var(--warn)"'); };   /* nearest rear sensor under 0.8 m: amber */
+  var extra = UI.radar([0, 1, 1, 0], 38, -1) + amber(UI.radar([1, 2, 3, 1], 548, 1)) +
+    '<text x="196" y="652" text-anchor="middle" font-family="var(--f-display)" font-weight="800" font-size="40" fill="var(--text)">0.6<tspan dx="6" font-family="var(--f-ui)" font-weight="500" font-size="22" fill="var(--dim)">m</tspan></text>' +
     t(36, 122, 'end', '2.3') + t(284, 122, 'start', '2.3') + t(36, 406, 'end', '2.4') + t(284, 406, 'start', '2.2') +
-    '<text x="292" y="300" font-family="var(--f-ui)" font-weight="600" font-size="18" letter-spacing="3" fill="var(--dim)" transform="rotate(90 292 300)" text-anchor="middle" class="uc">Driver</text>';
-  document.getElementById('carbox').innerHTML = UI.car({ rl: true, vb: '-50 -26 420 650', extra: extra }).replace('<svg ', '<svg style="position:absolute;inset:0;width:100%;height:100%" ');
+    '<path d="M266 242H284" stroke="var(--text)" stroke-width="2"/><text x="292" y="249" font-family="var(--f-ui)" font-weight="600" font-size="20" fill="var(--text)">Driver</text>';
+  document.getElementById('carbox').innerHTML = UI.car({ rl: true, vb: '-50 -26 420 684', extra: extra }).replace('<svg ', '<svg style="position:absolute;inset:0;width:100%;height:100%" ');
 };
 </script></body></html>

@@ -5,48 +5,60 @@
 <style>
 .side{display:flex;flex-direction:column;justify-content:space-between}
 .side .v{font:800 72px/.9 var(--f-display)}
+.side .ft{height:52px;display:flex;flex-direction:column;justify-content:flex-end}   /* same footer height in all four cards so rows line up */
+[data-od-id="range"] .v{font-size:110px}          /* the Cockpit theme keeps its original larger numerals */
+[data-od-id="consumption"] .v{font-size:96px}
 .ribbon-lbl{position:relative;height:22px;margin-top:6px}
 .ribbon-lbl span{position:absolute;transform:translateX(-50%);font:500 18px var(--f-mono);color:var(--dim)}
+.ribbon-lbl span.e0,.ribbon-lbl span.e1{transform:none}
+html[data-theme="ford"] [data-od-id="range"] .v,html[data-theme="ford"] [data-od-id="consumption"] .v{font-size:72px}   /* all four side values: 72 px */
+html[data-theme="ford"] .side .unit.u{margin-left:0}
+html[data-theme="ford"] .side .pct{color:var(--text);font-weight:600}
+html[data-theme="ford"] .badge.note{background:none;box-shadow:none;padding:0;height:auto;color:var(--dim);font-size:19px;font-weight:500}
+/* shift-up cue is an advisory: ice-cyan outlined pill, not an amber warning */
+html[data-theme="ford"] #hint{background:transparent;color:var(--lime);box-shadow:inset 0 0 0 2px var(--lime);border-radius:999px;animation:none;
+  align-self:center;height:56px;padding:0 28px 0 20px;gap:12px;font-size:26px;font-weight:600}
+html[data-theme="ford"] #hint small{font:inherit;opacity:1}
 </style></head>
 <body><div class="stage"><div class="frame" data-active="drive">
 <main class="main" data-od-id="drive-cruise">
   <div class="row jb c abs" style="left:24px;right:24px;top:24px;height:44px">
     <div class="tabs"><a href="drive.html" class="chip">Cluster</a><a href="drive-boost.html" class="chip">Boost</a><a class="chip on">Cruise</a></div>
-    <span class="badge">Consumption is estimated · no fuel-rate PID</span>
+    <span class="badge note">Consumption is estimated · no fuel-rate PID</span>
   </div>
 
-  <section class="abs col g12" style="left:24px;top:84px;width:250px;height:636px">
+  <section class="abs col g12" style="left:24px;top:80px;width:250px;height:640px">
     <div class="card side grow" data-od-id="range">
       <span class="lbl row c g8"><i data-i="fuel" data-s="22"></i>Range</span>
-      <div><div class="num lime" style="font-size:110px">410</div><div class="unit">km · est.</div></div>
-      <div><div class="seg sk" data-n="12" data-v=".62" data-c="c"></div><div class="row jb mono" style="margin-top:6px"><span>E</span><span>62 %</span><span>F</span></div></div>
+      <div><div class="v lime">410</div><div class="unit u">km</div></div>
+      <div class="ft"><div class="seg sk" data-n="12" data-v=".62" data-c="c"></div><div class="row jb mono" style="margin-top:6px"><span>E</span><span class="pct">62%</span><span>F</span></div></div>
     </div>
     <div class="card side grow" data-od-id="coolant">
       <span class="lbl row c g8"><i data-i="thermo" data-s="22"></i>Coolant</span>
-      <div class="v">92<span class="unit">°C</span></div>
-      <div class="seg sk" data-n="12" data-v=".65" data-split=".81" style="height:14px"></div>
+      <div><div class="v">92<span class="unit t">°C</span></div><div class="unit u">Normal</div></div>
+      <div class="ft"><div class="seg sk" data-n="12" data-v=".65" data-split=".81"></div><div class="row jb mono" style="margin-top:6px"><span>C</span><span>H</span></div></div>
     </div>
   </section>
 
-  <section class="abs col jc tc" style="left:298px;top:84px;width:572px;height:636px" data-od-id="speed">
+  <section class="abs col jc tc" style="left:298px;top:80px;width:572px;height:640px" data-od-id="speed">
     <span class="lbl">Speed</span>
     <div id="speed" class="num lime" style="font-size:330px;margin:6px 0 0">74</div>
     <div class="unit" style="font-size:26px;margin-top:6px">km/h</div>
     <div id="ribbon" class="seg sk" data-n="44" data-v=".37" data-split=".6" style="height:30px;margin-top:34px"></div>
-    <div class="ribbon-lbl"><span style="left:0%">0</span><span style="left:25%">50</span><span style="left:50%">100</span><span style="left:75%">150</span><span style="left:100%">200</span></div>
+    <div class="ribbon-lbl"><span class="e0" style="left:0">0</span><span style="left:25%">50</span><span style="left:50%">100</span><span style="left:75%">150</span><span class="e1" style="right:0">200</span></div>
     <div id="hint" class="warn" style="margin-top:34px;justify-content:center"><i data-i="chevu" data-s="34"></i><span>Shift up <small>→ gear 4</small></span></div>
   </section>
 
-  <section class="abs col g12" style="left:894px;top:84px;width:250px;height:636px">
+  <section class="abs col g12" style="left:894px;top:80px;width:250px;height:640px">
     <div class="card side grow" data-od-id="consumption">
-      <span class="lbl">Average</span>
-      <div><div class="v lime" style="font-size:96px;font-family:var(--f-display);font-weight:800;line-height:.9">6.4</div><div class="unit">L/100 km · est.</div></div>
-      <span class="mono">Trip A · 42.8 km</span>
+      <span class="lbl row c g8"><i data-i="route" data-s="22"></i>Average</span>
+      <div><div class="v lime">6.4</div><div class="unit u">L/100 km</div></div>
+      <div class="ft"><span class="mono">Trip A · 42.8 km</span></div>
     </div>
     <div class="card side grow" data-od-id="eco">
-      <span class="lbl">Smoothness</span>
-      <div class="row" style="align-items:baseline;gap:10px"><span class="v">82</span><span class="unit">/ 100</span></div>
-      <div class="seg sk" data-n="12" data-v=".82" data-c="l" style="height:14px"></div>
+      <span class="lbl row c g8"><i data-i="pulse" data-s="22"></i>Smoothness</span>
+      <div><div class="v">82<span class="unit">/ 100</span></div><div class="unit u">Good</div></div>
+      <div class="ft"><div class="seg sk" data-n="12" data-v=".82" data-c="l"></div><div class="row jb mono" style="margin-top:6px"><span>0</span><span>100</span></div></div>
     </div>
   </section>
 </main>

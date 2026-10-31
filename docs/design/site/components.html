@@ -15,11 +15,11 @@
   <div class="cap">Chips, tabs and badges</div>
   <div class="demo"><div class="tabs"><span class="chip on">Selected</span><span class="chip">Option</span><span class="chip">Option</span></div><span class="chip c">Info</span><span class="badge">Read-only</span><span class="badge lime">Live</span><span class="badge fill">Armed</span></div>
 
-  <div class="cap">Segmented bars · cobalt below the threshold, lime above</div>
-  <div class="demo" style="display:block"><div class="lbl" style="margin-bottom:8px">Rpm · threshold 64 %</div><div class="seg sk" data-n="40" data-v=".78" data-split=".64"></div>
-    <div class="lbl" style="margin:18px 0 8px">Boost · bipolar around zero (vacuum cobalt, boost lime)</div><div class="seg sk" data-n="40" data-zero=".4" data-v=".78"></div>
+  <div class="cap">Segmented bars · <span class="ci">cobalt below the threshold, lime above</span><span class="fi">lit segments ice-cyan, unlit a blue tint</span></div>
+  <div class="demo" style="display:block"><div class="lbl" style="margin-bottom:8px">Rpm · <span class="ci">threshold 64 %</span><span class="fi">lit to the current value</span></div><div class="seg sk" data-n="40" data-v=".78" data-split=".64"></div>
+    <div class="lbl" style="margin:18px 0 8px">Boost · bipolar around zero (<span class="ci">vacuum cobalt, boost lime</span><span class="fi">vacuum blue, boost cyan</span>)</div><div class="seg sk" data-n="40" data-zero=".4" data-v=".78"></div>
     <div class="lbl" style="margin:18px 0 8px">Vacuum</div><div class="seg sk" data-n="40" data-zero=".4" data-v=".18"></div>
-    <div class="lbl" style="margin:18px 0 8px">Fuel · always cobalt until low</div><div class="seg sk" data-n="20" data-v=".62" data-c="c"></div></div>
+    <div class="lbl" style="margin:18px 0 8px">Fuel · <span class="ci">always cobalt until low</span><span class="fi">cyan until low</span></div><div class="seg sk" data-n="20" data-v=".62" data-c="c"></div></div>
 
   <div class="cap">Sliders and toggles</div>
   <div class="demo"><div class="slider" style="width:360px" data-v=".62" data-n="26"></div><span class="tg on"></span><span class="tg"></span></div>
@@ -28,9 +28,9 @@
   <div class="demo"><div class="card"><span class="lbl">Default</span><div class="num n-m">92<span class="unit"> °C</span></div></div><div class="card s2"><span class="lbl">Raised</span><div class="num n-m">14.2<span class="unit"> V</span></div></div><div class="card sel"><span class="lbl lime">Selected</span><div class="num n-m lime">93.5</div></div><div class="card hi"><span class="lbl">Highlight</span><div class="num n-m">108</div></div></div>
 
   <div class="cap">List rows</div>
-  <div class="demo" style="display:block;padding:8px 22px"><div class="li on"><span class="ico"><i data-i="phone" data-s="26"></i></span><div class="grow"><div class="t">Selected row</div><div class="s">Lime icon block and left tint</div></div></div><div class="li"><span class="ico"><i data-i="bt" data-s="26"></i></span><div class="grow"><div class="t">Default row</div><div class="s">Secondary line in Dim</div></div></div></div>
+  <div class="demo" style="display:block;padding:8px 22px"><div class="li on"><span class="ico"><i data-i="phone" data-s="26"></i></span><div class="grow"><div class="t">Selected row</div><div class="s"><span class="ci">Lime icon block and left tint</span><span class="fi">Blue fill, white text</span></div></div></div><div class="li"><span class="ico"><i data-i="bt" data-s="26"></i></span><div class="grow"><div class="t">Default row</div><div class="s">Secondary line in Dim</div></div></div></div>
 
-  <div class="cap">Warning banner · the only large lime fill</div>
+  <div class="cap">Warning banner · <span class="ci">lime</span><span class="fi">amber</span> fills are only ever warnings</div>
   <div class="warn"><i data-i="warn" data-s="34"></i><span>Rear left door open <small>· 12 km/h</small></span></div>
 
   <div class="cap">Heads-up card and OSD</div>
@@ -40,8 +40,8 @@
   <div class="demo"><a class="key" style="width:110px"><b>5</b><small>JKL</small></a><table class="tbl" style="width:520px"><tbody><tr><td class="m">010C</td><td>Engine speed</td><td class="v lime" style="text-align:right">5,029</td><td class="m">rpm</td></tr></tbody></table></div>
 
   <div class="cap">Vehicle top view and radar</div>
-  <div class="demo" style="gap:40px;align-items:flex-start"><div id="car1" style="width:260px;height:420px"></div><div id="car2" style="width:260px;height:420px"></div>
-    <div class="pnl" style="max-width:320px"><h3>States</h3><p>Closed doors are solid cobalt. An open door swings out in lime and leaves a dashed outline where it was. Radar arcs light from the car outward: one ring cobalt, two cobalt-light, three lime.</p></div></div>
+  <div class="demo" style="gap:40px;align-items:flex-start"><div><div id="car1" style="width:260px;height:420px"></div><div class="lbl" style="text-align:center">Doors closed · radar levels</div></div><div><div id="car2" style="width:260px;height:420px"></div><div class="lbl" style="text-align:center">Doors, tailgate and bonnet open</div></div>
+    <div class="pnl" style="max-width:320px"><h3>States</h3><p><span class="ci">Closed doors are solid cobalt. An open door swings out in lime and leaves a dashed outline where it was. Radar arcs light from the car outward: one ring cobalt, two cobalt-light, three lime.</span><span class="fi">Closed doors are solid blue. An open door swings out in cyan and leaves a dashed outline where it was. Radar arcs light from the car outward: one ring blue, two sky blue, three cyan.</span></p></div></div>
 
   <div class="foot">Mapping: <code>CockpitCard</code>, <code>CockpitButton</code>, <code>SegBar</code>, <code>ArcGauge</code>, <code>SettingRow</code>, <code>WarningBanner</code>, <code>VehicleTopView</code>. All draw with Canvas or clip shapes; none uses blur, shadow or blend modes.</div>
 </div>

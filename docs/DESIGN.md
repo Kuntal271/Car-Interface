@@ -71,6 +71,10 @@ Motion (Ford only): screen enter 460 ms ease-out-expo with 38 ms card stagger; p
 
 Any new colour in a screen must be a token (`var(--lime)` etc., also inside inline SVG attributes, which accept `var()` in Chrome and Android WebView 120+). Hard-coded hex breaks the theme switch.
 
+## 3d. Review spec v2 (what the design critique loop checks)
+
+The numbered rules S1-S8 in `docs/design/critique/REVIEW-PROMPT.md` are the contract every screen is reviewed against; objective items (text >= 18 px, touch targets >= 56 px, gaps of 12 or 24 px, one logo, no overflow) are measured by `tools/design.sh probeall` and `qaall`, not judged by eye. Colour roles: white = measured values and titles; dim = labels and units; ice-cyan = data fills, chart lines, links, live/armed indicators and Peak/Best callouts; Ford blue = structure, inactive segments, primary buttons and selected controls; amber = warnings and limits only.
+
 ## 4. Screen sketches (1280x800)
 
 Drive: tach arc 270 degrees, cobalt track, lime progress after the threshold (default 4500 rpm), shift-light segments across the top; centre speed numerals (lime); right column: boost bar (vacuum = cobalt segments below zero, positive boost = lime segments), coolant, intake, battery, fuel as segmented tiles; bottom strip: trip km / avg / max / max boost / 0-100 timer.

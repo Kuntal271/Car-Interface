@@ -27,7 +27,7 @@
     grid: '<path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/>',
     sliders: '<path d="M4 7h9M17 7h3M4 17h3M11 17h9M15 4v6M9 14v6"/>',
     radio: '<path d="M3 9h18v11H3zM7 9l11-5.5"/><circle cx="8" cy="14.5" r="2"/><path d="M13 13.5h5M13 16.5h5"/>',
-    usb: '<path d="M12 3v14.5M9 6.5 12 3l3 3.5M12 12l-4-2v-2M12 14.5l4-2.5V9.5"/><circle cx="12" cy="19.5" r="2"/><path d="M6.5 6.5h3v3h-3zM14.5 7h3v3h-3z"/>',
+    usb: '<path d="M12 3v15M9.5 5.5 12 3l2.5 2.5M12 13l-4-2.5V8M12 15.500l4-2.500v-2"/><circle cx="12" cy="19.500" r="2"/><rect x="6.500" y="5.500" width="3" height="3"/><circle cx="16" cy="9" r="1.800"/>',
     bt: '<path d="M7 7.5 17 16l-5 4.5V3.5L17 8 7 16.5"/>',
     wifi: '<path d="M3 9a14 14 0 0 1 18 0M6 12.5a9.5 9.5 0 0 1 12 0M9 16a5 5 0 0 1 6 0M12 19.5h.01"/>',
     camera: '<path d="M3 8h4l1.5-2.5h7L17 8h4v11H3z"/><circle cx="12" cy="13.5" r="3.5"/>',
@@ -67,6 +67,9 @@
     power: '<path d="M12 3v8M6.500 6.500a8 8 0 1 0 11 0"/>',
     cast: '<path d="M3 6h18v11H3zM8 21h8M12 17v4M9.500 10.500l2.500 2.500 2.500-2.500"/>',
     folder: '<path d="M3 6.500h6.500l2 2.500H21V19H3z"/>',
+    image: '<rect x="3" y="5" width="18" height="14" rx="2.500"/><circle cx="9" cy="10" r="1.700"/><path d="M4 17l5-4.500 3.500 3L16 12l4.500 4.500"/>',
+    fog: '<path d="M10 5c5 0 8 3 8 7s-3 7-8 7z"/><path d="M2.500 8l5 1.200M2.500 12.500h5M2.500 17l5-1.200"/>',
+    storage: '<rect x="3" y="14" width="18" height="6" rx="2"/><path d="M5 14l2-8h10l2 8"/><path d="M7.500 17h.01M11 17h6"/>',
     video: '<path d="M3 6h13v12H3zM16 10.500l5-3v9l-5-3"/>',
     globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.500 3 14.500 0 18M12 3c-3 3.500-3 14.500 0 18"/>',
     calc: '<path d="M5 3h14v18H5zM8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/>',
@@ -189,7 +192,9 @@
         host.insertBefore(d, el); return d;
       };
       var fr = o.red / o.max * 270, lo = UI.rgb('--cobalt-rgb').map(function (x) { return x * .62; }), hi = UI.rgb('--lime-rgb');
-      var track = 'conic-gradient(from -135deg at 50% 50%,rgba(var(--dim-rgb),.13) 0deg,rgba(var(--dim-rgb),.13) ' + fr + 'deg,rgba(var(--warn-rgb),.42) ' + fr + 'deg,rgba(var(--warn-rgb),.42) 270deg)';
+      var ticks = '', ta;
+      for (ta = fr; ta < 270; ta += 3.2) ticks += ',rgba(var(--warn-rgb),.85) ' + ta.toFixed(1) + 'deg,rgba(var(--warn-rgb),.85) ' + Math.min(270, ta + 1.3).toFixed(1) + 'deg,transparent ' + Math.min(270, ta + 1.3).toFixed(1) + 'deg,transparent ' + Math.min(270, ta + 3.2).toFixed(1) + 'deg';
+      var track = 'conic-gradient(from -135deg at 50% 50%,rgba(var(--dim-rgb),.13) 0deg,rgba(var(--dim-rgb),.13) ' + fr + 'deg,transparent ' + fr + 'deg' + ticks + ')';
       var lit = 'conic-gradient(from -135deg at 50% 50%,rgb(' + lo.map(Math.round) + ') 0deg,rgb(' + hi + ') ' + (fr * .72) + 'deg,rgb(' + hi + ') ' + fr + 'deg,var(--warn) ' + fr + 'deg,var(--warn) 270deg)';
       mk('ttrack', track, 'conic-gradient(from -135deg at 50% 50%,#000 0deg,#000 270deg,transparent 270deg)');
       var litEl = mk('tlit', lit, 'conic-gradient(from -135deg at 50% 50%,#000 0deg,#000 calc(var(--p,0) * 270deg),transparent calc(var(--p,0) * 270deg))');
@@ -201,7 +206,7 @@
         if (maj) { var t = UI.pol(o.cx, o.cy, o.r1 - 62, a); s += '<text x="' + t[0] + '" y="' + (t[1] + 13) + '" text-anchor="middle" font-family="var(--f-display)" font-weight="600" font-size="40" fill="' + (red ? 'var(--warn)' : 'var(--text)') + '">' + (k / 2) + '</text>'; }
       }
       s += '<g class="tip"><circle cx="' + o.cx + '" cy="' + (o.cy - rm) + '" r="46" fill="url(#tipglow)"/><circle cx="' + o.cx + '" cy="' + (o.cy - rm) + '" r="12" fill="#fff"/></g>';
-      s += '<text x="' + o.cx + '" y="' + (o.cy + 262) + '" text-anchor="middle" font-family="var(--f-ui)" font-weight="500" font-size="21" fill="var(--dim)">x1000 rpm</text>';
+      s += '<text x="' + o.cx + '" y="' + (o.cy + 292) + '" text-anchor="middle" font-family="var(--f-ui)" font-weight="500" font-size="24" fill="var(--dim)">rpm x 1000</text>';
       el.setAttribute('viewBox', '0 0 ' + o.w + ' ' + o.h); el.innerHTML = s;
       el._ford = { lit: litEl, tip: el.querySelector('.tip') };
     }
@@ -262,7 +267,7 @@
     levels.forEach(function (lv, i) {
       for (var k = 1; k <= 3; k++) {
         var r = 8 + k * 17, a = (dir < 0 ? 0 : 180) + angs[i] * (dir < 0 ? 1 : -1), p1 = UI.pol(xs[i], y, r, a - 17), p2 = UI.pol(xs[i], y, r, a + 17);
-        var col = k > lv ? 'rgba(var(--cobalt-rgb),.22)' : (k === 3 ? 'var(--lime)' : k === 2 ? 'var(--cobalt-lt)' : 'var(--cobalt)');
+        var col = k > lv ? 'rgba(var(--cobalt-rgb),.22)' : (UI.theme === 'ford' ? (k === 3 ? 'var(--warn)' : 'var(--lime)') : (k === 3 ? 'var(--lime)' : k === 2 ? 'var(--cobalt-lt)' : 'var(--cobalt)'));
         out += '<path d="M' + p1[0].toFixed(1) + ' ' + p1[1].toFixed(1) + 'A' + r + ' ' + r + ' 0 0 1 ' + p2[0].toFixed(1) + ' ' + p2[1].toFixed(1) + '" fill="none" stroke="' + col + '" stroke-width="9"/>';
       }
     });
@@ -290,7 +295,7 @@
     for (var i = 0; i < o.n; i++) {
       var f = (i + 0.5) / o.n, c = '';
       if (o.zero != null) { if (v >= o.zero) { if (f >= o.zero && f <= v) c = 'l'; } else if (f <= o.zero && f >= v) c = 'c'; }
-      else if (f <= v) c = (o.c || (f >= o.sp ? 'l' : 'c'));
+      else if (f <= v) c = (UI.theme === 'ford' && o.c !== 'w') ? 'l' : (o.c || (f >= o.sp ? 'l' : 'c'));
       h += '<i class="' + c + '"></i>';
     }
     e.innerHTML = h;
@@ -303,11 +308,11 @@
     });
     root.querySelectorAll('.slider[data-v]').forEach(function (e) {
       var v = parseFloat(e.dataset.v), n = +(e.dataset.n || 28), h = '<div class="seg sk">';
-      for (var i = 0; i < n; i++) h += '<i class="' + ((i + 0.5) / n <= v ? 'c' : '') + '"></i>';
+      for (var i = 0; i < n; i++) h += '<i class="' + ((i + 0.5) / n <= v ? (UI.theme === 'ford' ? 'l' : 'c') : '') + '"></i>';
       e.innerHTML = h + '</div><div class="knob" style="left:' + (v * 100) + '%"></div>'; e.removeAttribute('data-v');
     });
     root.querySelectorAll('svg[data-spark]').forEach(function (e) {
-      var pts = e.dataset.spark.split(',').map(parseFloat); UI.spark(e, pts, { w: +(e.dataset.w || 160), h: +(e.dataset.h || 40), c: e.dataset.c === 'l' ? 'var(--lime)' : 'var(--cobalt-lt)' });
+      var pts = e.dataset.spark.split(',').map(parseFloat); UI.spark(e, pts, { w: +(e.dataset.w || 160), h: +(e.dataset.h || 40), c: (e.dataset.c === 'l' || UI.theme === 'ford') ? 'var(--lime)' : 'var(--cobalt-lt)' });
       e.removeAttribute('data-spark');
     });
   }
@@ -376,6 +381,15 @@
         if (e.classList.contains('hit')) return;
         if (Math.min(r.width, r.height) < 56) o.push('TARGET ' + Math.round(r.width) + 'x' + Math.round(r.height) + ' ' + (e.className && e.className.baseVal === undefined ? e.className : '') + ' "' + (e.textContent || '').trim().slice(0, 24) + '"');
       });
+      var cards = [].slice.call(document.querySelectorAll('.card, .qt, .app, .rc')).filter(function (c) { return !c.closest('svg, .scaled') && c.offsetWidth; }), gs = {};
+      cards.forEach(function (a, i) { cards.slice(i + 1).forEach(function (b) {
+        if (a.contains(b) || b.contains(a)) return;
+        var A = a.getBoundingClientRect(), B = b.getBoundingClientRect(), gx = Math.max(B.left - A.right, A.left - B.right), gy = Math.max(B.top - A.bottom, A.top - B.bottom);
+        var ox = Math.min(A.right, B.right) - Math.max(A.left, B.left), oy = Math.min(A.bottom, B.bottom) - Math.max(A.top, B.top), g = null;
+        if (gx > 0 && gx < 40 && oy > 8) g = gx; else if (gy > 0 && gy < 40 && ox > 8) g = gy;
+        if (g !== null && Math.abs(g - 12) > 1.5 && Math.abs(g - 24) > 1.5) { var k = 'GAP ' + Math.round(g) + 'px'; gs[k] = (gs[k] || 0) + 1; }
+      }); });
+      Object.keys(gs).forEach(function (k) { o.push(k + ' x' + gs[k]); });
       var w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
       while (w.nextNode()) { var n = w.currentNode, t = n.textContent.trim(); if (!t || n.parentElement.closest('svg, script, style, pre, figcaption')) continue;
         var f = parseFloat(getComputedStyle(n.parentElement).fontSize); if (f < 18) { var k = Math.round(f) + 'px ' + t.slice(0, 30); if (!seen[k]) { seen[k] = 1; o.push('TEXT ' + k); } } }

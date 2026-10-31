@@ -5,27 +5,39 @@
 <style>
 .opt{display:flex;align-items:center;gap:14px;height:56px;border-bottom:1px solid var(--hair-soft);font:600 21px var(--f-ui)}
 .opt:last-child{border:0}
+.opt .nm{white-space:nowrap}
+.opt .val{width:56px;text-align:right;font-size:32px;white-space:nowrap;flex:none}
+.opt .val .unit{font-size:21px}
+html[data-theme="ford"] .badge.close{background:var(--warn);color:var(--on-warn);box-shadow:none}
+html[data-theme="ford"] .rd{color:var(--text)}
+html[data-theme="ford"] .dl .dn{fill:var(--text)}
+html[data-theme="ford"] .dl .du{fill:var(--dim);font-family:var(--f-ui);font-weight:500;font-size:22px}
 </style></head>
 <body><div class="stage"><div class="frame" data-active="parking" data-dock="0">
 <main class="main full" data-od-id="parking">
   <section class="abs card" style="left:24px;top:24px;width:850px;height:696px;padding:0" data-od-id="camera">
     <div class="vf" style="inset:1px"></div>
     <svg id="guides" viewBox="0 0 850 696" width="850" height="696" class="abs" style="left:0;top:0"></svg>
-    <div class="abs row c g12" style="left:20px;top:18px"><span class="badge fill">Rear camera</span><span class="mono">live feed is a vendor surface · overlay is ours</span></div>
+    <div class="abs row c g12" style="left:20px;top:18px"><span class="badge fill">Rear camera · live</span></div>
     <div class="abs lbl" style="right:24px;top:22px">Rear view</div>
   </section>
   <section class="abs col g12" style="left:898px;top:24px;width:358px;height:696px" data-od-id="parking-panel">
     <div class="row jb c" style="height:56px"><span class="h1" style="font-size:48px">Parking</span><span class="badge fill" style="height:44px;font-size:26px;padding:0 16px">R</span></div>
     <div class="tabs"><span class="chip on" style="padding:0 20px">Rear</span><span class="chip" style="padding:0 20px">360°</span><span class="chip" style="padding:0 20px">Front</span></div>
-    <div class="card col" style="height:252px;padding:14px 18px" data-od-id="sensors">
-      <div class="row jb c"><span class="lbl">Rear sensors</span><span class="badge lime">Close</span></div>
-      <div id="mini" style="position:relative;height:110px;margin:4px 0"></div>
-      <div class="row" style="align-items:baseline;gap:10px"><span class="num lime" style="font-size:72px">0.6</span><span class="unit">m</span><span class="grow"></span><span class="lbl">Centre-left</span></div>
+    <div class="card col" style="height:288px;padding:14px 18px" data-od-id="sensors">
+      <div class="row jb c"><span class="lbl">Rear sensors</span><span class="badge lime close">Close</span></div>
+      <div class="row grow g12" style="margin-top:6px;align-items:stretch">
+        <div id="mini" style="position:relative;width:116px"></div>
+        <div class="col grow jc">
+          <div class="row" style="align-items:baseline"><span class="num lime rd" style="font-size:72px">0.6</span><span class="unit">m</span></div>
+          <span class="lbl" style="margin-top:6px">Centre-left</span>
+        </div>
+      </div>
     </div>
     <div class="card col grow" style="padding-top:6px;padding-bottom:6px" data-od-id="parking-opts">
       <div class="opt"><span class="grow">Guidelines</span><span class="tg on"></span></div>
-      <div class="opt"><span class="grow">Beep volume</span><div class="slider" style="width:170px" data-v=".6" data-n="14"></div></div>
-      <div class="opt"><span class="grow">Brightness</span><div class="slider" style="width:170px" data-v=".75" data-n="14"></div></div>
+      <div class="opt" style="gap:12px"><span class="grow nm">Beep volume</span><div class="slider" style="width:100px" data-v=".6" data-n="10"></div><span class="num val">60<span class="unit t">%</span></span></div>
+      <div class="opt" style="gap:12px"><span class="grow nm">Brightness</span><div class="slider" style="width:100px" data-v=".7" data-n="10"></div><span class="num val">70<span class="unit t">%</span></span></div>
     </div>
     <a class="btn" style="opacity:.75">Exit · available in P</a>
   </section>
@@ -39,15 +51,16 @@ UI.onready = function () {
   /* predicted path (solid), mirror-symmetric */
   s += '<path d="M' + (cx - half(660) * .72) + ' 660Q' + (cx - half(450) * .72) + ' 430 ' + (cx - half(250) * .72) + ' 250M' + (cx + half(660) * .72) + ' 660Q' + (cx + half(450) * .72) + ' 430 ' + (cx + half(250) * .72) + ' 250" stroke="var(--lime)" stroke-width="5" fill="none"/>';
   /* distance bars: far / mid / near */
-  [[270, '2.0 m', 'var(--cobalt)'], [390, '1.0 m', 'var(--cobalt-lt)'], [520, '0.5 m', 'var(--lime)']].forEach(function (b) {
+  [[270, '2.0', 'var(--cobalt)'], [390, '1.0', 'var(--cobalt-lt)'], [520, '0.5', 'var(--lime)']].forEach(function (b) {
     var h = half(b[0]) ;
     s += '<line x1="' + (cx - h) + '" x2="' + (cx + h) + '" y1="' + b[0] + '" y2="' + b[0] + '" stroke="' + b[2] + '" stroke-width="8"/>' +
-      '<text x="' + (cx + h + 14) + '" y="' + (b[0] + 10) + '" font-family="var(--f-display)" font-weight="800" font-size="32" fill="' + b[2] + '">' + b[1] + '</text>';
+      '<text x="' + (cx + h + 14) + '" y="' + (b[0] + 10) + '" font-family="var(--f-display)" font-weight="800" font-size="32" fill="' + b[2] + '" class="dl"><tspan class="dn">' + b[1] + '</tspan><tspan class="du"> m</tspan></text>';
   });
   /* detected object: centre-left, just inside the 0.5 m bar (matches the 0.6 m readout) */
-  s += '<rect x="' + (cx - 190) + '" y="436" width="130" height="62" fill="rgba(var(--lime-rgb),.12)" stroke="var(--lime)" stroke-width="2.5" stroke-dasharray="7 6"/>' +
-    '<text x="' + (cx - 125) + '" y="476" text-anchor="middle" font-family="var(--f-ui)" font-weight="700" font-size="21" fill="var(--lime)" letter-spacing="2" class="uc">Object</text>';
+  s += '<rect x="' + (cx - 190) + '" y="436" width="130" height="62" fill="rgba(var(--warn-rgb),.12)" stroke="var(--warn)" stroke-width="2.5" stroke-dasharray="7 6"/>' +
+    '<text x="' + (cx - 125) + '" y="476" text-anchor="middle" font-family="var(--f-ui)" font-weight="700" font-size="21" fill="var(--warn)" letter-spacing="2" class="uc">Object</text>';
   document.getElementById('guides').innerHTML = s;
-  document.getElementById('mini').innerHTML = UI.car({ vb: '40 340 240 260', extra: UI.radar([1, 3, 2, 1], 548, 1) }).replace('<svg ', '<svg style="position:absolute;inset:0;width:100%;height:100%" ');
+  var amber = function (svg) { return svg.replace(/stroke="var\(--lime\)"/g, 'stroke="var(--warn)"'); };   /* nearest sensor under 0.8 m: amber */
+  document.getElementById('mini').innerHTML = UI.car({ vb: '30 32 260 586', extra: amber(UI.radar([1, 3, 2, 1], 548, 1)) }).replace('<svg ', '<svg style="position:absolute;inset:0;width:100%;height:100%" ');
 };
 </script></body></html>

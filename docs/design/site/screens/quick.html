@@ -11,15 +11,18 @@
 .qt{height:118px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font:700 18px var(--f-display);letter-spacing:.12em;text-transform:uppercase;color:var(--dim);
   background:var(--c12);box-shadow:inset 0 0 0 1px var(--hair);clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%)}
 .qt .ic{color:var(--cobalt-lt)} .qt.on{background:var(--accent);color:var(--on-accent);box-shadow:none} .qt.on .ic{color:var(--on-accent)}
+/* ---- Ford theme: modal scrim .8, inactive tile icons dim ---- */
+html[data-theme="ford"] .dimmer{background:rgba(var(--bg-rgb),.8)}
+html[data-theme="ford"] .qt:not(.on) .ic{color:var(--dim)}
 </style></head>
 <body><div class="stage"><div class="frame" data-shell="0" data-active="home">
 <iframe id="bkf" class="bkf" title="Home" tabindex="-1"></iframe><div class="dimmer"></div>
 <section class="card s2 abs" style="left:24px;top:72px;width:1120px;height:316px;z-index:6" data-od-id="quick-panel">
   <div class="row g24" style="height:100%">
     <div class="col jb" style="width:470px">
-      <div><div class="row jb c"><span class="lbl row c g8"><i data-i="sun" data-s="22"></i>Brightness</span><span class="num n-s">70</span></div><div class="slider" data-v=".7" data-n="22"></div></div>
-      <div><div class="row jb c"><span class="lbl row c g8"><i data-i="vol" data-s="22"></i>Volume</span><span class="num n-s lime">18</span></div><div class="slider" data-v=".6" data-n="22"></div></div>
-      <div class="row g12"><a href="settings.html" class="btn grow ghost"><i data-i="sliders" data-s="24"></i>All settings</a><a class="btn ghost"><i data-i="power" data-s="24"></i>Power</a></div>
+      <div><div class="row jb c"><span class="lbl row c g8"><i data-i="sun" data-s="22"></i>Brightness</span><span class="num n-s">70<span class="unit t">%</span></span></div><div class="slider" data-v=".7" data-n="22"></div></div>
+      <div><div class="row jb c"><span class="lbl row c g8"><i data-i="vol" data-s="22"></i>Volume</span><span class="num n-s lime">18<span class="unit"> / 30</span></span></div><div class="slider" data-v=".6" data-n="22"></div></div>
+      <div class="row g12"><a href="settings.html" class="btn grow ghost"><i data-i="sliders" data-s="24"></i>All settings</a><a class="btn ghost"><i data-i="power" data-s="24"></i>Power menu</a></div>
     </div>
     <div class="grid grow" style="grid-template-columns:repeat(4,1fr);grid-auto-rows:118px;gap:12px;align-content:center">
       <a class="qt on"><i data-i="wifi" data-s="34"></i>Wi-Fi</a><a class="qt on"><i data-i="bt" data-s="34"></i>Bluetooth</a><a class="qt"><i data-i="signal" data-s="34"></i>Hotspot</a><a class="qt"><i data-i="mute" data-s="34"></i>Mute</a>

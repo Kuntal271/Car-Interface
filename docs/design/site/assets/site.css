@@ -64,3 +64,29 @@ html.doc .btn{box-shadow:inset 0 0 0 1px rgba(111,146,255,.85)} html.doc .btn.pr
 .jump a{font:700 16px var(--f-display);letter-spacing:.12em;text-transform:uppercase;padding:8px 16px;color:var(--text);box-shadow:inset 0 0 0 1px var(--hair)} .jump a:hover{background:var(--lime);color:var(--bg)}
 @media(max-width:1180px){.hero .grid2{grid-template-columns:1fr}.dev{display:none}}
 @media(max-width:900px){.two,.three,.sw{grid-template-columns:1fr}.stats{flex-wrap:wrap}.nav .wrap{gap:14px;overflow:auto}}
+
+/* ---------- Ford theme: documentation chrome (rounded, sentence case, no engineering grid) ---------- */
+html[data-theme="ford"] body.doc{background:radial-gradient(1200px 700px at 20% -10%,rgba(31,99,240,.22),transparent 70%),var(--bg)}
+html[data-theme="ford"] .nav,html[data-theme="ford"] .top{background:rgba(5,10,20,.94)}
+html[data-theme="ford"] .nav .brand,html[data-theme="ford"] .top .brand{text-transform:none;letter-spacing:.01em;font-weight:700}
+html[data-theme="ford"] .nav .brand i,html[data-theme="ford"] .top .brand i{border-radius:50%;transform:none}
+html[data-theme="ford"] .nav a.l,html[data-theme="ford"] .top a.l{text-transform:none;letter-spacing:.01em;font-family:var(--f-ui);font-weight:600;font-size:18px;white-space:nowrap}
+html[data-theme="ford"] .hero h1{text-transform:none;letter-spacing:0;font-size:clamp(72px,9vw,132px);line-height:.9}
+html[data-theme="ford"] .hero .grid2{gap:56px}
+html[data-theme="ford"] .cta .btn{min-width:250px}
+html[data-theme="ford"] .sec>.wrap>h2,html[data-theme="ford"] .h-sec,html[data-theme="ford"] .grp,html[data-theme="ford"] .pnl h3,html[data-theme="ford"] .sc h3{text-transform:none;letter-spacing:.005em}
+html[data-theme="ford"] .kicker{font-family:var(--f-ui);text-transform:none;letter-spacing:.03em;color:var(--cobalt-lt);font-size:18px}
+html[data-theme="ford"] .cap,html[data-theme="ford"] table.t th{text-transform:none;letter-spacing:.02em;font-size:16px;color:var(--dim)}
+html[data-theme="ford"] .stats span{text-transform:none;letter-spacing:.02em;font-size:18px}
+html[data-theme="ford"] .stats,html[data-theme="ford"] .sc,html[data-theme="ford"] .pnl,html[data-theme="ford"] .demo,html[data-theme="ford"] .icons div,html[data-theme="ford"] .sw .c,html[data-theme="ford"] .flow .n{border-radius:20px}
+html[data-theme="ford"] .sc{overflow:hidden}
+html[data-theme="ford"] .tag{font-family:var(--f-ui);text-transform:none;letter-spacing:.02em;font-size:15px;border-radius:999px;padding:3px 12px;color:#c9d6ff}
+html[data-theme="ford"] .tag.hi{background:var(--warn);color:var(--on-warn);box-shadow:none}
+html[data-theme="ford"] .tag.md{color:var(--warn);box-shadow:inset 0 0 0 1px rgba(var(--warn-rgb),.6)}
+html[data-theme="ford"] code,html[data-theme="ford"] .code{font-family:var(--f-ui);font-size:16px;border-radius:6px;background:rgba(var(--cobalt-rgb),.18)}
+html[data-theme="ford"] .jump a{text-transform:none;letter-spacing:.01em;font-family:var(--f-ui);font-weight:600;border-radius:999px}
+html[data-theme="ford"] .jump a:hover{background:var(--accent);color:#fff}
+html[data-theme="ford"] .themesw{border-radius:999px;overflow:hidden}
+html[data-theme="ford"] .themesw button{text-transform:none;letter-spacing:.01em;font-size:16px;padding:8px 16px}
+html[data-theme="ford"] .li.on,html[data-theme="ford"] .tr.on,html[data-theme="ford"] .q.on{background:var(--accent);color:var(--on-accent)}
+html[data-theme="ford"] .li.on .t,html[data-theme="ford"] .li.on .s{color:#fff}

@@ -19,13 +19,26 @@ figcaption b{display:block;color:var(--text);font:800 26px var(--f-display);lett
 .bkf{position:absolute;left:0;top:0;width:1280px;height:800px;border:0}
 .dimmer{position:absolute;inset:0;background:rgba(var(--bg-rgb),.66);z-index:6}
 .sheet-t{position:absolute;z-index:7}
+/* banners: Cockpit keeps its flush edge-to-edge look; Ford insets them 24 px (left 24, width 1120) */
+.bn-top{left:0;top:56px;width:1168px} .bn-bot{left:0;bottom:0;width:1168px}
+.shiftb{left:0;top:56px;width:1168px;height:84px;background:var(--warn);display:flex;align-items:center;justify-content:center;color:var(--on-warn);font:800 72px var(--f-display);letter-spacing:.3em}
+.cav{width:84px;height:84px;display:grid;place-items:center;background:var(--s2);box-shadow:inset 0 0 0 2px var(--cobalt);font:800 44px var(--f-display);color:var(--lime)}
+.call{left:660px;top:80px;width:490px;padding:18px 22px}
+.scrim-ford{display:none}
+html[data-theme="ford"] .scrim-ford{display:block}
+html[data-theme="ford"] .bn-top{left:24px;top:68px;width:1120px}
+html[data-theme="ford"] .bn-bot{left:24px;bottom:24px;width:1120px}
+html[data-theme="ford"] .shiftb{left:24px;top:68px;width:1120px;border-radius:24px;font-weight:600;font-size:56px;letter-spacing:.012em}
+html[data-theme="ford"] .call{left:652px;width:492px}
+html[data-theme="ford"] .cav{border-radius:50%}
+html[data-theme="ford"] .vol-v{color:var(--text)}
 </style></head>
 <body><div class="stage">
 <div class="hd"><h1>System overlays</h1><p>Everything that can interrupt the screen. Warnings are inverted-lime blocks, never red. Each overlay lists its trigger, priority and how it goes away. Priority 1 interrupts everything; lower numbers win.</p></div>
 <div class="gal">
 
 <figure><div class="mini"><div class="frame" data-shell="0" data-active="drive"><iframe class="bkf" data-t="25.6" title="Drive" tabindex="-1"></iframe>
-  <div class="sheet-t osd" style="left:300px;top:640px;width:560px"><div class="row c g16"><i data-i="vol" data-s="34" class="lime"></i><div class="slider grow" data-v=".6" data-n="30"></div><span class="num n-m lime">18</span></div></div></div></div>
+  <div class="sheet-t osd" style="left:300px;top:640px;width:560px"><div class="row c g16"><i data-i="vol" data-s="34" class="lime"></i><span class="lbl">Volume</span><div class="slider grow" data-v=".6" data-n="30"></div><span class="num n-m lime vol-v">18<span class="unit"> / 30</span></span></div></div></div></div>
 <figcaption><b>Volume</b>Trigger: steering-wheel keys or knob. Priority 5. Auto-hides after 1.5 s. Never blocks touch.</figcaption></figure>
 
 <figure><div class="mini"><div class="frame" data-shell="0" data-active="drive"><iframe class="bkf" data-t="25.6" title="Drive" tabindex="-1"></iframe>
@@ -33,7 +46,7 @@ figcaption b{display:block;color:var(--text);font:800 26px var(--f-display);lett
 <figcaption><b>Climate change</b>Trigger: A/C or fan frame changes on the Canbox. Priority 5. Auto-hides after 2 s. View only.</figcaption></figure>
 
 <figure><div class="mini"><div class="frame" data-shell="0" data-active="drive"><iframe class="bkf" data-t="3" title="Drive" tabindex="-1"></iframe>
-  <div class="sheet-t warn" style="left:0;top:56px;width:1168px"><i data-i="warn" data-s="34"></i><span>Rear left door open <small>· 12 km/h</small></span></div></div></div>
+  <div class="sheet-t warn bn-top"><i data-i="warn" data-s="34"></i><span>Rear left door open <small>· 12 km/h</small></span></div></div></div>
 <figcaption><b>Door open while moving</b>Trigger: any door flag set and speed above 5 km/h. Priority 3. Stays until closed. Pulses at 1 Hz.</figcaption></figure>
 
 <figure><div class="mini"><div class="frame" data-shell="0" data-active="drive"><iframe class="bkf" data-t="25.6" title="Drive" tabindex="-1"></iframe><div class="dimmer"></div>
@@ -42,16 +55,16 @@ figcaption b{display:block;color:var(--text);font:800 26px var(--f-display);lett
 <figcaption><b>Coolant high</b>Trigger: coolant above the profile threshold (105 °C). Priority 1. Modal, needs a tap to dismiss, returns if still above threshold after 60 s.</figcaption></figure>
 
 <figure><div class="mini"><div class="frame" data-shell="0" data-active="drive"><iframe class="bkf" data-t="92" title="Drive" tabindex="-1"></iframe>
-  <div class="sheet-t warn" style="left:0;bottom:0;width:1168px"><i data-i="batt" data-s="34"></i><span>Battery 11.6 V <small>· unit will sleep to protect the battery</small></span></div></div></div>
+  <div class="sheet-t warn bn-bot"><i data-i="batt" data-s="34"></i><span>Battery 11.6 V <small>· unit will sleep to protect the battery</small></span></div></div></div>
 <figcaption><b>Low battery</b>Trigger: module voltage below profile threshold with engine off. Priority 2. Bottom banner, 30 s before auto-sleep.</figcaption></figure>
 
-<figure><div class="mini"><div class="frame" data-shell="0" data-active="drive"><iframe class="bkf" data-t="25.6" title="Drive" tabindex="-1"></iframe>
-  <div class="sheet-t card" style="left:660px;top:80px;width:490px;padding:18px 22px"><div class="row c g16"><div style="width:84px;height:84px;display:grid;place-items:center;background:var(--s2);box-shadow:inset 0 0 0 2px var(--cobalt);font:800 44px var(--f-display);color:var(--lime)">AM</div><div class="grow"><div class="lbl">Incoming call</div><div class="h2">Aarav Mehta</div></div></div>
+<figure><div class="mini"><div class="frame" data-shell="0" data-active="drive"><iframe class="bkf" data-t="25.6" title="Drive" tabindex="-1"></iframe><div class="dimmer scrim-ford"></div>
+  <div class="sheet-t card call"><div class="row c g16"><div class="cav">AM</div><div class="grow"><div class="lbl">Incoming call</div><div class="h2">Aarav Mehta</div></div></div>
     <div class="row g12" style="margin-top:16px"><a class="btn pri grow"><i data-i="phone" data-s="26"></i>Answer</a><a class="btn grow"><i data-i="close" data-s="26"></i>Decline</a></div></div></div></div>
 <figcaption><b>Incoming call</b>Trigger: Bluetooth HFP ring. Priority 2. Heads-up card top-right so gauges stay visible; ringtone through the car speakers.</figcaption></figure>
 
 <figure><div class="mini"><div class="frame" data-shell="0" data-active="drive"><iframe class="bkf" data-t="25.6" title="Drive" tabindex="-1"></iframe>
-  <div class="sheet-t" style="left:0;top:56px;width:1168px;height:84px;background:var(--warn);display:flex;align-items:center;justify-content:center;color:var(--on-warn);font:800 72px var(--f-display);letter-spacing:.3em">SHIFT</div></div></div>
+  <div class="sheet-t shiftb"><span class="cp-only">SHIFT</span><span class="ford-only">Shift up · gear 4</span></div></div></div>
 <figcaption><b>Shift light</b>Trigger: rpm above the shift threshold (5,200). Priority 4. Flashes at 4 Hz for at most 0.4 s per crossing. Off by default in Settings.</figcaption></figure>
 
 <figure><div class="mini"><div class="frame" data-shell="0" data-active="drive"><iframe class="bkf" data-t="92" title="Drive" tabindex="-1"></iframe><div class="dimmer"></div>

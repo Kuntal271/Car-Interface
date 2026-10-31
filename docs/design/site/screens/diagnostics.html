@@ -8,23 +8,35 @@
 .sum{height:112px;display:flex;flex-direction:column;justify-content:space-between;padding:14px 18px}
 .sum .v{font:800 48px/.9 var(--f-display)}
 .tbl svg{display:block;width:150px;height:30px}
+/* Ford-only variants (.fx shown in Ford, .cx shown in Cockpit); the Cockpit theme renders exactly as before */
+.fx{display:none} html[data-theme="ford"] .fx{display:inline} html[data-theme="ford"] .cx{display:none}
+.gp{gap:8px}
+html[data-theme="ford"] .gp{gap:12px}                                              /* command-guard pills: 12 px, dim text */
+html[data-theme="ford"] .gp .badge{color:var(--dim)}
+html[data-theme="ford"] .kv b.lime,html[data-theme="ford"] .tbl td.v,html[data-theme="ford"] .tbl td.v.lime{color:var(--text)}   /* measured values are white */
+html[data-theme="ford"] .gtxt .lime{color:var(--text);font-weight:600}              /* emphasis in running text, not a data colour */
+html[data-theme="ford"] .badge.fill.live{background:transparent;color:var(--lime);box-shadow:inset 0 0 0 1px rgba(var(--lime-rgb),.5)}   /* live indicator: ice-cyan outline */
+html[data-theme="ford"] .sum{height:120px}
+html[data-theme="ford"] .sum .fx.fault{display:flex;flex-direction:column;gap:4px}
+html[data-theme="ford"] .sum .fault .v{font-size:34px}
+html[data-theme="ford"] .sum .fault .sub{font:400 18px/1.2 var(--f-ui);color:var(--dim);white-space:nowrap}
 </style></head>
 <body><div class="stage"><div class="frame" data-active="apps">
 <main class="main row g24" data-od-id="diagnostics">
   <section class="col g12" style="width:352px">
     <div class="row jb c" style="height:44px"><span class="h2">Diagnose</span><span class="badge lime"><i data-i="key" data-s="16"></i>Read-only</span></div>
     <div class="card col" style="padding-top:12px;padding-bottom:6px" data-od-id="adapter">
-      <div class="row jb c" style="margin-bottom:8px"><span class="lbl">OBD adapter</span><span class="badge fill">Connected</span></div>
+      <div class="row jb c" style="margin-bottom:8px"><span class="lbl">OBD adapter</span><span class="badge fill live">Connected</span></div>
       <div class="kv"><span>Type</span><b>ELM327 · BLE</b></div>
-      <div class="kv"><span>Protocol</span><b>CAN 11-bit / 500k</b></div>
+      <div class="kv"><span>Protocol</span><b class="cx">CAN 11-bit / 500k</b><b class="fx">CAN 11-bit / 500 kbit/s</b></div>
       <div class="kv"><span>PIDs found</span><b>22</b></div>
       <div class="kv"><span>Poll rate</span><b class="lime">14 Hz</b></div>
       <div class="kv"><span>Latency</span><b>38 ms</b></div>
     </div>
     <div class="card col grow" data-od-id="safety">
       <span class="lbl row c g8"><i data-i="key" data-s="22"></i>Command guard</span>
-      <div style="font:400 20px/1.35 var(--f-ui);margin-top:12px;color:var(--text)">Only <span class="lime">AT</span> setup commands and <span class="lime">Mode 01</span> live reads are ever sent. Everything else is blocked in code and in tests.</div>
-      <div class="row g8" style="margin-top:auto;flex-wrap:wrap"><span class="badge">Mode 03 · blocked</span><span class="badge">Mode 04 · blocked</span><span class="badge">Mode 22 · blocked</span></div>
+      <div class="gtxt" style="font:400 20px/1.35 var(--f-ui);margin-top:12px;color:var(--text)">Only <span class="lime">AT</span> setup commands and <span class="lime">Mode 01</span> live reads are ever sent. Everything else is blocked in code and in tests.</div>
+      <div class="row gp" style="margin-top:auto;flex-wrap:wrap"><span class="badge">Mode 03 · blocked</span><span class="badge">Mode 04 · blocked</span><span class="badge">Mode 22 · blocked</span></div>
     </div>
   </section>
 
@@ -33,7 +45,7 @@
       <div class="card sum grow"><span class="lbl">Battery</span><span class="v">14.2<span class="unit"> V</span></span></div>
       <div class="card sum grow"><span class="lbl">Coolant</span><span class="v">92<span class="unit"> °C</span></span></div>
       <div class="card sum grow"><span class="lbl">Load</span><span class="v lime">88<span class="unit"> %</span></span></div>
-      <div class="card sum grow"><span class="lbl">Faults</span><span class="v dim">—</span></div>
+      <div class="card sum grow"><span class="lbl">Faults</span><span class="v dim cx">—</span><span class="fx fault"><span class="v">Not read</span><span class="sub">Mode 03 blocked</span></span></div>
     </div>
     <div class="card col grow" style="padding:10px 14px">
       <table class="tbl"><thead><tr><th>PID</th><th>Parameter</th><th style="text-align:right">Value</th><th>Unit</th><th>Trend</th><th style="text-align:right">Hz</th></tr></thead><tbody id="rows"></tbody></table>
@@ -56,7 +68,7 @@ UI.onready = function () {
       var d = UI.Sim.at(UI.Sim.snapT - 20 + j * 0.5);
       pts.push(typeof k === 'string' ? (k === 'cool' ? 92 : k === 'iat' ? d.iat : d[k]) : k + Math.sin(j * .4 + i) * (k === 100 ? .25 : k === 62 ? .15 : .12));
     }
-    UI.spark(document.getElementById('sp' + i), pts, { w: 150, h: 30, min: r[4], max: r[5], fill: r[6] > 1, c: r[6] > 1 ? 'var(--lime)' : 'var(--cobalt-lt)' });
+    UI.spark(document.getElementById('sp' + i), pts, { w: 150, h: 30, min: r[4], max: r[5], fill: r[6] > 1, c: (UI.theme === 'ford' || r[6] > 1) ? 'var(--lime)' : 'var(--cobalt-lt)' });
   });
 };
 </script></body></html>

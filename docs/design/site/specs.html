@@ -23,17 +23,17 @@
   <div class="cap">Where each number comes from</div>
   <table class="t"><thead><tr><th>Field</th><th>Primary source</th><th>Fallback</th><th>Note</th></tr></thead><tbody>
     <tr><td><b>Rpm, speed</b></td><td>OBD PID 010C / 010D</td><td>Canbox frame, if the dialect carries it</td><td>The stock UI shows both, so the Canbox probably does. Confirm from a capture.</td></tr>
-    <tr><td><b>Boost</b></td><td>OBD: MAP (010B) minus BARO (0133)</td><td>None</td><td>The Canbox cannot provide it. Needs an adapter.</td></tr>
+    <tr><td><b>Boost</b></td><td>OBD: MAP (010B) minus BARO (0133)</td><td>No fallback</td><td>The Canbox cannot provide it. Needs an adapter.</td></tr>
     <tr><td><b>Coolant, intake, load, throttle, battery, fuel</b></td><td>OBD Mode 01</td><td>Canbox fuel level</td><td>Fuel level PID 012F; verify the car reports it.</td></tr>
-    <tr><td><b>Gear</b></td><td>Estimated from rpm ÷ speed</td><td>—</td><td>Always labelled <code>EST</code>.</td></tr>
-    <tr><td><b>Fuel use, range, consumption</b></td><td>Estimated from fuel-level change</td><td>—</td><td>No fuel-rate PID on this engine. Labelled <code>EST</code> everywhere.</td></tr>
-    <tr><td><b>Doors, tailgate, bonnet, radar, climate, outside temp, lights, steering angle</b></td><td>Canbox UART tap</td><td>None</td><td>Dialect unknown. Each field is optional and hidden if the car never sends it.</td></tr>
-    <tr><td><b>Tyre pressure</b></td><td>Canbox, if present</td><td>None</td><td>Marked ◇ on the Car screen; may not exist on a 2015 EcoSport.</td></tr>
-    <tr><td><b>Media, calls, contacts</b></td><td>Android MediaSession and Bluetooth HFP</td><td>—</td><td>Standard APIs, no vendor dependency.</td></tr>
+    <tr><td><b>Gear</b></td><td>Estimated from rpm ÷ speed</td><td>No fallback</td><td>Always labelled <code>EST</code>.</td></tr>
+    <tr><td><b>Fuel use, range, consumption</b></td><td>Estimated from fuel-level change</td><td>No fallback</td><td>No fuel-rate PID on this engine. Labelled <code>EST</code> everywhere.</td></tr>
+    <tr><td><b>Doors, tailgate, bonnet, radar, climate, outside temp, lights, steering angle</b></td><td>Canbox UART tap</td><td>No fallback</td><td>Dialect unknown. Each field is optional and hidden if the car never sends it.</td></tr>
+    <tr><td><b>Tyre pressure</b></td><td>Canbox, if present</td><td>No fallback</td><td>Marked ◇ on the Car screen; may not exist on a 2015 EcoSport.</td></tr>
+    <tr><td><b>Media, calls, contacts</b></td><td>Android MediaSession and Bluetooth HFP</td><td>No fallback</td><td>Standard APIs, no vendor dependency.</td></tr>
     <tr><td><b>Radio, DSP, camera</b></td><td>Vendor service</td><td>Launch the stock app</td><td>Highest risk. Design assumes an API; fall back to shortcuts if none exists.</td></tr>
   </tbody></table>
 
-  <div class="cap">Overlay priority (1 wins)</div>
+  <div class="cap">Overlay priority (1 = highest)</div>
   <table class="t"><thead><tr><th>P</th><th>Overlay</th><th>Blocks input</th><th>Dismiss</th></tr></thead><tbody>
     <tr><td>1</td><td>Reverse engaged · Coolant high</td><td>Yes</td><td>Gear change · tap (returns if still high after 60 s)</td></tr>
     <tr><td>2</td><td>Incoming call · Low battery</td><td>No</td><td>Answer or decline · automatic</td></tr>
@@ -45,7 +45,7 @@
   <div class="cap">Performance rules for the Compose build</div>
   <div class="two">
     <div class="pnl"><h3>Budget</h3><ul><li>Frame cost p99 ≤ 10 ms, zero missed vsyncs over a 10 minute drive cycle. Stretch: 5 ms.</li><li>No allocation in the draw phase of a gauge.</li><li>Cold start to interactive ≤ 4 s.</li><li>Measured with <code>dumpsys gfxinfo</code> on the real unit, not on the emulator.</li></ul></div>
-    <div class="pnl"><h3>Technique</h3><ul><li>Read gauge state inside <code>drawBehind</code>, so a new rpm redraws one layer and never recomposes.</li><li>Pre-build segment <code>Path</code>s once per size; per frame only choose the fill colour.</li><li>One <code>StateFlow&lt;VehicleSample&gt;</code>, sampled at display rate, shared by all screens.</li><li>Static backgrounds (grid, vignette, ambient glow) are cached bitmaps that are only moved. No blur, no shadows.</li><li>Two tiers, Rich and Lite. The app watches frame time on the unit and drops to Lite (no stagger, no ambient drift, solid cards) if more than 2 % of frames exceed 12 ms.</li><li>Ford theme tach: one <code>sweepGradient</code> arc, one <code>drawArc</code> per frame, tip as a rotated bitmap. Boot animation: pre-rendered, not computed at runtime.</li></ul></div>
+    <div class="pnl"><h3>Technique</h3><ul><li>Read gauge state inside <code>drawBehind</code>, so a new rpm redraws one layer and never recomposes.</li><li>Pre-build each segment <code>Path</code> once per size; per frame only choose the fill colour.</li><li>One <code>StateFlow&lt;VehicleSample&gt;</code>, sampled at display rate, shared by all screens.</li><li>Static backgrounds (grid, vignette, ambient glow) are cached bitmaps that are only moved. No blur, no shadows.</li><li>Two tiers, Rich and Lite. The app watches frame time on the unit and drops to Lite (no stagger, no ambient drift, solid cards) if more than 2 % of frames exceed 12 ms.</li><li>Ford theme tach: one <code>sweepGradient</code> arc, one <code>drawArc</code> per frame, tip as a rotated bitmap. Boot animation: pre-rendered, not computed at runtime.</li></ul></div>
   </div>
 
   <div class="cap">Open questions that change the design</div>

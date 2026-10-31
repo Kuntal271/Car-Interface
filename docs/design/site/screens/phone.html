@@ -7,18 +7,29 @@
 .pr .av{width:52px;height:52px;display:grid;place-items:center;background:var(--c25);font:800 24px var(--f-display);letter-spacing:.04em;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,0 100%)}
 .pr .t{font:600 23px var(--f-ui)} .pr .s{font:400 18px var(--f-ui);color:var(--dim)} .pr .tm{margin-left:auto;font:500 18px var(--f-mono);color:var(--dim)}
 .pr.miss .t{color:var(--lime)} .pr.miss .av{background:var(--accent);color:var(--on-accent)}
-.pr .call{width:56px;height:56px;display:grid;place-items:center;background:var(--c25);color:var(--text);box-shadow:inset 0 0 0 1px var(--hair)}
+.pr .call{flex:none;width:56px;height:56px;display:grid;place-items:center;background:var(--c25);color:var(--text);box-shadow:inset 0 0 0 1px var(--hair)}
+.pr .t{display:flex;align-items:center}
+.pr .mtag,.pr .fo{display:none}
+.dnum{padding:0 6px}
+.pv{color:var(--dim)}
+/* Ford theme: names stay white, amber Missed tag, round call buttons, backspace flush with the keypad edge, white measured value */
+html[data-theme="ford"] .pr.miss .t{color:var(--text)}
+html[data-theme="ford"] .pr .mtag{display:inline-flex;align-items:center;height:28px;margin-left:12px;padding:0 12px;border-radius:999px;background:var(--warn);color:var(--on-warn);font:700 18px var(--f-ui)}
+html[data-theme="ford"] .pr .fo{display:inline}
+html[data-theme="ford"] .pr .call{border-radius:50%}
+html[data-theme="ford"] .dnum{padding:0 0 0 6px}
+html[data-theme="ford"] .pv{color:var(--text)}
 </style></head>
 <body><div class="stage"><div class="frame" data-active="phone">
 <main class="main row g24" data-od-id="phone">
   <section class="col g12" style="width:470px">
     <div class="card row c g16 tight" style="height:84px" data-od-id="phone-link">
       <i data-i="phone" data-s="34" class="lime"></i>
-      <div class="grow"><div class="h3">Pixel 8</div><div class="lbl" style="letter-spacing:.04em;text-transform:none">Bluetooth hands-free · connected</div></div>
-      <div class="col" style="align-items:flex-end;gap:4px"><i data-i="signal" data-s="24" class="lime"></i><span class="mono">82 %</span></div>
+      <div class="grow"><div class="h3">Pixel 8</div><div class="lbl" style="letter-spacing:.04em;text-transform:none">Hands-free · connected</div></div>
+      <div class="col" style="align-items:flex-end;gap:4px"><i data-i="signal" data-s="24" class="lime"></i><span class="row c g8"><i data-i="batt" data-s="24" class="dim"></i><span class="mono pv">82%</span></span></div>
     </div>
     <div class="card col g12 grow" data-od-id="dialer" style="padding:16px">
-      <div class="row c jb" style="height:70px;padding:0 6px;border-bottom:1px solid var(--hair)"><span class="num" style="font-size:54px;letter-spacing:.04em">98765 43210</span><a class="btn ghost sq" style="min-height:56px;width:60px"><i data-i="chevl" data-s="28"></i></a></div>
+      <div class="row c jb dnum" style="height:70px;border-bottom:1px solid var(--hair)"><span class="num" style="font-size:54px;letter-spacing:.04em">98765 43210</span><a class="btn ghost sq" aria-label="Backspace" style="min-height:56px;width:60px;flex:none"><i data-i="chevl" data-s="28" class="cp-only"></i><svg class="ic ford-only" viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><path d="M9 5h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H9l-6.500-7z"/><path d="M12.500 9.500l5 5M17.500 9.500l-5 5"/></svg></a></div>
       <div class="grid grow" style="grid-template-columns:repeat(3,1fr);gap:10px">
         <a class="key"><b>1</b><small>&nbsp;</small></a><a class="key"><b>2</b><small>ABC</small></a><a class="key"><b>3</b><small>DEF</small></a>
         <a class="key"><b>4</b><small>GHI</small></a><a class="key"><b>5</b><small>JKL</small></a><a class="key"><b>6</b><small>MNO</small></a>
@@ -31,13 +42,13 @@
   <section class="col g12 grow" data-od-id="phone-lists">
     <div class="row jb c" style="height:48px"><div class="tabs"><span class="chip on">Recents</span><span class="chip">Contacts</span><span class="chip">Saved</span></div><a class="btn ghost" style="min-height:48px;padding:0 20px"><i data-i="search" data-s="22"></i>Search</a></div>
     <div class="card col grow" style="padding:6px 10px" data-od-id="recents">
-      <div class="pr miss"><span class="av">RK</span><div><div class="t">Rohan Kapoor</div><div class="s">Missed · mobile</div></div><span class="tm">19:42</span><a class="call"><i data-i="phone" data-s="24"></i></a></div>
+      <div class="pr miss"><span class="av">RK</span><div><div class="t">Rohan Kapoor<span class="mtag">Missed</span></div><div class="s"><span class="cp-only">Missed · mobile</span><span class="fo">Mobile</span></div></div><span class="tm">19:42</span><a class="call"><i data-i="phone" data-s="24"></i></a></div>
       <div class="pr"><span class="av">AM</span><div><div class="t">Aarav Mehta</div><div class="s">Outgoing · mobile · 4 min</div></div><span class="tm">18:05</span><a class="call"><i data-i="phone" data-s="24"></i></a></div>
       <div class="pr"><span class="av">HO</span><div><div class="t">Home</div><div class="s">Incoming · 12 min</div></div><span class="tm">17:30</span><a class="call"><i data-i="phone" data-s="24"></i></a></div>
       <div class="pr"><span class="av"><i data-i="user" data-s="26"></i></span><div><div class="t">+91 98123 45678</div><div class="s">Incoming · 1 min</div></div><span class="tm">Yesterday</span><a class="call"><i data-i="phone" data-s="24"></i></a></div>
       <div class="pr"><span class="av">SN</span><div><div class="t">Sneha Nair</div><div class="s">Outgoing · 7 min</div></div><span class="tm">Yesterday</span><a class="call"><i data-i="phone" data-s="24"></i></a></div>
-      <div class="pr"><span class="av">GA</span><div><div class="t">Garage · Service desk</div><div class="s">Incoming · 3 min</div></div><span class="tm">Wed</span><a class="call"><i data-i="phone" data-s="24"></i></a></div>
-      <div class="pr miss" style="border:0"><span class="av">VP</span><div><div class="t">Vikram Patel</div><div class="s">Missed · mobile</div></div><span class="tm">Wed</span><a class="call"><i data-i="phone" data-s="24"></i></a></div>
+      <div class="pr"><span class="av">GA</span><div><div class="t">Garage · service desk</div><div class="s">Incoming · 3 min</div></div><span class="tm">Wed</span><a class="call"><i data-i="phone" data-s="24"></i></a></div>
+      <div class="pr miss" style="border:0"><span class="av">VP</span><div><div class="t">Vikram Patel<span class="mtag">Missed</span></div><div class="s"><span class="cp-only">Missed · mobile</span><span class="fo">Mobile</span></div></div><span class="tm">Wed</span><a class="call"><i data-i="phone" data-s="24"></i></a></div>
     </div>
   </section>
 </main>

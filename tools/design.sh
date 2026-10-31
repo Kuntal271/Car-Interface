@@ -25,6 +25,12 @@ case "${1:-}" in
          done ;;
   bench) shift; for n in "$@"; do echo "== $n (JS update cost per frame, not raster)"; "$CHROME" --headless=new --disable-gpu --window-size=1280,800 --virtual-time-budget=6000 \
            --dump-dom "http://127.0.0.1:$PORT/screens/$n.html?raw=1&bench=1&noanim=1" 2>/dev/null | python3 -c "import sys,re; m=re.search(r'<pre id=\"bench-out\">(.*?)</pre>',sys.stdin.read(),re.S); print(m.group(1) if m else 'no bench output')"; done ;;
+  probe) shift; for n in "$@"; do echo "== $n"; "$CHROME" --headless=new --disable-gpu --window-size=1280,800 --virtual-time-budget=4000 \
+           --dump-dom "http://127.0.0.1:$PORT/screens/$n.html?raw=1&probe=1&noanim=1${Q:+&$Q}" 2>/dev/null | python3 "$(dirname "$SELF")/domgrab.py" probe-out; done ;;
+  probeall) cd "$ROOT/screens" && for f in *.html; do n="${f%.html}"
+              if [ "$n" = overlays ]; then for i in 1 2 3 4 5 6 7 8; do Q="one=$i" "$SELF" probe overlays | sed "s/^== overlays/== overlays#$i/"; done; else "$SELF" probe "$n"; fi; done ;;
+  rvshots) mkdir -p "$ROOT/shots/_rv"; cd "$ROOT/screens" && for f in *.html; do n="${f%.html}"
+              if [ "$n" = overlays ]; then for i in 1 2 3 4 5 6 7 8; do "$SELF" shotq overlays "_rv/overlays-$i" "one=$i&noanim=1"; done; else "$SELF" shotq "$n" "_rv/$n" "noanim=1"; fi; done ;;
   qaall) cd "$ROOT/screens" && for f in *.html; do "$SELF" qa "${f%.html}"; done ;;
-  *) echo "usage: $0 serve | shot <name...> | shotall"; exit 2 ;;
+  *) echo "usage: $0 serve | shot | shotq | shotall | qa | qaall | probe | probeall | bench"; exit 2 ;;
 esac

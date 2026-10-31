@@ -13,14 +13,35 @@
 .st .v{font:800 46px/.9 var(--f-display)}
 .mo{display:flex;align-items:center;gap:16px;height:52px;border-bottom:1px solid var(--hair-soft);font:500 21px var(--f-ui)}
 .mo:last-child{border:0} .mo .ic{color:var(--lime)} .mo b{font:800 28px var(--f-display);margin-left:auto}
+.chartc{flex:none;height:176px;padding-top:12px;padding-bottom:10px}
+.r1{height:76px;margin-top:2px} .r2{height:76px}
+/* ---- Ford-only variants (.fx shown in Ford, .cx shown in Cockpit); the Cockpit theme renders exactly as before ---- */
+.fx{display:none} html[data-theme="ford"] .fx{display:inline} html[data-theme="ford"] .cx{display:none}
+html[data-theme="ford"] .fx.row{display:flex}
+html[data-theme="ford"] .lbl.lnk{color:var(--lime)}                                      /* Reset = link: ice-cyan */
+html[data-theme="ford"] .live .v{font-size:38px}                                         /* Trip A / B are secondary */
+html[data-theme="ford"] .live .mono,html[data-theme="ford"] .tr .s,html[data-theme="ford"] .tr .d{white-space:nowrap}
+html[data-theme="ford"] .tr{height:auto;flex:1}                                           /* list rows share the column height */
+html[data-theme="ford"] .tr .k.lime{color:var(--text)}                                    /* measured value: white */
+html[data-theme="ford"] .st .v{font-size:40px}
+html[data-theme="ford"] .st{justify-content:space-between}                          /* labels share one line, numerals share one baseline */
+html[data-theme="ford"] .st.pri,html[data-theme="ford"] .r2 .st:first-child{flex:1.3}   /* both stat rows share the same column grid */
+html[data-theme="ford"] .st.pri .v{font-size:72px}                                        /* selected-trip distance is the primary element */
+html[data-theme="ford"] .st .v.hl{color:var(--lime)}                                      /* Max boost: cyan peak callout */
+html[data-theme="ford"] .r1{height:96px;margin-top:0} html[data-theme="ford"] .r2{height:68px}
+html[data-theme="ford"] .chartc{height:193px;padding-top:12px;padding-bottom:8px}
+html[data-theme="ford"] .mo{height:auto;flex:1;font-size:21px}
+html[data-theme="ford"] .lg{align-items:center;font:500 19px var(--f-ui);color:var(--dim)} html[data-theme="ford"] .lg span{display:inline-flex;align-items:center;gap:8px}
+#chartf{display:none;width:100%;height:141px;margin-top:8px} html[data-theme="ford"] #chartf{display:block}
+#chartf .ax{font:500 18px var(--f-ui);fill:var(--dim)}
 </style></head>
 <body><div class="stage"><div class="frame" data-active="apps">
 <main class="main row g24" data-od-id="trips">
   <section class="col g12" style="width:470px">
     <div class="row jb c" style="height:44px"><span class="h2">Trips</span><div class="tabs"><span class="chip on">All</span><span class="chip">Week</span></div></div>
     <div class="row g12">
-      <div class="card live grow col g8" data-od-id="trip-a"><div class="row jb c"><span class="lbl">Trip A</span><span class="lbl white">Reset</span></div><div class="v lime">42.8<span class="unit"> km</span></div><span class="mono">1 h 08 · since ignition</span></div>
-      <div class="card live grow col g8" data-od-id="trip-b"><div class="row jb c"><span class="lbl">Trip B</span><span class="lbl white">Reset</span></div><div class="v">1,204<span class="unit"> km</span></div><span class="mono">since last refuel</span></div>
+      <div class="card live grow col g8" data-od-id="trip-a"><div class="row jb c"><span class="lbl">Trip A</span><span class="lbl white lnk hit">Reset</span></div><div class="v lime">42.8<span class="unit"> km</span></div><span class="mono">1 h 08 · since ignition</span></div>
+      <div class="card live grow col g8" data-od-id="trip-b"><div class="row jb c"><span class="lbl">Trip B</span><span class="lbl white lnk hit">Reset</span></div><div class="v">1,204<span class="unit"> km</span></div><span class="mono">since last refuel</span></div>
     </div>
     <div class="card grow col" style="padding:6px 8px" data-od-id="trip-list">
       <div class="tr on"><div><div class="d">Today · 18:12</div><div class="s">1 h 08 · avg 38 km/h</div></div><span class="k lime">42.8</span><span class="unit">km</span></div>
@@ -35,22 +56,24 @@
   <section class="col g12 grow" data-od-id="trip-detail">
     <div class="card col g12" style="flex:none;padding-bottom:12px">
       <div class="row jb c"><span class="h3">Today · 18:12 → 19:20</span><span class="badge">Recorded by Cockpit</span></div>
-      <div class="row" style="height:76px;margin-top:2px">
-        <div class="st"><span class="lbl">Distance</span><span class="v lime">42.8<span class="unit"> km</span></span></div>
+      <div class="row r1">
+        <div class="st pri"><span class="lbl">Distance</span><span class="v lime">42.8<span class="unit"> km</span></span></div>
         <div class="st"><span class="lbl">Average</span><span class="v">38<span class="unit"> km/h</span></span></div>
         <div class="st"><span class="lbl">Top</span><span class="v">131<span class="unit"> km/h</span></span></div>
       </div>
       <div class="hr"></div>
-      <div class="row" style="height:76px">
-        <div class="st"><span class="lbl">Max boost</span><span class="v lime">+1.04<span class="unit"> bar</span></span></div>
+      <div class="row r2">
+        <div class="st"><span class="lbl">Max boost</span><span class="v lime hl">+1.04<span class="unit"> bar</span></span></div>
         <div class="st"><span class="lbl">Fuel · est.</span><span class="v">2.9<span class="unit"> L</span></span></div>
         <div class="st"><span class="lbl">Avg · est.</span><span class="v">6.8<span class="unit"> L/100</span></span></div>
       </div>
     </div>
-    <div class="card col" style="flex:none;height:176px;padding-top:12px;padding-bottom:10px" data-od-id="trip-chart">
-      <div class="row jb c"><span class="lbl">Speed &amp; boost</span><span class="row g16 mono"><span style="color:var(--cobalt)">■ speed</span><span class="lime">■ boost</span></span></div>
-      <svg id="chart" viewBox="0 0 560 150" width="100%" height="82" preserveAspectRatio="none" style="margin-top:8px"></svg>
-      <div class="row jb mono" style="margin-top:8px"><span>18:12</span><span>18:30</span><span>18:48</span><span>19:06</span><span>19:20</span></div>
+    <div class="card col chartc" data-od-id="trip-chart">
+      <div class="row jb c"><span class="lbl">Speed &amp; boost</span><span class="row g16 mono cx"><span style="color:var(--cobalt)">■ speed</span><span class="lime">■ boost</span></span>
+        <span class="row g24 lg fx"><span><svg width="30" height="12" viewBox="0 0 30 12"><line x1="0" x2="30" y1="6" y2="6" stroke="var(--lime)" stroke-width="3" stroke-linecap="round"/></svg>Speed</span><span><svg width="30" height="12" viewBox="0 0 30 12"><line x1="1" x2="29" y1="6" y2="6" stroke="var(--text)" stroke-width="3" stroke-dasharray="7 5"/></svg>Boost</span></span></div>
+      <svg id="chart" class="cx" viewBox="0 0 560 150" width="100%" height="82" preserveAspectRatio="none" style="margin-top:8px"></svg>
+      <div class="row jb mono cx" style="margin-top:8px"><span>18:12</span><span>18:30</span><span>18:48</span><span>19:06</span><span>19:20</span></div>
+      <svg id="chartf"></svg>
     </div>
     <div class="card grow col" style="padding-top:6px;padding-bottom:6px" data-od-id="moments">
       <div class="mo"><i data-i="bolt" data-s="26"></i>Peak boost at 4,950 rpm<b>18:31</b></div>
@@ -62,7 +85,36 @@
 </main>
 </div></div>
 <script>
+/* Ford: real-pixel chart. Left axis km/h 0-150, right axis bar -1..+2, x axis in true clock time (18:12 -> 19:20 = 68 min). */
+function fordChart() {
+  var svg = document.getElementById('chartf'), W = svg.clientWidth || 578, H = svg.clientHeight || 141, NS = 'http://www.w3.org/2000/svg';
+  var L = 40, R = 34, T = 30, B = H - 30, P = B - T, x0 = L, x1 = W - R, pad = 10, ax0 = x0 + pad, ax1 = x1 - pad, MIN = 68, s = '';
+  var gy = function (i) { return T + P * i / 3; };
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  var sp = [], bo = [], N = 79;
+  for (var i = 0; i <= N; i++) {
+    var d = UI.Sim.at(i * 1.25), x = ax0 + (ax1 - ax0) * i / N, b = d.boost > 0 ? d.boost * 1.04 / 0.95 : d.boost;   /* peak scaled to the printed Max boost +1.04 bar */
+    sp.push(x.toFixed(1) + ',' + (T + P * (1 - d.speed / 150)).toFixed(1));
+    bo.push(x.toFixed(1) + ',' + (T + P * (1 - (b + 1) / 3)).toFixed(1));
+  }
+  var lab = ['150', '100', '50', '0'], rlab = ['+2', '+1', '0', '\u22121'];
+  for (var g = 0; g <= 3; g++) {
+    s += '<line x1="' + x0 + '" x2="' + x1 + '" y1="' + gy(g) + '" y2="' + gy(g) + '" stroke="var(--dim)" stroke-opacity="' + (g === 3 ? .6 : .32) + '" stroke-width="' + (g === 3 ? 1.5 : 1) + '"/>';
+    s += '<text class="ax" x="' + (x0 - 6) + '" y="' + (gy(g) + 6) + '" text-anchor="end">' + lab[g] + '</text>';
+    s += '<text class="ax" x="' + (x1 + 6) + '" y="' + (gy(g) + 6) + '">' + rlab[g] + '</text>';
+  }
+  s += '<text class="ax" x="0" y="14">km/h</text><text class="ax" x="' + (x1 + 6) + '" y="14">bar</text>';
+  [['18:12', 0], ['18:30', 18], ['18:48', 36], ['19:06', 54], ['19:20', 68]].forEach(function (t) {
+    var x = ax0 + (ax1 - ax0) * t[1] / MIN;
+    s += '<line x1="' + x.toFixed(1) + '" x2="' + x.toFixed(1) + '" y1="' + B + '" y2="' + (B + 6) + '" stroke="var(--dim)" stroke-width="1.5"/>';
+    s += '<text class="ax" x="' + x.toFixed(1) + '" y="' + (B + 24) + '" text-anchor="middle">' + t[0] + '</text>';
+  });
+  s += '<polygon points="' + ax0 + ',' + B + ' ' + sp.join(' ') + ' ' + ax1 + ',' + B + '" fill="var(--lime)" opacity=".16"/><polyline points="' + sp.join(' ') + '" fill="none" stroke="var(--lime)" stroke-width="2.5" stroke-linejoin="round"/>';
+  s += '<polyline points="' + bo.join(' ') + '" fill="none" stroke="var(--text)" stroke-width="2.5" stroke-dasharray="7 5" stroke-linejoin="round"/>';
+  svg.innerHTML = s;
+}
 UI.onready = function () {
+  if (UI.theme === 'ford') { fordChart(); return; }
   var W = 560, H = 150, sp = [], bo = [], s = '';
   for (var i = 0; i <= 80; i++) { var d = UI.Sim.at(i * 1.25); sp.push((i / 80 * W).toFixed(1) + ',' + (H - d.speed / 140 * H).toFixed(1)); bo.push((i / 80 * W).toFixed(1) + ',' + (H - ((d.boost + 1) / 2.5) * H).toFixed(1)); }
   for (var g = 0; g <= 3; g++) s += '<line x1="0" x2="' + W + '" y1="' + (g * H / 3) + '" y2="' + (g * H / 3) + '" stroke="rgba(var(--cobalt-rgb),.25)"/>';
