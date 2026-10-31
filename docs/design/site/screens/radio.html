@@ -10,11 +10,13 @@
 #freq{margin-top:8px}
 .fx{display:none} html[data-theme="ford"] .fx{display:inline} html[data-theme="ford"] .cx{display:none}
 html[data-theme="ford"] .chip.c.fm{background:var(--accent);color:var(--on-accent)}            /* selected band: blue fill, white text */
-html[data-theme="ford"] .sg{font:600 20px var(--f-ui);color:var(--text);white-space:nowrap}      /* signal strength value */
+html[data-theme="ford"] .sg{font:600 24px var(--f-display);color:var(--text);white-space:nowrap}      /* signal strength value (Barlow Condensed numerals) */
 html[data-theme="ford"] .sg .unit{font-size:18px}
 html[data-theme="ford"] #fcol{align-self:flex-start} html[data-theme="ford"] #freq{line-height:.82;margin-top:-5px}                                   /* tighter numeral box so the ruler keeps its full 70 px */
 html[data-theme="ford"] #ruler{flex:none}
 html[data-theme="ford"] .btn .unit{font-size:19px}
+html[data-theme="ford"] .btn .stv{font:600 26px var(--f-display)}                                 /* 0.1 step value: Barlow Condensed */
+html[data-theme="ford"] .badge.rds:not(.lime):not(.fill):not(.warn){color:var(--lime);box-shadow:inset 0 0 0 1px rgba(var(--lime-rgb),.5)}   /* RDS: ice-cyan outline like Stereo */
 html[data-theme="ford"] .btn.pri.sv{background:rgba(var(--cobalt-lt-rgb),.14);color:var(--text);box-shadow:inset 0 0 0 1px var(--hair)}   /* Save preset is secondary */
 html[data-theme="ford"] .pre{height:98px;padding:10px 16px}                                      /* two rows + 24 px bottom margin */
 html[data-theme="ford"] .pre b{line-height:.8}
@@ -27,7 +29,7 @@ html[data-theme="ford"] .pre.sel .p,html[data-theme="ford"] .pre.sel b,html[data
 <main class="main col g12" data-od-id="radio">
   <div class="row jb c" style="height:48px">
     <div class="tabs"><a href="media.html" class="chip">Bluetooth</a><a href="media.html" class="chip">USB</a><span class="chip on">Radio</span><a class="chip">Streaming</a></div>
-    <div class="row g12 c"><span class="chip c fm" style="height:40px">FM</span><span class="chip" style="height:40px">AM</span><span class="badge lime">Stereo</span><span class="badge">RDS</span><span class="row c g8 lime"><i data-i="signal" data-s="26"></i><span class="lbl white">Strong</span><span class="sg fx">48<span class="unit">dBµV</span></span></span></div>
+    <div class="row g12 c"><span class="chip c fm" style="height:40px">FM</span><span class="chip" style="height:40px">AM</span><span class="badge lime">Stereo</span><span class="badge rds">RDS</span><span class="row c g8 lime"><i data-i="signal" data-s="26"></i><span class="lbl white">Strong</span><span class="sg fx">48<span class="unit">dBµV</span></span></span></div>
   </div>
   <div class="card col" style="height:308px;padding:16px 22px" data-od-id="tuner">
     <div class="row g24 c" style="flex:1">
@@ -42,8 +44,8 @@ html[data-theme="ford"] .pre.sel .p,html[data-theme="ford"] .pre.sel b,html[data
   </div>
   <div class="row g12" style="height:96px">
     <a class="btn big grow"><i data-i="prev" data-s="30"></i>Seek</a>
-    <a class="btn big grow"><i data-i="minus" data-s="30"></i><span>0.1<span class="unit fx">MHz</span></span></a>
-    <a class="btn big grow"><i data-i="plus" data-s="30"></i><span>0.1<span class="unit fx">MHz</span></span></a>
+    <a class="btn big grow"><i data-i="minus" data-s="30"></i><span class="stv">0.1<span class="unit fx">MHz</span></span></a>
+    <a class="btn big grow"><i data-i="plus" data-s="30"></i><span class="stv">0.1<span class="unit fx">MHz</span></span></a>
     <a class="btn big grow">Seek<i data-i="next" data-s="30"></i></a>
     <a class="btn big pri sv" style="width:290px"><i data-i="plus" data-s="26"></i>Save preset</a>
   </div>
@@ -72,7 +74,7 @@ UI.onready = function () {
   for (var f = lo; f <= hi + .001; f += 0.5) {
     var x = X(f), maj = Math.abs(f - Math.round(f)) < .01, big = maj && Math.round(f) % 2 === 0;
     s += '<line x1="' + x + '" x2="' + x + '" y1="' + (big ? 26 : maj ? 32 : 40) + '" y2="62" stroke="' + (f > 93.4 && f < 93.6 ? 'var(--lime)' : 'var(--cobalt-lt)') + '" stroke-width="' + (maj ? 2 : 1.2) + '"/>';
-    if (big) s += '<text x="' + x + '" y="20" text-anchor="middle" font-family="var(--f-mono)" font-weight="500" font-size="18" fill="var(--dim)">' + Math.round(f) + '</text>';
+    if (big) s += '<text x="' + x + '" y="20" text-anchor="middle" font-family="' + (UI.theme === 'ford' ? 'var(--f-display)' : 'var(--f-mono)') + '" font-weight="500" font-size="' + (UI.theme === 'ford' ? 20 : 18) + '" fill="var(--dim)">' + Math.round(f) + '</text>';
   }
   st.forEach(function (f) { var x = X(f); s += '<path d="M' + (x - 6) + ' 68l6-8 6 8z" fill="var(--cobalt)"/>'; });
   var nx = X(93.5);

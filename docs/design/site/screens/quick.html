@@ -14,6 +14,9 @@
 /* ---- Ford theme: modal scrim .8, inactive tile icons dim ---- */
 html[data-theme="ford"] .dimmer{background:rgba(var(--bg-rgb),.8)}
 html[data-theme="ford"] .qt:not(.on) .ic{color:var(--dim)}
+/* Ford: the tile grid fills the panel content height, so its bottom edge meets the All settings / Power menu pill row (12 px row gap kept) */
+html[data-theme="ford"] .qgrid{grid-template-rows:repeat(2,minmax(0,1fr));grid-auto-rows:auto;align-content:stretch}
+html[data-theme="ford"] .qgrid .qt{height:auto}
 </style></head>
 <body><div class="stage"><div class="frame" data-shell="0" data-active="home">
 <iframe id="bkf" class="bkf" title="Home" tabindex="-1"></iframe><div class="dimmer"></div>
@@ -24,7 +27,7 @@ html[data-theme="ford"] .qt:not(.on) .ic{color:var(--dim)}
       <div><div class="row jb c"><span class="lbl row c g8"><i data-i="vol" data-s="22"></i>Volume</span><span class="num n-s lime">18<span class="unit"> / 30</span></span></div><div class="slider" data-v=".6" data-n="22"></div></div>
       <div class="row g12"><a href="settings.html" class="btn grow ghost"><i data-i="sliders" data-s="24"></i>All settings</a><a class="btn ghost"><i data-i="power" data-s="24"></i>Power menu</a></div>
     </div>
-    <div class="grid grow" style="grid-template-columns:repeat(4,1fr);grid-auto-rows:118px;gap:12px;align-content:center">
+    <div class="grid grow qgrid" style="grid-template-columns:repeat(4,1fr);grid-auto-rows:118px;gap:12px;align-content:center">
       <a class="qt on"><i data-i="wifi" data-s="34"></i>Wi-Fi</a><a class="qt on"><i data-i="bt" data-s="34"></i>Bluetooth</a><a class="qt"><i data-i="signal" data-s="34"></i>Hotspot</a><a class="qt"><i data-i="mute" data-s="34"></i>Mute</a>
       <a class="qt"><i data-i="moon" data-s="34"></i>Night</a><a class="qt"><i data-i="power" data-s="34"></i>Screen off</a><a class="qt"><i data-i="camera" data-s="34"></i>Dash cam</a><a class="qt"><i data-i="gauge" data-s="34"></i>Simulator</a>
     </div>

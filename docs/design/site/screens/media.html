@@ -8,6 +8,8 @@
 .q .n{font:500 18px var(--f-mono);color:var(--dim);width:28px}
 .q .t{font:600 22px var(--f-ui)} .q .a{font:400 18px var(--f-ui);color:var(--dim)} .q .d{margin-left:auto;font:500 18px var(--f-mono);color:var(--dim)}
 .q.on{background:linear-gradient(90deg,var(--l12),transparent);box-shadow:inset 4px 0 0 var(--accent)} .q.on .n,.q.on .t{color:var(--lime)}
+html[data-theme="ford"] .tm,html[data-theme="ford"] .q .n,html[data-theme="ford"] .q.on .n,html[data-theme="ford"] .q .d{color:var(--text)}   /* measured values: white */
+html[data-theme="ford"] .q .n,html[data-theme="ford"] .q .d{font-family:var(--f-display);font-size:20px;letter-spacing:.02em}   /* numerals: Barlow Condensed */
 .fx{display:none} html[data-theme="ford"] .fx{display:inline}   /* Ford-only additions; the Cockpit theme renders exactly as before */
 </style></head>
 <body><div class="stage"><div class="frame" data-active="media">
@@ -18,7 +20,7 @@
       <div class="art" style="width:290px;height:290px;flex:none;align-self:center"></div>
       <div class="col grow jb" style="min-width:0">
         <div><span class="badge">FLAC · 44.1 kHz</span><div class="title" style="margin-top:14px">Midnight City</div><div class="h3 dim" style="margin-top:10px">M83</div><div class="lbl" style="margin-top:8px">Hurry Up, We're Dreaming</div></div>
-        <div><div class="seg thin sk" data-n="40" data-v=".38" data-c="l"></div><div class="row jb mono" style="margin-top:6px"><span>1:32</span><span>−2:31</span></div></div>
+        <div><div class="seg thin sk" data-n="40" data-v=".38" data-c="l"></div><div class="row jb mono tm" style="margin-top:6px"><span>1:32</span><span>−2:31</span></div></div>
         <div class="row g12"><a class="btn grow"><i data-i="prev" data-s="30"></i></a><a class="btn pri grow" style="min-height:80px"><i data-i="pause" data-s="40"></i></a><a class="btn grow"><i data-i="next" data-s="30"></i></a></div>
       </div>
     </div>
@@ -29,7 +31,7 @@
     </div>
   </section>
   <section class="card col grow" style="padding:14px 10px" data-od-id="queue">
-    <div class="row jb c" style="padding:0 10px 12px"><span class="h3">Up next</span><span class="lbl">12 tracks</span></div>
+    <div class="row jb c" style="padding:0 10px 12px"><span class="h3">Up next</span><span class="lbl cp-only">12 tracks</span><span class="lbl ford-only">1–8 of 12</span></div>
     <div class="q on"><span class="n">01</span><div><div class="t">Midnight City</div><div class="a">M83</div></div><span class="d">4:03</span></div>
     <div class="q"><span class="n">02</span><div><div class="t">Genesis</div><div class="a">Justice</div></div><span class="d">3:55</span></div>
     <div class="q"><span class="n">03</span><div><div class="t">Nightcall</div><div class="a">Kavinsky</div></div><span class="d">4:18</span></div>

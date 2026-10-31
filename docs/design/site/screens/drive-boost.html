@@ -28,13 +28,14 @@ html[data-theme="ford"] .lbl.ttl{color:var(--text);font-weight:600}
 html[data-theme="ford"] .badge.armed{background:transparent;color:var(--lime);box-shadow:inset 0 0 0 1px rgba(var(--lime-rgb),.5)}
 html[data-theme="ford"] .best,html[data-theme="ford"] .best b.white,html[data-theme="ford"] .best .unit{color:var(--lime)}
 html[data-theme="ford"] .best{font-size:22px;font-weight:600}
+html[data-theme="ford"] .badge.src:not(.lime):not(.fill):not(.warn){color:var(--dim)}   /* a source note, not a value: dim text */
 </style></head>
 <body><div class="stage"><div class="frame" data-active="drive">
 <main class="main row g24" data-od-id="drive-boost">
   <section class="col g12" style="width:660px">
     <div class="row jb c" style="height:44px">
       <div class="tabs"><a href="drive.html" class="chip">Cluster</a><a class="chip on">Boost</a><a href="drive-cruise.html" class="chip">Cruise</a></div>
-      <span class="badge">Source · OBD MAP − BARO</span>
+      <span class="badge src">Source · OBD MAP − BARO</span>
     </div>
     <div class="card col" style="height:372px;padding:10px 14px" data-od-id="boost-arc">
       <svg id="arc" viewBox="0 0 640 350" width="632" height="348"></svg>

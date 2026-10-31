@@ -11,9 +11,14 @@
 .prov{font:500 18px var(--f-mono);color:var(--dim)}
 .vent{height:56px;display:grid;place-items:center;color:var(--dim);background:var(--c12);box-shadow:inset 0 0 0 1px var(--hair)}
 .vents{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-html[data-theme="ford"] .vent{border-radius:20px}
-html[data-theme="ford"] .st .sv{color:var(--text)}
 .vent.on{background:var(--accent);color:var(--on-accent);box-shadow:none}
+/* Ford: the climate card is view only. Airflow = non-interactive indicators (live = ice-cyan icon + thin cyan outline, off = dim icon);
+   A/C pill = cyan outline live indicator; status values all white; map title in the title style */
+html[data-theme="ford"] .vent{border-radius:999px;background:none;box-shadow:none;color:var(--dim)}
+html[data-theme="ford"] .vent.on{background:none;color:var(--lime);box-shadow:inset 0 0 0 1.5px var(--lime)}
+html[data-theme="ford"] .badge.fill.live{background:none;color:var(--lime);box-shadow:inset 0 0 0 1.5px var(--lime)}
+html[data-theme="ford"] .st,html[data-theme="ford"] .st.off{color:var(--text)}
+html[data-theme="ford"] .lbl.vt{font:600 28px/1.1 var(--f-display);letter-spacing:.012em;color:var(--text)}
 </style></head>
 <body><div class="stage"><div class="frame" data-active="car">
 <main class="main row g24" data-od-id="car">
@@ -31,7 +36,7 @@ html[data-theme="ford"] .st .sv{color:var(--text)}
   </section>
 
   <section class="grow col g12" data-od-id="car-top">
-    <div class="row jb c" style="height:44px"><span class="lbl">Vehicle · top view</span><span class="badge lime">1 open</span></div>
+    <div class="row jb c" style="height:44px"><span class="lbl vt">Vehicle · top view</span><span class="badge lime">1 open</span></div>
     <div id="carbox" class="grow" style="position:relative"></div>
     <div class="warn" style="justify-content:center;font-size:26px;padding:10px 20px;height:56px"><i data-i="warn" data-s="30"></i>Rear left door open</div>
   </section>
@@ -42,7 +47,7 @@ html[data-theme="ford"] .st .sv{color:var(--text)}
       <div class="num n-m" style="margin-top:12px">31<span class="unit t">°C</span></div>
     </div>
     <div class="card col grow jb" data-od-id="climate">
-      <div class="row jb c"><span class="lbl row c g8"><i data-i="snow" data-s="22"></i>Climate</span><span class="badge fill">A/C on</span></div>
+      <div class="row jb c"><span class="lbl row c g8"><i data-i="snow" data-s="22"></i>Climate</span><span class="badge fill live">A/C on</span></div>
       <div class="row" style="align-items:baseline"><span class="num n-xl">22.0</span><span class="unit t" style="font-size:28px">°C</span></div>
       <div>
         <div class="row jb c" style="margin-bottom:8px"><span class="lbl">Fan</span><span class="lbl white">3 / 7</span></div>
@@ -50,7 +55,7 @@ html[data-theme="ford"] .st .sv{color:var(--text)}
       </div>
       <div>
         <div class="lbl" style="margin-bottom:8px">Airflow</div>
-        <div class="vents"><span class="vent on"><i data-i="user" data-s="28"></i></span><span class="vent"><i data-i="chevd" data-s="28"></i></span><span class="vent"><i data-i="defrost" data-s="28"></i></span><span class="vent on"><i data-i="recirc" data-s="28"></i></span></div>
+        <div class="vents" role="group" aria-label="Airflow (view only)"><span class="vent on" role="img" aria-label="Face, active"><i data-i="user" data-s="28"></i></span><span class="vent" role="img" aria-label="Feet, off"><i data-i="chevd" data-s="28"></i></span><span class="vent" role="img" aria-label="Defrost, off"><i data-i="defrost" data-s="28"></i></span><span class="vent on" role="img" aria-label="Recirculation, active"><i data-i="recirc" data-s="28"></i></span></div>
       </div>
     </div>
   </section>
@@ -58,12 +63,14 @@ html[data-theme="ford"] .st .sv{color:var(--text)}
 </div></div>
 <script>
 UI.onready = function () {
-  var t = function (x, y, anchor, v) { return '<text x="' + x + '" y="' + y + '" text-anchor="' + anchor + '" font-family="var(--f-display)" font-weight="800" font-size="40" fill="var(--text)">' + v + '</text><text x="' + x + '" y="' + (y + 22) + '" text-anchor="' + anchor + '" font-family="var(--f-ui)" font-weight="600" font-size="19" letter-spacing="2" fill="var(--dim)" class="uc">bar</text>'; };
+  var ford = UI.theme === 'ford', um = ford ? 24 : 22;   /* Ford's taller viewBox scales the drawing down ~7%, so small SVG text gets a little larger */
+  var t = function (x, y, anchor, v) { return '<text x="' + x + '" y="' + y + '" text-anchor="' + anchor + '" font-family="var(--f-display)" font-weight="800" font-size="40" fill="var(--text)">' + v + '</text><text x="' + x + '" y="' + (y + (ford ? 24 : 22)) + '" text-anchor="' + anchor + '" font-family="var(--f-ui)" font-weight="600" font-size="' + (ford ? 21 : 19) + '" letter-spacing="2" fill="var(--dim)" class="uc">bar</text>'; };
+  var rdg = function (x, y, v) { return '<text x="' + x + '" y="' + y + '" text-anchor="middle" font-family="var(--f-display)" font-weight="800" font-size="40" fill="var(--text)">' + v + '<tspan dx="6" font-family="var(--f-ui)" font-weight="500" font-size="' + um + '" fill="var(--dim)">m</tspan></text>'; };
   var amber = function (svg) { return svg.replace(/stroke="var\(--lime\)"/g, 'stroke="var(--warn)"'); };   /* nearest rear sensor under 0.8 m: amber */
   var extra = UI.radar([0, 1, 1, 0], 38, -1) + amber(UI.radar([1, 2, 3, 1], 548, 1)) +
-    '<text x="196" y="652" text-anchor="middle" font-family="var(--f-display)" font-weight="800" font-size="40" fill="var(--text)">0.6<tspan dx="6" font-family="var(--f-ui)" font-weight="500" font-size="22" fill="var(--dim)">m</tspan></text>' +
+    rdg(196, 652, '0.6') + (ford ? rdg(160, -38, '1.8') : '') +
     t(36, 122, 'end', '2.3') + t(284, 122, 'start', '2.3') + t(36, 406, 'end', '2.4') + t(284, 406, 'start', '2.2') +
-    '<path d="M266 242H284" stroke="var(--text)" stroke-width="2"/><text x="292" y="249" font-family="var(--f-ui)" font-weight="600" font-size="20" fill="var(--text)">Driver</text>';
-  document.getElementById('carbox').innerHTML = UI.car({ rl: true, vb: '-50 -26 420 684', extra: extra }).replace('<svg ', '<svg style="position:absolute;inset:0;width:100%;height:100%" ');
+    '<path d="M266 242H284" stroke="var(--text)" stroke-width="2"/><text x="292" y="249" font-family="var(--f-ui)" font-weight="600" font-size="' + (ford ? 22 : 20) + '" fill="var(--text)">Driver</text>';
+  document.getElementById('carbox').innerHTML = UI.car({ rl: true, vb: ford ? '-50 -78 420 736' : '-50 -26 420 684', extra: extra }).replace('<svg ', '<svg style="position:absolute;inset:0;width:100%;height:100%" ');
 };
 </script></body></html>

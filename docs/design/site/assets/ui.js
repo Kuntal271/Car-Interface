@@ -193,7 +193,8 @@
       };
       var fr = o.red / o.max * 270, lo = UI.rgb('--cobalt-rgb').map(function (x) { return x * .62; }), hi = UI.rgb('--lime-rgb');
       var ticks = '', ta;
-      for (ta = fr; ta < 270; ta += 3.2) ticks += ',rgba(var(--warn-rgb),.85) ' + ta.toFixed(1) + 'deg,rgba(var(--warn-rgb),.85) ' + Math.min(270, ta + 1.3).toFixed(1) + 'deg,transparent ' + Math.min(270, ta + 1.3).toFixed(1) + 'deg,transparent ' + Math.min(270, ta + 3.2).toFixed(1) + 'deg';
+      var nStr = Math.max(1, Math.round((270 - fr) / 3.2)), pitch = (270 - fr) / nStr, k;
+      for (k = 0; k < nStr; k++) { ta = fr + k * pitch; ticks += ',rgba(var(--warn-rgb),.85) ' + ta.toFixed(2) + 'deg,rgba(var(--warn-rgb),.85) ' + (ta + 1.3).toFixed(2) + 'deg,transparent ' + (ta + 1.3).toFixed(2) + 'deg,transparent ' + (ta + pitch).toFixed(2) + 'deg'; }
       var track = 'conic-gradient(from -135deg at 50% 50%,rgba(var(--dim-rgb),.13) 0deg,rgba(var(--dim-rgb),.13) ' + fr + 'deg,transparent ' + fr + 'deg' + ticks + ')';
       var lit = 'conic-gradient(from -135deg at 50% 50%,rgb(' + lo.map(Math.round) + ') 0deg,rgb(' + hi + ') ' + (fr * .72) + 'deg,rgb(' + hi + ') ' + fr + 'deg,var(--warn) ' + fr + 'deg,var(--warn) 270deg)';
       mk('ttrack', track, 'conic-gradient(from -135deg at 50% 50%,#000 0deg,#000 270deg,transparent 270deg)');

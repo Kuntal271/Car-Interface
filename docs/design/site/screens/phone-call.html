@@ -12,10 +12,13 @@
 .timer{font-size:112px} .cname{font-size:66px} .callno{font-size:20px}
 .ctls{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .endc{font-size:30px;min-height:120px}
+.fx{display:none} html[data-theme="ford"] .fx{display:inline} html[data-theme="ford"] .cx{display:none}   /* Ford-only / Cockpit-only variants */
 /* Ford theme: the caller is the primary element, the timer and End call step back */
 html[data-theme="ford"] .avatar{width:250px;height:250px;font-size:128px}
 html[data-theme="ford"] .cname{font-size:76px}
-html[data-theme="ford"] .callno{color:var(--text)}
+html[data-theme="ford"] .callno{color:var(--text);font-family:var(--f-display);font-size:28px;font-weight:600;letter-spacing:.02em}   /* caller number: Barlow Condensed */
+html[data-theme="ford"] .ctl .ic{color:var(--text)}      /* control glyphs: white, not periwinkle */
+html[data-theme="ford"] .micv{color:var(--text);margin-left:6px}   /* measured level: white; the label stays dim */
 html[data-theme="ford"] .timer{font-size:64px}
 html[data-theme="ford"] .ctls{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(3,minmax(0,1fr));flex:1;min-height:0}
 html[data-theme="ford"] .ctl{height:auto}
@@ -30,7 +33,7 @@ html[data-theme="ford"] .endc{flex:none;height:96px;min-height:96px}
     <div>
       <div class="num lime timer">00:42</div>
       <div class="seg thin sk" data-n="40" data-v=".7" data-c="c" style="margin-top:12px"></div>
-      <div class="row jb mono" style="margin-top:6px"><span>Audio · car speakers</span><span>mic level</span></div>
+      <div class="row jb mono" style="margin-top:6px"><span>Audio · car speakers</span><span><span class="cx">mic level</span><span class="fx">Mic level <span class="micv">−18 dB</span></span></span></div>
     </div>
   </section>
   <section class="col g12" style="width:536px">

@@ -11,6 +11,12 @@
 .cell{flex:1;padding:0 22px;border-right:1px solid var(--hair-soft);display:flex;flex-direction:column;justify-content:center;gap:6px}
 .cell:last-child{border:0}
 .cell .v{font:800 40px/.9 var(--f-display)}
+.bv{display:flex;align-items:baseline;gap:12px;margin:6px 0 10px}
+/* Ford: value + unit share one baseline (flex, baseline-aligned) and one fixed gap = the unit's 6 px margin; the markup's spaces drop out of the flex flow.
+   Cockpit keeps its inline flow and text spaces. */
+html[data-theme="ford"] .bv{gap:0}
+html[data-theme="ford"] .tile .v,html[data-theme="ford"] .cell .v{display:flex;align-items:baseline}
+html[data-theme="ford"] .cell .unit,html[data-theme="ford"] .cell .unit.t{margin-left:6px}
 </style></head>
 <body><div class="stage"><div class="frame" data-active="drive">
 <main class="main" data-od-id="drive">
@@ -31,7 +37,7 @@
   <section class="abs col g12" style="left:652px;top:44px;width:492px" data-od-id="drive-right">
     <div class="card col" style="height:262px" data-od-id="boost">
       <div class="row jb c"><span class="lbl row c g8"><i data-i="bolt" data-s="22"></i>Boost</span><span class="badge lime">Peak <span id="peak">+1.04</span> bar</span></div>
-      <div class="row" style="align-items:baseline;gap:12px;margin:6px 0 10px"><span id="boost" class="num lime" style="font-size:120px">+0.95</span><span class="unit">bar</span></div>
+      <div class="bv"><span id="boost" class="num lime" style="font-size:120px">+0.95</span><span class="unit">bar</span></div>
       <div id="boostbar" class="seg sk" data-n="44" data-zero=".4" data-v=".78" style="height:28px"></div>
       <div class="scale"><span class="e0" style="left:0">−1.0</span><span style="left:40%">0</span><span style="left:60%">+0.5</span><span style="left:80%">+1.0</span><span class="e1" style="right:0">+1.5</span></div>
     </div>
@@ -49,7 +55,7 @@
     <div class="cell"><span class="lbl">Trip A</span><span class="v">42.8 <span class="unit">km</span></span></div>
     <div class="cell"><span class="lbl">Average</span><span class="v">38 <span class="unit">km/h</span></span></div>
     <div class="cell"><span class="lbl">Top speed</span><span class="v">131 <span class="unit">km/h</span></span></div>
-    <div class="cell"><span class="lbl">0–100 best</span><span class="v lime">12.3 <span class="unit">s</span></span></div>
+    <div class="cell"><span class="lbl">0–100 best</span><span class="v lime best">12.3 <span class="unit">s</span></span></div>
     <div class="cell"><span class="lbl">Engine load</span><span class="v"><span id="load">88</span> <span class="unit t">%</span></span></div>
   </section>
 </main>

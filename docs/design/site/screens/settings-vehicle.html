@@ -11,9 +11,10 @@
 .src:last-child{border:0} .src .t{font:600 22px var(--f-ui)} .src .s{font:400 18px var(--f-ui);color:var(--dim)}
 .cat{display:flex;align-items:center;gap:16px;height:62px;padding:0 18px;font:700 20px var(--f-display);letter-spacing:.1em;text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--hair-soft)}
 .cat.on{color:var(--text);background:linear-gradient(90deg,var(--l12),transparent);box-shadow:inset 4px 0 0 var(--accent)} .cat .ic{color:var(--cobalt-lt)} .cat.on .ic{color:var(--lime)}
+.fx{display:none} html[data-theme="ford"] .fx{display:inline} html[data-theme="ford"] .cx{display:none}   /* Ford-only / Cockpit-only variants */
 /* Ford theme: "Listening" = ice-cyan outline live indicator, like "Live" */
 html[data-theme="ford"] .badge.listen{color:var(--lime);box-shadow:inset 0 0 0 1px rgba(var(--lime-rgb),.5)}
-html[data-theme="ford"] .stp .val{min-width:132px}   /* leaves room for threshold labels to stay on one line */
+html[data-theme="ford"] .stp .val{min-width:136px;white-space:nowrap}   /* leaves room for threshold labels to stay on one line; wide enough for "10,000 km" so every row has identical geometry */
 </style></head>
 <body><div class="stage"><div class="frame" data-active="settings">
 <main class="main row g24" data-od-id="settings-vehicle">
@@ -30,7 +31,7 @@ html[data-theme="ford"] .stp .val{min-width:132px}   /* leaves room for threshol
       <div class="stp"><span class="grow">Low battery</span><a class="b"><i data-i="minus" data-s="22"></i></a><span class="val">12.0 <span class="unit">V</span></span><a class="b"><i data-i="plus" data-s="22"></i></a></div>
       <div class="stp"><span class="grow">Low fuel</span><a class="b"><i data-i="minus" data-s="22"></i></a><span class="val">15 <span class="unit t">%</span></span><a class="b"><i data-i="plus" data-s="22"></i></a></div>
       <div class="stp"><span class="grow">Low tyre pressure</span><a class="b"><i data-i="minus" data-s="22"></i></a><span class="val">1.9 <span class="unit">bar</span></span><a class="b"><i data-i="plus" data-s="22"></i></a></div>
-      <div class="stp"><span class="grow">Service reminder</span><a class="b"><i data-i="minus" data-s="22"></i></a><span class="val">10,000 <span class="unit">km</span></span><a class="b"><i data-i="plus" data-s="22"></i></a></div>
+      <div class="stp"><span class="grow"><span class="cx">Service reminder</span><span class="fx">Service every</span></span><a class="b"><i data-i="minus" data-s="22"></i></a><span class="val">10,000 <span class="unit">km</span></span><a class="b"><i data-i="plus" data-s="22"></i></a></div>
     </div>
   </section>
   <section class="col g12 grow">

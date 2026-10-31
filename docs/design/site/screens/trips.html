@@ -32,6 +32,10 @@ html[data-theme="ford"] .r1{height:96px;margin-top:0} html[data-theme="ford"] .r
 html[data-theme="ford"] .chartc{height:193px;padding-top:12px;padding-bottom:8px}
 html[data-theme="ford"] .mo{height:auto;flex:1;font-size:21px}
 html[data-theme="ford"] .lg{align-items:center;font:500 19px var(--f-ui);color:var(--dim)} html[data-theme="ford"] .lg span{display:inline-flex;align-items:center;gap:8px}
+/* round 2: selected trip row = solid Ford-blue fill with white text (drops the teal gradient + left bar); header chip = dim text, neutral outline */
+html[data-theme="ford"] .tr.on{background:var(--accent);background-image:none;box-shadow:none;border-bottom-color:transparent;color:var(--on-accent)}
+html[data-theme="ford"] .tr.on .d,html[data-theme="ford"] .tr.on .s,html[data-theme="ford"] .tr.on .k,html[data-theme="ford"] .tr.on .k.lime,html[data-theme="ford"] .tr.on .unit{color:var(--on-accent)}
+html[data-theme="ford"] .badge.rec:not(.lime):not(.fill):not(.warn){color:var(--dim)}
 #chartf{display:none;width:100%;height:141px;margin-top:8px} html[data-theme="ford"] #chartf{display:block}
 #chartf .ax{font:500 18px var(--f-ui);fill:var(--dim)}
 </style></head>
@@ -55,7 +59,7 @@ html[data-theme="ford"] .lg{align-items:center;font:500 19px var(--f-ui);color:v
 
   <section class="col g12 grow" data-od-id="trip-detail">
     <div class="card col g12" style="flex:none;padding-bottom:12px">
-      <div class="row jb c"><span class="h3">Today · 18:12 → 19:20</span><span class="badge">Recorded by Cockpit</span></div>
+      <div class="row jb c"><span class="h3">Today · <span class="cx">18:12 → 19:20</span><span class="fx">18:12 – 19:20</span></span><span class="badge rec">Recorded by Cockpit</span></div>
       <div class="row r1">
         <div class="st pri"><span class="lbl">Distance</span><span class="v lime">42.8<span class="unit"> km</span></span></div>
         <div class="st"><span class="lbl">Average</span><span class="v">38<span class="unit"> km/h</span></span></div>
@@ -76,9 +80,10 @@ html[data-theme="ford"] .lg{align-items:center;font:500 19px var(--f-ui);color:v
       <svg id="chartf"></svg>
     </div>
     <div class="card grow col" style="padding-top:6px;padding-bottom:6px" data-od-id="moments">
-      <div class="mo"><i data-i="bolt" data-s="26"></i>Peak boost at 4,950 rpm<b>18:31</b></div>
-      <div class="mo"><i data-i="gauge" data-s="26"></i>Top speed 131 km/h<b>18:44</b></div>
-      <div class="mo"><i data-i="clock" data-s="26"></i>Longest stop · 6 min<b>18:52</b></div>
+      <!-- Ford values are read off the plotted series (UI.Sim, 79 samples over 68 min): boost first hits its max at the end of the first pull, speed first hits its max when the plateau starts, the longest zero-speed run is the final stop -->
+      <div class="mo"><i data-i="bolt" data-s="26"></i><span class="cx">Peak boost at 4,950 rpm</span><span class="fx">Peak boost at 4,800 rpm</span><b><span class="cx">18:31</span><span class="fx">18:18</span></b></div>
+      <div class="mo"><i data-i="gauge" data-s="26"></i>Top speed 131 km/h<b><span class="cx">18:44</span><span class="fx">18:43</span></b></div>
+      <div class="mo"><i data-i="clock" data-s="26"></i><span class="cx">Longest stop · 6 min</span><span class="fx">Longest stop · 9 min</span><b><span class="cx">18:52</span><span class="fx">19:11</span></b></div>
     </div>
     <div class="row g12"><a class="btn grow"><i data-i="export" data-s="24"></i>Export CSV to USB</a><a class="btn ghost"><i data-i="trash" data-s="24"></i>Delete</a></div>
   </section>

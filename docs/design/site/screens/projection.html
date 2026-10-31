@@ -11,6 +11,7 @@
 .pst{display:flex;flex-direction:column;gap:6px;padding:0 20px;border-right:1px solid var(--hair-soft);flex:1}
 .pst:last-child{border:0} .pst b{font:800 40px/.9 var(--f-display)}
 .lnk{display:inline-flex;align-items:center}
+.fx{display:none} html[data-theme="ford"] .fx{display:inline} html[data-theme="ford"] .cx{display:none}   /* Ford-only / Cockpit-only variants */
 /* Ford theme: link-up pill = ice-cyan outline (like Active), + Add is an ice-cyan link, throughput is a white measured value */
 html[data-theme="ford"] .badge.fill.live{background:transparent;color:var(--lime);box-shadow:inset 0 0 0 1px rgba(var(--lime-rgb),.5)}
 html[data-theme="ford"] .lnk{color:var(--lime)}
@@ -26,16 +27,21 @@ html[data-theme="ford"] .pst b.lime{color:var(--text)}
         <rect x="360" y="52" width="200" height="130" rx="8" fill="var(--s1)"/><rect x="372" y="64" width="176" height="106" fill="rgba(var(--cobalt-rgb),.16)" stroke="none"/>
         <path d="M410 182v18h100v-18" />
       </g>
-      <path d="M160 125H350" stroke="var(--lime)" stroke-width="3" stroke-dasharray="3 9" stroke-linecap="butt"/>
-      <g transform="translate(231 96) scale(2.2)" class="ic" stroke="var(--lime)" fill="none" stroke-width="1.8"><path d="M3 9a14 14 0 0 1 18 0M6 12.500a9.500 9.500 0 0 1 12 0M9 16a5 5 0 0 1 6 0M12 19.500h.01"/></g>
+      <path class="cx" d="M160 125H350" stroke="var(--lime)" stroke-width="3" stroke-dasharray="3 9" stroke-linecap="butt"/>
+      <g class="ic cx" transform="translate(231 96) scale(2.2)" stroke="var(--lime)" fill="none" stroke-width="1.8"><path d="M3 9a14 14 0 0 1 18 0M6 12.500a9.500 9.500 0 0 1 12 0M9 16a5 5 0 0 1 6 0M12 19.500h.01"/></g>
+      <g class="fx" stroke="var(--lime)" stroke-width="3" stroke-dasharray="3 9" stroke-linecap="butt" fill="none">
+        <!-- 63 px = 6 dots + 5 gaps, so both runs start and end on a dot; icon centred on x 255; 10 px to each device, ~12 px to the icon -->
+        <path d="M160 125H223"/><path d="M287 125H350"/>
+      </g>
+      <g class="ic fx" transform="translate(228.600 97) scale(2.2)" stroke="var(--lime)" fill="none" stroke-width="1.8"><path d="M3 9a14 14 0 0 1 18 0M6 12.500a9.500 9.500 0 0 1 12 0M9 16a5 5 0 0 1 6 0M12 19.500h.01"/></g>
       <path d="M98 120l24 16-24 16z" fill="var(--lime)" transform="translate(-13 -30) scale(1)" opacity=".0"/>
       <text x="95" y="132" text-anchor="middle" font-family="var(--f-display)" font-weight="800" font-size="44" fill="var(--lime)">AA</text>
       <text x="460" y="126" text-anchor="middle" font-family="var(--f-display)" font-weight="800" font-size="40" fill="var(--text)" letter-spacing="2" class="uc">Cockpit</text>
     </svg>
     <div class="row" style="height:92px;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)">
       <div class="pst" style="justify-content:center;padding-left:0"><span class="lbl">Phone</span><b>Pixel 8</b></div>
-      <div class="pst" style="justify-content:center"><span class="lbl">Link</span><b>5 GHz</b></div>
-      <div class="pst" style="justify-content:center"><span class="lbl">Throughput</span><b class="lime">62 Mb/s</b></div>
+      <div class="pst" style="justify-content:center"><span class="lbl">Link</span><b><span class="cx">5 GHz</span><span class="fx">5<span class="unit">GHz</span></span></b></div>
+      <div class="pst" style="justify-content:center"><span class="lbl">Throughput</span><b class="lime"><span class="cx">62 Mb/s</span><span class="fx">62<span class="unit">Mb/s</span></span></b></div>
     </div>
     <div class="row g12">
       <a class="btn pri big grow"><i data-i="nav" data-s="30"></i>Android Auto</a>

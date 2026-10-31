@@ -18,6 +18,11 @@ html[data-theme="ford"] .sv{font-weight:600}
 .band .seg.v i{min-height:6px;transform:skewX(-14deg)}
 .opt{display:flex;align-items:center;gap:16px;min-height:78px;border-bottom:1px solid var(--hair-soft);font:600 22px var(--f-ui)}
 .opt:last-child{border:0} .opt .s{font:400 18px var(--f-ui);color:var(--dim)}
+.bal{padding:16px 18px} .swc{flex:none;width:170px} .swc .slider{width:100%}
+/* ---- Ford: Balance card uses the same 24 px inner padding as the Subwoofer card; pad fills the content box edge to edge ---- */
+html[data-theme="ford"] .bal{padding:24px}
+html[data-theme="ford"] #pad{height:auto;flex:1;min-height:0}
+html[data-theme="ford"] .opt .s.fo{display:block;height:21px;line-height:21px;text-align:center;white-space:nowrap}   /* Subwoofer range caption */
 </style></head>
 <body><div class="stage"><div class="frame" data-active="media">
 <main class="main row g24" data-od-id="sound">
@@ -33,12 +38,12 @@ html[data-theme="ford"] .sv{font-weight:600}
     </div>
   </section>
   <section class="col g12 grow">
-    <div class="card col" style="height:410px;padding:16px 18px" data-od-id="balance">
+    <div class="card col bal" style="height:410px" data-od-id="balance">
       <div class="row jb c"><span class="lbl">Balance · Fader</span><span class="lbl lime cp-only">L 2 · F 3</span><span class="lbl fo"><span class="bv">L 2</span> / 10 · <span class="bv">F 3</span> / 10</span></div>
       <svg id="pad" viewBox="0 0 400 330" width="100%" height="330" style="margin-top:10px"></svg>
     </div>
     <div class="card col grow" style="padding-top:4px;padding-bottom:4px" data-od-id="dsp-options">
-      <div class="opt"><div class="grow">Subwoofer<div class="s"><span class="sv">+4</span> dB</div></div><div class="slider" style="width:170px" data-v=".66" data-n="12"></div></div>
+      <div class="opt"><div class="grow">Subwoofer<div class="s"><span class="sv">+4</span> dB</div></div><div class="swc"><div class="slider" data-v=".66" data-n="12"></div><div class="s fo">−10 to +10 dB</div></div></div>
       <div class="opt"><div class="grow">Loudness</div><span class="tg on"></span></div>
       <div class="opt"><div class="grow">Speed-sensitive volume<div class="s">Raises level with road noise</div></div><span class="tg on"></span></div>
     </div>
@@ -54,12 +59,17 @@ UI.onready = function () {
     for (var i = 0; i < 25; i++) {
       var c = '';
       if (i === Z) c = 'w'; else if (v > 0 && i > Z && i <= Z + v) c = 'l'; else if (v < 0 && i < Z && i >= Z + v) c = cut;
-      segs += '<i class="' + c + '"' + (c === 'w' ? ' style="opacity:.35"' : '') + '></i>';
+      segs += '<i class="' + c + '"' + (c === 'w' ? (UI.theme === 'ford' ? ' style="background:var(--dim);opacity:.45"' : ' style="opacity:.35"') : '') + '></i>';
     }
     h += '<div class="band"><span class="db ' + (v > 0 ? 'lime' : '') + '">' + (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v) + '<span class="u">dB</span></span><div class="seg v grow" style="height:auto">' + segs + '</div><span class="hz">' + b[0] + '</span></div>';
   });
   document.getElementById('eq').innerHTML = h;
-  var s = '', x0 = 20, y0 = 10, w = 360, hh = 300;
+  var s = '', x0 = 20, y0 = 10, w = 360, hh = 300, pad = document.getElementById('pad');
+  if (UI.theme === 'ford') {   /* Ford: the pad fills the card's content box exactly, so its edges line up with the title, header value and the Subwoofer card below */
+    var PW = pad.clientWidth || 340, PH = pad.clientHeight || 330;
+    pad.setAttribute('viewBox', '0 0 ' + PW + ' ' + PH);
+    x0 = .5; y0 = .5; w = PW - 1; hh = PH - 1;
+  }
   s += '<rect x="' + x0 + '" y="' + y0 + '" width="' + w + '" height="' + hh + '" fill="var(--s1)" stroke="var(--cobalt)" stroke-opacity=".5"/>';
   for (var i = 1; i < 6; i++) s += '<line x1="' + (x0 + w * i / 6) + '" x2="' + (x0 + w * i / 6) + '" y1="' + y0 + '" y2="' + (y0 + hh) + '" stroke="var(--cobalt)" stroke-opacity=".25"/>';
   for (var j = 1; j < 5; j++) s += '<line y1="' + (y0 + hh * j / 5) + '" y2="' + (y0 + hh * j / 5) + '" x1="' + x0 + '" x2="' + (x0 + w) + '" stroke="var(--cobalt)" stroke-opacity=".25"/>';
