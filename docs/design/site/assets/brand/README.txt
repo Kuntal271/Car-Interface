@@ -1,4 +1,3 @@
-Ford_logo_flat.svg - Ford oval, vector from Wikimedia Commons ("Ford_logo_flat.svg").
+Ford Blue Oval, flat vector from Wikimedia Commons ('Ford_logo_flat.svg').
 Ford and the Blue Oval are registered trademarks of Ford Motor Company.
-Included for the owner's personal use on their own vehicle's head unit. Do not publish or redistribute this folder, the design site or the app with this logo in it.
-The same paths are embedded in ../brand.js (the site draws the logo from there).
+Independent, non-commercial personal project: not affiliated with, authorised by or endorsed by Ford Motor Company. Shown only to preview the interface on the author's own car; no trademark right is granted (see NOTICE.md in the repository root). Removed on request of the rights holder.

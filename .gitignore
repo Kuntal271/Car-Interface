@@ -13,3 +13,5 @@ firmware/
 docs/design/site/shots/_*
 docs/design/site/shots/doc-*
 tools/.venv/
+*.log
+tools/elm.log
