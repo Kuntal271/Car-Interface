@@ -47,7 +47,9 @@ object InstalledApps {
 
     private const val PREFS = "cockpit"
     private const val KEY_RECENT = "recent_apps"
-    fun recents(ctx: Context): List<String> = RecentApps.parse(ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_RECENT, "") ?: "")
+    fun recents(ctx: Context): List<String> = RecentApps.parse(
+        try { ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_RECENT, "") ?: "" } catch (_: ClassCastException) { "" },       // a damaged file can hold another type under this key
+    )
     fun remember(ctx: Context, pkg: String) {
         val sp = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         sp.edit().putString(KEY_RECENT, RecentApps.serialise(RecentApps.touch(recents(ctx), pkg))).apply()
