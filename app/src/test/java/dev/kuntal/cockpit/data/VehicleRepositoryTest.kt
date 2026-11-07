@@ -65,6 +65,14 @@ class VehicleRepositoryTest {
         assertEquals(listOf(1_000L, 2_000L, 4_000L, 8_000L, 10_000L, 10_000L), gaps.take(6))
     }
 
+    @Test fun gearIsEstimatedIntoTheState() = runTest {
+        val repo = VehicleRepository(FlakySource(0), simulated = true)      // 50 km/h at 2000 rpm = ratio 40 -> gear 4
+        var last: VehicleUiState? = null
+        val job = launch { repo.states().collect { last = it } }
+        advanceTimeBy(200); runCurrent(); job.cancel()
+        assertEquals(4, last!!.gear)
+    }
+
     @Test fun tripIsCarriedInTheState() = runTest {
         val repo = VehicleRepository(FlakySource(0), simulated = true)
         var last: VehicleUiState? = null

@@ -3,27 +3,19 @@ package dev.kuntal.cockpit
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.text.BasicText
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import dev.kuntal.cockpit.ui.shell.Dest
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        setContent {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                BasicText("Cockpit", style = TextStyle(color = Color(0xFFF4F8FF), fontSize = 64.sp))
-            }
-        }
+        DebugHooks.snapshot = intent.getBooleanExtra("snapshot", false)
+        // `adb shell am start -n dev.kuntal.cockpit/.MainActivity --es screen drive` opens a given screen (used by tools/shot.sh and tests)
+        val start = intent.getStringExtra("screen")?.let { n -> Dest.entries.firstOrNull { it.name.equals(n, ignoreCase = true) } } ?: Dest.Drive
+        setContent { CockpitApp(startOn = start) }
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {

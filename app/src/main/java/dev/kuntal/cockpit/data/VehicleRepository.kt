@@ -13,6 +13,7 @@ data class VehicleUiState(
     val sample: VehicleSample? = null,
     val link: Link = Link.Connecting,
     val trip: TripState = TripState(),
+    val gear: Int? = null,                 // estimated from rpm / speed; null when unknown
 )
 
 /**
@@ -35,7 +36,7 @@ class VehicleRepository(
                 .collect { s ->
                     attempt = 0
                     trip.accept(s)
-                    state = state.copy(sample = s, link = if (simulated) Link.Simulated else Link.Connected, trip = trip.snapshot())
+                    state = state.copy(sample = s, link = if (simulated) Link.Simulated else Link.Connected, trip = trip.snapshot(), gear = GearEstimator.estimate(s.speedKmh, s.rpm))
                     emit(state)
                 }
             state = state.copy(link = Link.Lost); emit(state)

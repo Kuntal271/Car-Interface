@@ -15,3 +15,5 @@ docs/design/site/shots/doc-*
 tools/.venv/
 *.log
 tools/elm.log
+docs/shots/*-snap.png
+docs/shots/_*
