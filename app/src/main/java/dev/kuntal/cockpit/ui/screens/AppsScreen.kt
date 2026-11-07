@@ -46,7 +46,6 @@ import dev.kuntal.cockpit.ui.components.tile
 import dev.kuntal.cockpit.ui.shell.InstalledApps
 import dev.kuntal.cockpit.ui.theme.CockpitFonts
 import dev.kuntal.cockpit.ui.theme.LocalPalette
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 /**
@@ -57,7 +56,8 @@ import kotlinx.coroutines.withContext
 fun AppsScreen(apps: List<AppEntry>, recents: List<String>, onLaunch: (AppEntry) -> Unit) {
     val p = LocalPalette.current
     var query by rememberSaveable { mutableStateOf("") }
-    val shown = remember(apps, query) { AppIndex.filter(apps, query) }
+    val index = remember(apps) { AppIndex.Search(apps) }                      // sorted + keyed once per list, not per keystroke
+    val shown = remember(index, query) { index.filter(query) }
 
     Box(Modifier.fillMaxSize()) {
         // search field: 520 x 56 pill
@@ -105,7 +105,7 @@ private fun Modifier.weightFill(): Modifier = this.width(340.dp)
 private fun AppTile(app: AppEntry, recent: Boolean, onClick: () -> Unit) {
     val p = LocalPalette.current
     val ctx = LocalContext.current
-    val icon by produceState<androidx.compose.ui.graphics.ImageBitmap?>(null, app.pkg) { value = withContext(Dispatchers.IO) { InstalledApps.icon(ctx, app.pkg) } }
+    val icon by produceState(InstalledApps.cachedIcon(app.pkg), app.pkg) { if (value == null) value = withContext(InstalledApps.iconDispatcher) { InstalledApps.icon(ctx, app.pkg) } }
     Box(Modifier.fillMaxWidth().height(148.dp).tile().tap(onClick)) {
         icon?.let { Image(it, null, Modifier.at(60, 28).size(56.dp)) }
         Txt(app.label, 19, 23, p.text, Modifier.fillMaxWidth().at(0, 98), weight = FontWeight.SemiBold, align = TextAlign.Center)

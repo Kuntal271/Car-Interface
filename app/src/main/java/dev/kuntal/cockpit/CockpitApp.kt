@@ -80,7 +80,7 @@ fun CockpitApp(startOn: Dest = Dest.Home, startPage: SettingsPage = SettingsPage
                     }
                     Dest.Drive -> DriveScreen(state)
                     Dest.Apps -> {
-                        val apps by produceState(emptyList<AppEntry>()) { value = withContext(Dispatchers.IO) { InstalledApps.query(ctx) } }
+                        val apps by produceState(InstalledApps.lastQuery) { value = withContext(Dispatchers.IO) { InstalledApps.query(ctx) } }
                         var recents by remember { mutableStateOf(InstalledApps.recents(ctx)) }
                         AppsScreen(apps, recents) { a ->
                             if (InstalledApps.launch(ctx, a)) { InstalledApps.remember(ctx, a.pkg); recents = InstalledApps.recents(ctx) }
