@@ -12,11 +12,15 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
@@ -99,7 +103,14 @@ const val DESIGN_H = 800
 
 @Composable
 fun DesignCanvas(palette: Palette = FordPalette, content: @Composable () -> Unit) {
-    BoxWithConstraints(Modifier.fillMaxSize().background(palette.bg)) {
+    // The letterbox bars (a display that is not 16:10) get the background colour; on a 16:10 display nothing is drawn here, because the canvas
+    // paints its own opaque background over every pixel anyway. It used to be one more full-screen fill underneath (overdraw).
+    BoxWithConstraints(Modifier.fillMaxSize().drawBehind {
+        val s = min(size.width / DESIGN_W, size.height / DESIGN_H)
+        val bx = (size.width - DESIGN_W * s) / 2f; val by = (size.height - DESIGN_H * s) / 2f
+        if (bx > .5f) { drawRect(palette.bg, Offset.Zero, Size(bx + 1f, size.height)); drawRect(palette.bg, Offset(size.width - bx - 1f, 0f), Size(bx + 1f, size.height)) }
+        if (by > .5f) { drawRect(palette.bg, Offset.Zero, Size(size.width, by + 1f)); drawRect(palette.bg, Offset(0f, size.height - by - 1f), Size(size.width, by + 1f)) }
+    }) {
         val scale = min(constraints.maxWidth / DESIGN_W.toFloat(), constraints.maxHeight / DESIGN_H.toFloat())
         CompositionLocalProvider(
             LocalDensity provides Density(density = scale, fontScale = 1f),   // sp == dp == design px, whatever the unit's dpi or font scale
@@ -118,11 +129,13 @@ fun DesignCanvas(palette: Palette = FordPalette, content: @Composable () -> Unit
 private fun FrameBackground() {
     val p = LocalPalette.current
     Box(
-        Modifier.fillMaxSize().drawWithCache {
+        Modifier.fillMaxSize().graphicsLayer(compositingStrategy = if (dev.kuntal.cockpit.DebugHooks.flatten) CompositingStrategy.Offscreen else CompositingStrategy.Auto).drawWithCache {
             val w = size.width; val h = size.height
             val base = Brush.verticalGradient(0f to p.bgTop, .7f to p.bg, 1f to p.bg)
+            // The gradient is fully transparent beyond `stop` of the radius, so the circle is drawn only that far (same colours, same
+            // interpolation, a smaller area to shade and blend: less fill on a weak GPU).
             fun glow(c: Color, cx: Float, cy: Float, rx: Float, ry: Float, stop: Float) = Triple(
-                Brush.radialGradient(0f to c, stop to c.copy(alpha = 0f), 1f to c.copy(alpha = 0f), center = Offset(cx, cy), radius = rx),
+                Brush.radialGradient(0f to c, 1f to c.copy(alpha = 0f), center = Offset(cx, cy), radius = rx * stop),
                 Offset(cx, cy), ry / rx,
             )
             val glows = listOf(
@@ -130,7 +143,7 @@ private fun FrameBackground() {
                 glow(p.glowB, 1.04f * w, -.10f * h, 900f * w / DESIGN_W, 520f * w / DESIGN_W, .72f),
                 glow(p.glowC, (-.10f + .35f) * w, (.30f + .35f) * h, .35f * w, .35f * h, 1f),
             )
-            val radii = floatArrayOf(1000f * w / DESIGN_W, 900f * w / DESIGN_W, .35f * w)
+            val radii = floatArrayOf(1000f * w / DESIGN_W * .70f, 900f * w / DESIGN_W * .72f, .35f * w)      // x the stops given above (.70, .72, 1)
             onDrawBehind {
                 drawRect(base)
                 glows.forEachIndexed { i, (brush, center, squash) ->
