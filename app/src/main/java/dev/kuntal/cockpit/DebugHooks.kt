@@ -12,6 +12,7 @@ import dev.kuntal.cockpit.vehicle.VehicleSample
  */
 object DebugHooks {
     @Volatile var snapshot = false
+    @Volatile var perf = false          // --ez perf true: log frame statistics to logcat (tag CockpitPerf) and show the overlay
 
     const val CLOCK = "21:47"
     const val DATE = "Fri 30 Oct"

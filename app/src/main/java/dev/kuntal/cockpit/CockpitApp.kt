@@ -28,6 +28,7 @@ import dev.kuntal.cockpit.ui.components.pill
 import dev.kuntal.cockpit.ui.screens.DriveScreen
 import dev.kuntal.cockpit.ui.screens.HomeAction
 import dev.kuntal.cockpit.ui.screens.HomeScreen
+import dev.kuntal.cockpit.perf.Perf
 import dev.kuntal.cockpit.ui.shell.AppLauncher
 import dev.kuntal.cockpit.ui.shell.Dest
 import dev.kuntal.cockpit.ui.shell.Dock
@@ -67,6 +68,7 @@ fun CockpitApp(startOn: Dest = Dest.Home, vm: CockpitViewModel = viewModel()) {
             }
             StatusBar(state)
             Dock(screen) { go(it) }
+            if (DebugHooks.perf) PerfOverlay()
             notice?.let { n ->
                 LaunchedEffect(n) { delay(2_500); notice = null }
                 Row(
@@ -83,4 +85,22 @@ private fun NotYet(d: Dest) {
     val p = LocalPalette.current
     Txt(d.label, 96, 110, p.text, Modifier.at(24, 330).width(1120.dp), CockpitFonts.Condensed, FontWeight.SemiBold, TextAlign.Center)
     Txt("Not built yet", 24, 30, p.dim, Modifier.at(24, 450).width(1120.dp), align = TextAlign.Center)
+}
+
+/** Debug overlay (launch with --ez perf true): the live frame statistics and the gate verdict. */
+@Composable
+private fun PerfOverlay() {
+    val p = LocalPalette.current
+    val sum by Perf.summary.collectAsStateWithLifecycle()
+    val mode by Perf.mode.collectAsStateWithLifecycle()
+    val ok = sum.meetsGate()
+    Row(
+        Modifier.at(244, 64).size(680.dp, 36.dp).pill(fill = p.bg.copy(alpha = .85f), border = if (ok) p.cyan.copy(alpha = .5f) else p.warn),
+        horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Txt(
+            "p50 %.1f   p99 %.1f   max %.1f ms   >12 ms %.1f%%   missed %.1f%%   %s   %s".format(sum.p50, sum.p99, sum.max, sum.over12Pct, sum.missedPct, if (ok) "PASS" else "FAIL", mode),
+            18, 22, if (ok) p.cyan else p.warn, weight = FontWeight.SemiBold,
+        )
+    }
 }
