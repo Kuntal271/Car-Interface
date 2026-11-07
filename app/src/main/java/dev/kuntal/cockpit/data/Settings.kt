@@ -42,8 +42,9 @@ data class Settings(
         return copy(
             tachMaxRpm = tach, redlineRpm = red, shiftRpm = shift,
             speedScaleKmh = speedScaleKmh.coerceIn(120, 300),
-            tcpHost = tcpHost.trim().ifEmpty { DEFAULT_HOST },
+            tcpHost = cleanHost(tcpHost).ifEmpty { DEFAULT_HOST },
             tcpPort = if (tcpPort in 1..65535) tcpPort else DEFAULT_PORT,
+            btName = btName.filterNot { it.isISOControl() }.take(MAX_BT_NAME), btAddress = btAddress.filterNot { it.isISOControl() || it.isWhitespace() }.take(MAX_BT_ADDRESS),
         )
     }
 
@@ -58,6 +59,12 @@ data class Settings(
     companion object {
         const val DEFAULT_HOST = "192.168.0.10"      // what most Wi-Fi ELM327 adapters answer on
         const val DEFAULT_PORT = 35000
+        const val MAX_HOST = 253              // longest valid DNS name; a pasted megabyte used to be stored, drawn on every redraw and resolved on every keystroke
+        const val MAX_BT_NAME = 64
+        const val MAX_BT_ADDRESS = 17         // AA:BB:CC:DD:EE:FF
+
+        /** No whitespace, control or zero-width characters (they cannot be part of a host name and only break the lookup), capped at [MAX_HOST]. */
+        fun cleanHost(s: String): String = s.filterNot { it.isISOControl() || it.isWhitespace() || Character.isSpaceChar(it) || it == '\u200B' || it == '\uFEFF' }.take(MAX_HOST)
 
         private inline fun <reified E : Enum<E>> Map<String, String>.enum(key: String, default: E): E =
             enumValues<E>().firstOrNull { it.name == this[key] } ?: default
