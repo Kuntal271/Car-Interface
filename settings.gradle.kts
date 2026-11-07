@@ -5,4 +5,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "ecosport-cockpit"
 include(":vehicle")
-// include(":app") is added with the Compose app (task 3.1)
+include(":app")

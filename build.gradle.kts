@@ -1,4 +1,6 @@
 plugins {
     alias(libs.plugins.kotlin.jvm) apply false
-    // android.application / kotlin.android / kotlin.compose are applied in :app (task 3.1)
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlin.compose) apply false
 }
