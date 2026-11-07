@@ -72,3 +72,25 @@ What the design site proves and does not prove:
 
 - Measured: scripting cost of one frame's data update, `tools/design.sh bench drive` (drive 0.03 ms mean, boost 0.16 ms mean, p99 0.5 ms in headless Chrome). It says the data-to-pixels logic is not the bottleneck.
 - Not measured: GPU raster and compositing on the unit's SoC. Only `dumpsys gfxinfo` / Perfetto on the real Palm Bay 1000 can show that. The emulator (software GL) cannot.
+
+
+## Measuring in the app (added with the Compose build)
+
+`FrameMeter` (app/perf/) reads the platform FrameMetrics for every frame and keeps a rolling window of 600 frames. Two numbers per frame:
+**total** (intended vsync to buffer swap: layout, draw, sync, command issue and GPU wait, the number the 10 ms gate applies to) and
+**app-cpu** (animation + layout/measure + draw + sync: what the app itself costs, independent of the GPU). Every 5 s it logs
+`n, total p50/p99/max, share over 12 ms, share missing the 60 Hz budget, app-cpu p50/p99/max, gate PASS/FAIL, mode` under logcat tag `CockpitPerf`.
+
+    adb shell am start -n dev.kuntal.cockpit/.MainActivity --es screen drive --ez perf true
+    adb logcat -s CockpitPerf:I        # also shown on screen as a PASS/FAIL overlay
+
+Gate: total p99 <= 10 ms and zero frames over 16.7 ms. `PerfGovernor` implements the fallback: two consecutive windows with more than
+2 % of frames over 12 ms drop telemetry to the UI from 20 Hz to 10 Hz (`PerfMode.Light`); three clean windows (under 0.5 %) restore it.
+
+What was done for it so far: telemetry values are read in leaf text/draw lambdas, so a 20 Hz sample recomposes only the strings that changed;
+bars and the tach arc are drawn in the draw phase only; the tach's static layer is cached; Home is split into a static render layer and a live
+one (app-cpu p50 5.7 -> 3.8 ms, p99 30.5 -> 12.2 ms with identical pixels); smoothing stops scheduling frames once a value has settled.
+
+**Not yet known:** the real unit's numbers. The emulator is an arm64 Android 11 image on a Mac GPU through the emulator's GL translation, in a
+debug build with a cold JIT: total p50 is 14-19 ms there, which says nothing about the head unit. First on-unit run: install a release build
+(R8 on), run the command above on Drive and Home for a few minutes, and record the lines here.
