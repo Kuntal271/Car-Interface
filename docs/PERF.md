@@ -84,6 +84,9 @@ What the design site proves and does not prove:
     adb shell am start -n dev.kuntal.cockpit/.MainActivity --es screen drive --ez perf true
     adb logcat -s CockpitPerf:I        # also shown on screen as a PASS/FAIL overlay
 
+Without adb: Settings > About > *Frame-time overlay* > On puts the same verdict on a line along the bottom of every screen
+(`WAITING` until frames have been measured, then `PASS` / `FAIL`). The meter ignores the first 2.5 s after launch (cold start).
+
 Gate: total p99 <= 10 ms and zero frames over 16.7 ms. `PerfGovernor` implements the fallback: two consecutive windows with more than
 2 % of frames over 12 ms drop telemetry to the UI from 20 Hz to 10 Hz (`PerfMode.Light`); three clean windows (under 0.5 %) restore it.
 

@@ -15,9 +15,11 @@ Dashboard values: RPM, speed, boost, coolant, battery, fuel and trip data. Vendo
 | Vehicle layer (`:vehicle`, pure Kotlin): ELM327 client, OBD parsers, simulator, read-only command guard | Done, 26 tests (1 needs the ELM327 emulator) |
 | Canbox UART frame decoder (Python) | Done, 10 tests green |
 | UI design site, 21 screens, two themes (Ford, default; Cockpit) | Done, in a recursive review loop (`docs/design/critique/`) |
-| Compose app (`:app`): HOME shell, design system, Drive, Home, Apps, status bar and dock | Built and running on the 1280x800 emulator; Drive and Home pixel-checked against the design (`tools/snap.sh`, `tools/cmp.py`); 90 JVM tests |
+| Compose app (`:app`): HOME shell, design system, Drive, Home, Apps, Settings, status bar and dock | Built and running on the 1280x800 emulator; Drive and Home pixel-checked against the design (`tools/snap.sh`, `tools/cmp.py`); 122 JVM tests |
+| Settings: Ford / Midnight theme, units, gauge thresholds, data source | Built; units and thresholds applied to every screen |
+| Real vehicle data: ELM327 over Wi-Fi (TCP) and Bluetooth | TCP verified end to end against the ELM327 emulator, including loss and automatic recovery; **Bluetooth not verified** (needs an adapter) |
 | Frame-time meter, perf governor, static/live render layers | Built; the gate (p99 <= 10 ms) still has to be **measured on the real unit** (emulator numbers are not representative) |
-| App screens still to build | Car, Media card from a real MediaSession, Settings (theme, units, data source), Trips, Parking, Sound, Diagnostics |
+| App screens still to build | Car (blocked on the Canbox dialect), Media card from a real MediaSession, Trips, Parking, Sound, Diagnostics |
 | Reading the real unit (Canbox dialect, adb) | Waiting on physical access |
 | Root | Optional, last, and only after stock firmware recovery is proven |
 
@@ -42,7 +44,8 @@ Open `prototype.html` (interactive, press L for the live drive), `index.html` (o
     source tools/env.sh && ./gradlew :vehicle:test     # Kotlin tests (edit the paths in env.sh for your machine)
     tools/design.sh qa home && tools/design.sh probe home   # layout QA and measured design probes (Chrome, macOS path)
     tools/design.sh verify                             # everything above for all 21 screens: VERIFY-CLEAN or the list of problems
-    ./gradlew :app:testDebugUnitTest :app:assembleDebug # the launcher: 90 unit tests, debug APK in app/build/outputs/apk/debug/
+    tools/release.sh                                   # tests + minified release APK, prints path/size/sha256 (install guide: docs/INSTALL.md)
+    ./gradlew :app:testDebugUnitTest :app:assembleDebug # the launcher: unit tests, debug APK in app/build/outputs/apk/debug/
     tools/avd.sh ...; adb install -r app/build/outputs/apk/debug/app-debug.apk
     tools/snap.sh home && tools/.venv/bin/python tools/cmp.py home   # frozen on the design's values, diffed against the design render
     adb shell am start -n dev.kuntal.cockpit/.MainActivity --es screen drive --ez perf true   # live run with frame statistics (logcat tag CockpitPerf)

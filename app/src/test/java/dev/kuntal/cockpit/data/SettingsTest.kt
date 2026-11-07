@@ -10,6 +10,7 @@ class SettingsTest {
         assertEquals(ThemeId.Ford, s.theme); assertEquals(SpeedUnit.KMH, s.speedUnit); assertEquals(PressureUnit.BAR, s.pressureUnit)
         assertEquals(TempUnit.C, s.tempUnit); assertEquals(SourceKind.Simulator, s.source); assertEquals(ClockFormat.H24, s.clock)
         assertEquals(6000, s.redlineRpm); assertEquals(7000, s.tachMaxRpm); assertEquals(5200, s.shiftRpm); assertEquals(200, s.speedScaleKmh)
+        assertEquals(false, s.perfOverlay)       // the diagnostic overlay is opt-in
     }
 
     @Test fun roundTripThroughTheStoredMap() {
@@ -17,7 +18,7 @@ class SettingsTest {
             theme = ThemeId.Midnight, clock = ClockFormat.H12, motion = MotionMode.Reduced, speedUnit = SpeedUnit.MPH,
             pressureUnit = PressureUnit.PSI, tempUnit = TempUnit.F, source = SourceKind.ObdBluetooth,
             tcpHost = "10.0.2.2", tcpPort = 35001, btAddress = "AA:BB:CC:DD:EE:FF", btName = "OBDII",
-            redlineRpm = 6200, tachMaxRpm = 8000, shiftRpm = 5500, speedScaleKmh = 240,
+            redlineRpm = 6200, tachMaxRpm = 8000, shiftRpm = 5500, speedScaleKmh = 240, perfOverlay = true,
         )
         assertEquals(s, Settings.fromMap(s.toMap()))
     }

@@ -25,6 +25,7 @@ data class Settings(
     val tachMaxRpm: Int = 7000,
     val shiftRpm: Int = 5200,
     val speedScaleKmh: Int = 200,
+    val perfOverlay: Boolean = false,
 ) {
     /** Changes only when the connection itself would have to change: theme and units never reconnect. */
     val sourceKey: String
@@ -51,6 +52,7 @@ data class Settings(
         "speed" to speedUnit.name, "pressure" to pressureUnit.name, "temp" to tempUnit.name,
         "source" to source.name, "tcpHost" to tcpHost, "tcpPort" to tcpPort.toString(), "bt" to btAddress, "btName" to btName,
         "redline" to redlineRpm.toString(), "tach" to tachMaxRpm.toString(), "shift" to shiftRpm.toString(), "speedScale" to speedScaleKmh.toString(),
+        "perfOverlay" to perfOverlay.toString(),
     )
 
     companion object {
@@ -70,6 +72,7 @@ data class Settings(
                 btAddress = m["bt"] ?: d.btAddress, btName = m["btName"] ?: d.btName,
                 redlineRpm = m["redline"]?.toIntOrNull() ?: d.redlineRpm, tachMaxRpm = m["tach"]?.toIntOrNull() ?: d.tachMaxRpm,
                 shiftRpm = m["shift"]?.toIntOrNull() ?: d.shiftRpm, speedScaleKmh = m["speedScale"]?.toIntOrNull() ?: d.speedScaleKmh,
+                perfOverlay = m["perfOverlay"]?.toBooleanStrictOrNull() ?: d.perfOverlay,
             ).sanitized()
         }
     }

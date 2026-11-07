@@ -87,7 +87,7 @@ fun SettingsScreen(settings: Settings, link: Link, onChange: ((Settings) -> Sett
             SettingsPage.Display -> DisplayPage(settings, onChange)
             SettingsPage.Connections -> ConnectionsPage(settings, link, onChange)
             SettingsPage.Vehicle -> VehiclePage(settings, onChange)
-            SettingsPage.About -> AboutPage(settings)
+            SettingsPage.About -> AboutPage(settings, onChange)
         }
     }
 }
@@ -209,7 +209,7 @@ private fun TextBox(x: Int, y: Int, w: Int, value: String, hint: String, number:
 }
 
 @Composable
-private fun AboutPage(s: Settings) {
+private fun AboutPage(s: Settings, set: ((Settings) -> Settings) -> Unit) {
     val p = LocalPalette.current
     val ctx = LocalContext.current
     val info = remember { appInfo(ctx) }
@@ -218,9 +218,12 @@ private fun AboutPage(s: Settings) {
     SettingRow(X, Y0 + 72, "Frame time", "p50 / p99, last ten seconds. Gate: p99 under 10 ms") {
         Txt(if (perf.count == 0) Fmt.DASH else "%.1f / %.1f ms".format(perf.p50, perf.p99), 21, 26, if (perf.count > 0 && perf.meetsGate()) p.cyan else p.text, weight = FontWeight.SemiBold)
     }
-    SettingRow(X, Y0 + 144, "Fonts") { Txt("Barlow, SIL Open Font License 1.1", 19, 24, p.dim) }
-    SettingRow(X, Y0 + 216, "Vehicle access") { Txt("Read-only (OBD-II mode 01)", 19, 24, p.dim) }
-    Para("Ford and the Blue Oval are trademarks of Ford Motor Company. This is an independent, non-commercial personal project, not affiliated with or endorsed by Ford.", 18, 26, p.dim, 708, Modifier.at(X, Y0 + 308))
+    SettingRow(X, Y0 + 144, "Frame-time overlay", "Live verdict on every screen, for testing") {
+        Chips(listOf(false, true), s.perfOverlay, { if (it) "On" else "Off" }) { v -> set { it.copy(perfOverlay = v) } }
+    }
+    SettingRow(X, Y0 + 216, "Fonts") { Txt("Barlow, SIL Open Font License 1.1", 19, 24, p.dim) }
+    SettingRow(X, Y0 + 288, "Vehicle access") { Txt("Read-only (OBD-II mode 01)", 19, 24, p.dim) }
+    Para("Ford and the Blue Oval are trademarks of Ford Motor Company. This is an independent, non-commercial personal project, not affiliated with or endorsed by Ford.", 18, 26, p.dim, 708, Modifier.at(X, Y0 + 380))
 }
 
 private fun appInfo(ctx: Context): String {

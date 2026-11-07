@@ -683,6 +683,13 @@ Deliver: docs/design/*.html + `docs/shots/mock-*.png` (screenshot each via a hea
 ------------------------------------------------------------------------------
 ## M3 — Compose app on the emulator (the owner's "first look")
 
+**Status (built):** `:app` is a working launcher on the emulator. Done: HOME shell with status bar and dock; design system (Ford and
+Midnight palettes, Barlow fonts, shared tokens); Home, Drive, Apps and Settings screens; units, gauge thresholds and data-source
+choice; live simulator and real ELM327 over TCP (loss and recovery verified); Bluetooth transport written, not verified; frame meter,
+performance governor and static/live render layers; release build via `tools/release.sh`; install guide `docs/INSTALL.md`.
+Not done: Car, Media (real MediaSession), Trips, Parking, Sound, Diagnostics screens; Canbox data; on-unit frame-time numbers.
+The sections below are the original plan and are kept for reference.
+
 ### 3.1 App module + HOME manifest
 Add `include(":app")` to settings.gradle.kts. app/build.gradle.kts:
     plugins {

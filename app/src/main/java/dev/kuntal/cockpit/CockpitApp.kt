@@ -1,5 +1,6 @@
 package dev.kuntal.cockpit
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -94,7 +95,7 @@ fun CockpitApp(startOn: Dest = Dest.Home, startPage: SettingsPage = SettingsPage
                 }
                 StatusBar(state)
                 Dock(screen) { go(it) }
-                if (DebugHooks.perf) PerfOverlay()
+                if (DebugHooks.perf || settings.perfOverlay) PerfOverlay()
                 notice?.let { n ->
                     LaunchedEffect(n) { delay(2_500); notice = null }
                     Row(
@@ -121,13 +122,15 @@ private fun PerfOverlay() {
     val sum by Perf.summary.collectAsStateWithLifecycle()
     val mode by Perf.mode.collectAsStateWithLifecycle()
     val ok = sum.meetsGate()
+    val idle = sum.count == 0                                  // nothing measured yet is not a failure
+    // In the 24 px margin under the cards: covers nothing.
     Row(
-        Modifier.at(244, 64).size(680.dp, 36.dp).pill(fill = p.bg.copy(alpha = .85f), border = if (ok) p.cyan.copy(alpha = .5f) else p.warn),
+        Modifier.at(24, 777).size(1120.dp, 22.dp).background(p.bg),
         horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
     ) {
         Txt(
-            "p50 %.1f   p99 %.1f   max %.1f ms   >12 ms %.1f%%   missed %.1f%%   %s   %s".format(sum.p50, sum.p99, sum.max, sum.over12Pct, sum.missedPct, if (ok) "PASS" else "FAIL", mode),
-            18, 22, if (ok) p.cyan else p.warn, weight = FontWeight.SemiBold,
+            "p50 %.1f   p99 %.1f   max %.1f ms   >12 ms %.1f%%   missed %.1f%%   %s   %s".format(sum.p50, sum.p99, sum.max, sum.over12Pct, sum.missedPct, if (idle) "WAITING" else if (ok) "PASS" else "FAIL", mode),
+            18, 22, if (idle) p.dim else if (ok) p.cyan else p.warn, weight = FontWeight.SemiBold,
         )
     }
 }
