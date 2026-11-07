@@ -1,4 +1,7 @@
 name: ci
+# Least privilege: no job needs to write to the repo, packages or pull requests. (A fork's pull_request run gets a read-only token and no secrets.)
+permissions:
+  contents: read
 on:
   push:
     branches: [main]
@@ -6,37 +9,64 @@ on:
 jobs:
   vehicle-kotlin:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Gradle wrapper jar is the one we reviewed (sha256 of the official Gradle 9.8.2 wrapper jar)
+        run: echo "3b8a25775a69158b5ad2b1d17a80a88dc7b40a352a73eb27d06c612a7ce68e98  gradle/wrapper/gradle-wrapper.jar" | sha256sum -c -
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
       - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
       - run: ./gradlew :vehicle:test --no-daemon
   android-app:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
       - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
       - name: Unit tests and debug build (Android SDK is preinstalled on the runner; ANDROID_HOME is set)
         run: ./gradlew :app:testDebugUnitTest :app:assembleDebug --no-daemon
+      # The APK is signed with the runner's throw-away debug key and is debuggable. Publish it only from main, so that a pull request
+      # (anyone can open one on a public repo) can never produce an installable "official" artifact.
+      - name: Checksum of the debug APK
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          sha256sum app/build/outputs/apk/debug/app-debug.apk | tee -a "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         with:
           name: cockpit-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
           retention-days: 14
   python-and-design:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - run: python3 -m unittest test_canbox_decode
         working-directory: tools
       - run: python3 tools/design-check.py
+      - name: No secrets, keystores or other forbidden files are tracked
+        run: tools/security/scan-secrets.sh
+      - name: Hostile-adapter test tool still behaves as documented
+        run: python3 -m unittest test_hostile_adapter
+        working-directory: tools/security
