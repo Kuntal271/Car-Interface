@@ -18,6 +18,20 @@ object PidDecoder {
         Pid.MODULE_VOLTAGE -> (d[0] * 256 + d[1]) / 1000.0
     }
 
+    /**
+     * Values a road car can really report. Outside these the frame was damaged or the adapter is lying (0xFFFF rpm is the
+     * "not available" marker), and a number on the dashboard would be presented as a measurement.
+     */
+    fun plausible(pid: Pid, v: Double): Boolean = when (pid) {
+        Pid.RPM -> v in 0.0..12_000.0
+        Pid.SPEED -> v in 0.0..250.0
+        Pid.COOLANT_TEMP, Pid.INTAKE_TEMP, Pid.OIL_TEMP -> v in -40.0..160.0
+        Pid.AMBIENT_TEMP -> v in -40.0..90.0
+        Pid.BARO -> v in 40.0..130.0                                // boost = MAP - BARO: a zero here would show every reading as boost
+        Pid.MODULE_VOLTAGE -> v in 0.0..32.0
+        Pid.MAP, Pid.ENGINE_LOAD, Pid.THROTTLE, Pid.FUEL_LEVEL -> true
+    }
+
     /** 4-byte "supported PIDs" bitmap for the range starting after [base] (0x00, 0x20, 0x40...). */
     fun supportedFrom(base: Int, bytes: IntArray): Set<Int> {
         val out = mutableSetOf<Int>()
