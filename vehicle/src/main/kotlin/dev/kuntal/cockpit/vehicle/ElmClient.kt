@@ -1,13 +1,16 @@
 package dev.kuntal.cockpit.vehicle
 
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
+import java.io.IOException
 
 class ElmClient(
     private val transport: Transport,
-    private val now: () -> Long = System::currentTimeMillis,
+    private val now: () -> Long = MonotonicClock,
 ) : VehicleSource {
     var supported: Set<Pid> = emptySet()
         private set
@@ -36,19 +39,35 @@ class ElmClient(
     override fun samples(): Flow<VehicleSample> = flow {
         try {
             connect()
+            // A vehicle that answers nothing (ignition off, bench adapter: "UNABLE TO CONNECT") is not a connection. Without PIDs there
+            // was nothing to wait for either, so the loop below used to spin and emit empty samples as fast as it could.
+            if (supported.none { it in PollSchedule.FAST }) throw IOException("the vehicle did not report rpm or speed")
             val schedule = PollSchedule(supported)
             var s = VehicleSample(now())
             var cycle = 0
+            val misses = HashMap<Pid, Int>()
+            var silentCycles = 0
             while (true) {
                 currentCoroutineContext().ensureActive()
+                var answered = 0
                 for (pid in schedule.pidsForCycle(cycle)) {
-                    ElmParser.parse(pid, ask(pid.request))?.let { s = s.with(pid, it) }
+                    val v = ElmParser.parse(pid, ask(pid.request))
+                    if (v != null) { s = s.with(pid, v); misses[pid] = 0; answered++ }
+                    // one miss is noise and keeps the last reading; a reading that keeps failing must not stay on screen as if it were live
+                    else if ((misses.merge(pid, 1, Int::plus) ?: 0) >= MISSES_BEFORE_DROP) s = s.without(pid)
                 }
+                silentCycles = if (answered == 0) silentCycles + 1 else 0
+                if (silentCycles >= SILENT_CYCLES_BEFORE_LOST) throw IOException("the vehicle stopped answering")
                 emit(s.copy(tsMs = now()))
                 cycle++
             }
         } finally {
-            transport.close()
+            withContext(NonCancellable) { transport.close() }          // a cancelled coroutine cannot suspend: without this the socket was never closed
         }
+    }
+
+    private companion object {
+        const val MISSES_BEFORE_DROP = 3
+        const val SILENT_CYCLES_BEFORE_LOST = 5
     }
 }

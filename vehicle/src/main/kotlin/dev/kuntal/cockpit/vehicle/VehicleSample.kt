@@ -1,5 +1,6 @@
 package dev.kuntal.cockpit.vehicle
 
+/** [tsMs] is milliseconds on a monotonic clock ([MonotonicClock]), only meaningful as a difference: wall time jumps (GPS or network time sync). */
 data class VehicleSample(
     val tsMs: Long,
     val rpm: Double? = null, val speedKmh: Double? = null,
@@ -26,3 +27,21 @@ fun VehicleSample.with(pid: Pid, v: Double): VehicleSample = when (pid) {
     Pid.FUEL_LEVEL -> copy(fuelPct = v)
     Pid.MODULE_VOLTAGE -> copy(batteryV = v)
 }
+
+fun VehicleSample.without(pid: Pid): VehicleSample = when (pid) {
+    Pid.RPM -> copy(rpm = null)
+    Pid.SPEED -> copy(speedKmh = null)
+    Pid.COOLANT_TEMP -> copy(coolantC = null)
+    Pid.INTAKE_TEMP -> copy(intakeC = null)
+    Pid.AMBIENT_TEMP -> copy(ambientC = null)
+    Pid.OIL_TEMP -> copy(oilC = null)
+    Pid.MAP -> copy(mapKpa = null)
+    Pid.BARO -> copy(baroKpa = null)
+    Pid.THROTTLE -> copy(throttlePct = null)
+    Pid.ENGINE_LOAD -> copy(loadPct = null)
+    Pid.FUEL_LEVEL -> copy(fuelPct = null)
+    Pid.MODULE_VOLTAGE -> copy(batteryV = null)
+}
+
+/** Milliseconds from an arbitrary origin that never steps when the owner or the network sets the clock. */
+object MonotonicClock : () -> Long { override fun invoke(): Long = System.nanoTime() / 1_000_000 }
