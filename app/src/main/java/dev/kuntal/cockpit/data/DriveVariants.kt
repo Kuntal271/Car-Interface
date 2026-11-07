@@ -26,6 +26,11 @@ class History(private val capacity: Int = 125) {
     private var n = 0
     fun add(boostBar: Double?, rpm: Double?) { val i = n % capacity; b[i] = boostBar ?: Double.NaN; r[i] = rpm ?: Double.NaN; n++ }
     val size get() = minOf(n, capacity)
+    val cap get() = capacity
+    companion object {
+        /** A full history from two series of equal length (screenshots and tests). */
+        fun of(boostBar: DoubleArray, rpm: DoubleArray): History = History(boostBar.size).also { h -> boostBar.indices.forEach { h.add(boostBar[it], rpm[it]) } }
+    }
     /** Oldest to newest. */
     fun boost(i: Int): Double = b[idx(i)]
     fun rpm(i: Int): Double = r[idx(i)]

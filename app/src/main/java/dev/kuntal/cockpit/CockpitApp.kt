@@ -45,6 +45,14 @@ import dev.kuntal.cockpit.ui.shell.OverlayLayer
 import dev.kuntal.cockpit.ui.shell.rememberBrightness
 import dev.kuntal.cockpit.ui.shell.rememberOverlay
 import dev.kuntal.cockpit.ui.shell.rememberQuickControls
+import dev.kuntal.cockpit.data.DriveVariant
+import dev.kuntal.cockpit.ui.screens.DriveExtras
+import dev.kuntal.cockpit.ui.screens.DriveHost
+import dev.kuntal.cockpit.data.PhoneDemo
+import dev.kuntal.cockpit.ui.screens.DemoCall
+import dev.kuntal.cockpit.ui.screens.PhoneDemoScreen
+import dev.kuntal.cockpit.ui.screens.ProjectionDemoScreen
+import dev.kuntal.cockpit.ui.screens.RadioDemoScreen
 import dev.kuntal.cockpit.ui.screens.AppsScreen
 import dev.kuntal.cockpit.ui.screens.CarScreen
 import dev.kuntal.cockpit.ui.screens.MediaScreen
@@ -86,12 +94,20 @@ fun CockpitApp(startOn: Dest = Dest.Home, startPage: SettingsPage = SettingsPage
     val ctx = LocalContext.current
     var screen by rememberSaveable {
         mutableStateOf(when {
-            DebugHooks.snapshot && DebugHooks.screen.startsWith("overlay") -> Dest.Drive        // overlays are shot over the Drive screen
+            DebugHooks.snapshot && (DebugHooks.screen.startsWith("overlay") || DebugHooks.screen.startsWith("drive-")) -> Dest.Drive
+            DebugHooks.screen == "phone" || DebugHooks.screen == "phone-call" -> Dest.PhoneDemo
+            DebugHooks.screen == "radio" -> Dest.RadioDemo
+            DebugHooks.screen == "projection" -> Dest.Projection        // overlays are shot over the Drive screen
             boot && settings.bootSplash && !DebugHooks.snapshot -> Dest.Boot
             else -> startOn
         })
     }
     var returnTo by rememberSaveable { mutableStateOf(if (startOn == Dest.Boot || startOn == Dest.Standby) Dest.Home else startOn) }
+    var driveView by rememberSaveable {
+        mutableStateOf(when (DebugHooks.screen) { "drive-boost" -> DriveVariant.Boost; "drive-cruise" -> DriveVariant.Cruise; else -> DriveVariant.Cluster })
+    }
+    val driveExtras = remember { if (DebugHooks.snapshot) SnapshotFixtures.driveExtras() else DriveExtras() }
+    var demoCall by remember { mutableStateOf(if (DebugHooks.screen == "phone-call") DemoCall(PhoneDemo.RECENTS[1].contact) else null) }
     var quick by remember { mutableStateOf(DebugHooks.snapshot && DebugHooks.screen == "quick") }
     var night by remember { mutableStateOf(false) }
     val touch = remember { longArrayOf(SystemClock.elapsedRealtime()) }
@@ -111,8 +127,8 @@ fun CockpitApp(startOn: Dest = Dest.Home, startPage: SettingsPage = SettingsPage
         }
     }
     fun go(d: Dest) = when (d) {
-        Dest.Phone -> launch("phone", "phone")
-        Dest.Maps -> launch("maps", "navigation")
+        Dest.Phone -> if (data.demo) screen = Dest.PhoneDemo else launch("phone", "phone")       // demo: the in-app stand-in; off: the unit's own app
+        Dest.Maps -> if (data.demo) screen = Dest.Projection else launch("maps", "navigation")
         else -> screen = d
     }
 
@@ -128,7 +144,7 @@ fun CockpitApp(startOn: Dest = Dest.Home, startPage: SettingsPage = SettingsPage
                             is HomeAction.Launch -> launch(a.what, a.what)
                         }
                     }
-                    Dest.Drive -> DriveScreen(state)
+                    Dest.Drive -> DriveHost(state, driveView, { driveView = it }, driveExtras)
                     Dest.Car -> CarScreen(canbox) { screen = Dest.Parking }
                     Dest.Parking -> ParkingScreen(radar, reverse, onExit = { screen = Dest.Car }, onOpenCamera = { launch("camera", "camera") })
                     Dest.Diagnostics -> DiagnosticsScreen(state, data.diag)
@@ -136,7 +152,7 @@ fun CockpitApp(startOn: Dest = Dest.Home, startPage: SettingsPage = SettingsPage
                     Dest.Trips -> TripsScreen(state, data, nowMs, java.time.ZoneId.systemDefault(), { trips -> TripExport.save(ctx, trips) }) { notice = it }
                     Dest.Media -> {
                         val eq = data.audio?.state?.collectAsStateWithLifecycle()
-                        MediaScreen(data.media, volume, eq?.value?.preset, onSound = { screen = Dest.Sound }, onRadio = { launch("radio", "radio") }, onOpenPlayer = { launch("media", "media") })
+                        MediaScreen(data.media, volume, eq?.value?.preset, onSound = { screen = Dest.Sound }, onRadio = { if (data.demo) screen = Dest.RadioDemo else launch("radio", "radio") }, onOpenPlayer = { launch("media", "media") })
                     }
                     Dest.Apps -> {
                         val apps by produceState(emptyList<AppEntry>()) { value = withContext(Dispatchers.IO) { InstalledApps.query(ctx) } }
@@ -150,6 +166,9 @@ fun CockpitApp(startOn: Dest = Dest.Home, startPage: SettingsPage = SettingsPage
                         val link by remember { derivedStateOf { state.value.link } }        // only a link change recomposes the page
                         SettingsScreen(settings, link, { change -> vm.settings.update(change) }, startPage)
                     }
+                    Dest.PhoneDemo -> PhoneDemoScreen(demoCall, { demoCall = DemoCall(it) }, { demoCall = null }, { notice = it })
+                    Dest.RadioDemo -> RadioDemoScreen({ launch("radio", "radio") }, { notice = it })
+                    Dest.Projection -> ProjectionDemoScreen { launch("maps", "navigation") }
                     Dest.Boot -> BootScreen { screen = returnTo.takeIf { it != Dest.Boot } ?: startOn.takeIf { it != Dest.Boot } ?: Dest.Home }
                     Dest.Standby -> StandbyScreen(state, canbox, remember(data) { data.trips.all().firstOrNull()?.distanceKm }) { touch[0] = SystemClock.elapsedRealtime(); screen = returnTo }
                     else -> NotYet(screen)

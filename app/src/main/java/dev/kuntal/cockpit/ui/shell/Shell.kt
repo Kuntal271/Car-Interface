@@ -66,6 +66,7 @@ fun Dest.dockSlot(): Dest? = when (this) {
     Dest.Trips, Dest.Diagnostics -> Dest.Apps
     Dest.Sound, Dest.RadioDemo -> Dest.Media
     Dest.PhoneDemo -> Dest.Phone
+    Dest.Projection -> Dest.Maps
     else -> if (dock) this else null
 }
 
