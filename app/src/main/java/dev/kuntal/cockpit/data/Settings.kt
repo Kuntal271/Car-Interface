@@ -42,8 +42,10 @@ data class Settings(
         return copy(
             tachMaxRpm = tach, redlineRpm = red, shiftRpm = shift,
             speedScaleKmh = speedScaleKmh.coerceIn(120, 300),
-            tcpHost = tcpHost.trim().ifEmpty { DEFAULT_HOST },
+            tcpHost = cleanHost(tcpHost),
             tcpPort = if (tcpPort in 1..65535) tcpPort else DEFAULT_PORT,
+            btAddress = cleanMac(btAddress),
+            btName = cleanName(btName),
         )
     }
 
@@ -58,6 +60,21 @@ data class Settings(
     companion object {
         const val DEFAULT_HOST = "192.168.0.10"      // what most Wi-Fi ELM327 adapters answer on
         const val DEFAULT_PORT = 35000
+
+        // Settings come from SharedPreferences and (debug builds) launch extras, names from other devices: nothing in them is trusted.
+        private val MAC = Regex("^([0-9A-F]{2}:){5}[0-9A-F]{2}$")
+
+        /** Hostname / IPv4 / IPv6 characters only, at most 253 (DNS limit); control and look-alike characters are dropped. */
+        internal fun cleanHost(raw: String): String =
+            raw.filter { it in 'a'..'z' || it in 'A'..'Z' || it in '0'..'9' || it in ".-_:[]%" }.take(253).ifEmpty { DEFAULT_HOST }
+
+        /** A Bluetooth MAC in the canonical upper-case form, else "" (= no adapter chosen, which is Link.Off, never the simulator). */
+        internal fun cleanMac(raw: String): String = raw.trim().uppercase().takeIf { MAC.matches(it) } ?: ""
+
+        /** The name a remote device announces: printable, at most 64 characters (no control / bidi / zero-width characters). */
+        internal fun cleanName(raw: String): String =
+            raw.filter { Character.getType(it).let { t -> t != Character.CONTROL.toInt() && t != Character.FORMAT.toInt() && t != Character.LINE_SEPARATOR.toInt() && t != Character.PARAGRAPH_SEPARATOR.toInt() } }
+                .trim().take(64)
 
         private inline fun <reified E : Enum<E>> Map<String, String>.enum(key: String, default: E): E =
             enumValues<E>().firstOrNull { it.name == this[key] } ?: default
