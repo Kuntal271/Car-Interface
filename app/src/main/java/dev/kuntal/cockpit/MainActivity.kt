@@ -1,5 +1,6 @@
 package dev.kuntal.cockpit
 
+import android.content.pm.ApplicationInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,10 +18,15 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        DebugHooks.snapshot = intent.getBooleanExtra("snapshot", false)
-        DebugHooks.perf = intent.getBooleanExtra("perf", false)
+        // The one place launch extras are read for dev hooks; see DevLaunch for what a release build ignores.
+        val dev = DevLaunch.parse(
+            debuggable = applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0,
+            bool = { intent.getBooleanExtra(it, false) }, str = { intent.getStringExtra(it) },
+        )
+        DebugHooks.snapshot = dev.snapshot
+        DebugHooks.perf = dev.perf
         meter = FrameMeter(window, log = DebugHooks.perf)
-        applyDevSettings()
+        applyDevSettings(dev)
         // `adb shell am start -n dev.kuntal.cockpit/.MainActivity --es screen drive` opens a given screen (used by tools/shot.sh and tests)
         val start = intent.getStringExtra("screen")?.let { n -> Dest.entries.firstOrNull { it.name.equals(n, ignoreCase = true) } } ?: Dest.Home
         val page = intent.getStringExtra("page")?.let { n -> SettingsPage.entries.firstOrNull { it.name.equals(n, ignoreCase = true) } } ?: SettingsPage.Display
@@ -29,13 +35,12 @@ class MainActivity : ComponentActivity() {
 
     /**
      * Dev hook for scripted runs: `--es set "theme=Midnight,source=ObdTcp,tcpHost=10.0.2.2"` (keys as in Settings.toMap) changes and
-     * stores settings, `--ez reset true` restores the defaults first. Snapshot mode always starts from the defaults.
+     * stores settings, `--ez reset true` restores the defaults first. Snapshot mode always starts from the defaults. Debuggable builds only (DevLaunch).
      */
-    private fun applyDevSettings() {
+    private fun applyDevSettings(dev: DevLaunch) {
         val store = SettingsStore.get(this)
-        val kv = intent.getStringExtra("set")?.split(',')?.mapNotNull { it.split('=', limit = 2).takeIf { p -> p.size == 2 }?.let { p -> p[0].trim() to p[1].trim() } }?.toMap().orEmpty()
-        if (intent.getBooleanExtra("reset", false) || DebugHooks.snapshot) store.update { Settings() }
-        if (kv.isNotEmpty()) store.update { Settings.fromMap(it.toMap() + kv) }
+        if (dev.reset || dev.snapshot) store.update { Settings() }
+        if (dev.set.isNotEmpty()) store.update { Settings.fromMap(it.toMap() + dev.set) }
     }
 
     override fun onStart() { super.onStart(); meter?.start() }
