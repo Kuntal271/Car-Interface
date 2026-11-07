@@ -2,6 +2,7 @@ package dev.kuntal.cockpit.vehicle
 
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -49,6 +50,7 @@ class ElmClient(
             var silentCycles = 0
             while (true) {
                 currentCoroutineContext().ensureActive()
+                val cycleStart = now()
                 var answered = 0
                 for (pid in schedule.pidsForCycle(cycle)) {
                     val v = ElmParser.parse(pid, ask(pid.request))
@@ -60,6 +62,8 @@ class ElmClient(
                 if (silentCycles >= SILENT_CYCLES_BEFORE_LOST) throw IOException("the vehicle stopped answering")
                 emit(s.copy(tsMs = now()))
                 cycle++
+                val spent = now() - cycleStart
+                if (spent < MIN_CYCLE_MS) delay(MIN_CYCLE_MS - spent)          // an adapter that answers at once must not pin a core (or the bus) at thousands of cycles a second
             }
         } finally {
             withContext(NonCancellable) { transport.close() }          // a cancelled coroutine cannot suspend: without this the socket was never closed
@@ -67,6 +71,7 @@ class ElmClient(
     }
 
     private companion object {
+        const val MIN_CYCLE_MS = 40L           // 25 cycles a second is more than the UI shows (20 Hz) and about what real adapters manage
         const val MISSES_BEFORE_DROP = 3
         const val SILENT_CYCLES_BEFORE_LOST = 5
     }

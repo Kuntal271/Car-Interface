@@ -1,6 +1,9 @@
 package dev.kuntal.cockpit.vehicle
 
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.test.currentTime
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
 import org.junit.Test
@@ -48,4 +51,20 @@ class ElmSessionHostileTest {
     }
 
     private class CancellationExit : RuntimeException()
+}
+
+/** An adapter that answers instantly (a fake, a fast USB cable, a clone) must not make the poll loop spin a core: the cycle has a floor. */
+class PollRateTest {
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    @org.junit.Test fun cyclesAreAtLeast40msApartEvenWhenTheAdapterAnswersAtOnce() = kotlinx.coroutines.test.runTest {
+        val replies = mapOf("0100" to "41 00 BE 3F A8 13", "0120" to "41 20 00 00 00 00", "010C" to "41 0C 1A F8", "010D" to "41 0D 32")
+        val t = object : Transport {
+            override suspend fun open() {}
+            override suspend fun close() {}
+            override suspend fun exchange(cmd: String): String = replies[cmd] ?: "NO DATA"
+        }
+        val s = ElmClient(t, now = { currentTime }).samples().take(6).toList()
+        val gaps = s.zipWithNext { a, b -> b.tsMs - a.tsMs }
+        org.junit.Assert.assertTrue("gaps $gaps", gaps.all { it >= 40 })
+    }
 }
