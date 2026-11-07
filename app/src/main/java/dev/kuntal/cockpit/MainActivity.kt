@@ -21,6 +21,8 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         DebugHooks.snapshot = intent.getBooleanExtra("snapshot", false)
         DebugHooks.perf = intent.getBooleanExtra("perf", false)
+        DebugHooks.freeze = intent.getBooleanExtra("freeze", false)
+        DebugHooks.flatten = intent.getBooleanExtra("flatten", false)
         DebugHooks.pinMode = intent.getStringExtra("perfmode")?.let { n -> PerfMode.entries.firstOrNull { it.name.equals(n, ignoreCase = true) } }
         DebugHooks.pinMode?.let { Perf.publish(Perf.summary.value, it) }
         meter = FrameMeter(window, log = DebugHooks.perf)

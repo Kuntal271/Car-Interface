@@ -13,6 +13,8 @@ import dev.kuntal.cockpit.vehicle.VehicleSample
 object DebugHooks {
     @Volatile var snapshot = false
     @Volatile var perf = false          // --ez perf true: log frame statistics to logcat (tag CockpitPerf) and show the overlay
+    @Volatile var freeze = false        // --ez freeze true: the simulator repeats the design values with a fresh timestamp (parked car, adapter connected, nothing changes)
+    @Volatile var flatten = false       // --ez flatten true: static layers become hardware textures (A/B switch for the GPU-fill experiment)
     @Volatile var pinMode: dev.kuntal.cockpit.perf.PerfMode? = null   // --es perfmode full|light: bypass PerfGovernor (repeatable benchmarks)
 
     const val CLOCK = "21:47"
