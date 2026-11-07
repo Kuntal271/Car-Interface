@@ -17,7 +17,7 @@ object DriveCycle {
     }
 
     fun at(tMs: Long): VehicleSample {
-        val t = tMs / 1000.0
+        val t = maxOf(0L, tMs) / 1000.0                 // a clock that stepped backwards must not push coolant and fuel off their scales
         val v = speedAt(t)
         val gearIdx = upshift.count { v >= it } // 0..5
         val rpm = maxOf(850.0, v * rpmPerKmh[gearIdx])

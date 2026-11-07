@@ -8,7 +8,7 @@ interface VehicleSource { fun samples(): Flow<VehicleSample> }
 
 /** Simulator: replays [DriveCycle] in real time. Default source on the emulator. */
 class SimSource(
-    private val now: () -> Long = System::currentTimeMillis,
+    private val now: () -> Long = MonotonicClock,
     private val periodMs: Long = 50,
 ) : VehicleSource {
     override fun samples(): Flow<VehicleSample> = flow {
