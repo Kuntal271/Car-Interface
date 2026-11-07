@@ -39,6 +39,15 @@ android {
 
 kotlin { jvmToolchain(17) }
 
+// Compose compiler reports (unstable classes, non-skippable composables): `tools/gb.sh -PcomposeReports=true :app:assembleRelease`,
+// output in app/build/compose_compiler/. Off by default so normal builds are unchanged.
+if (providers.gradleProperty("composeReports").isPresent) {
+    composeCompiler {
+        reportsDestination = layout.buildDirectory.dir("compose_compiler")
+        metricsDestination = layout.buildDirectory.dir("compose_compiler")
+    }
+}
+
 dependencies {
     implementation(project(":vehicle"))
     implementation(platform(libs.compose.bom))

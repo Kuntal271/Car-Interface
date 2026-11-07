@@ -1,10 +1,12 @@
 package dev.kuntal.cockpit.perf
 
+import android.os.Debug
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
 import android.view.FrameMetrics
 import android.view.Window
+import dev.kuntal.cockpit.DebugHooks
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -40,13 +42,17 @@ class FrameMeter(private val window: Window, private val log: Boolean) {
         if (now - lastReport >= REPORT_NS) {
             lastReport = now
             val s = stats.summary()
-            val mode = governor.update(s)
+            val mode = DebugHooks.pinMode ?: governor.update(s)
             Perf.publish(s, mode)
             val u = uiStats.summary()
             if (log) Log.i(TAG, "n=${s.count} total p50=%.1f p99=%.1f max=%.1f over12=%.1f%% missed=%.1f%% | app-cpu p50=%.1f p99=%.1f max=%.1f | gate=%s mode=%s".format(
-                s.p50, s.p99, s.max, s.over12Pct, s.missedPct, u.p50, u.p99, u.max, if (s.meetsGate()) "PASS" else "FAIL", mode))
+                s.p50, s.p99, s.max, s.over12Pct, s.missedPct, u.p50, u.p99, u.max, if (s.meetsGate()) "PASS" else "FAIL", mode) + gcStats())
         }
     }
+
+    /** Cumulative ART counters (tools/perf/bench.py differences them): GC count, blocking GCs, bytes allocated. Debug logging only. */
+    private fun gcStats() = " | gc=%s blk=%s alloc=%s".format(
+        Debug.getRuntimeStat("art.gc.gc-count"), Debug.getRuntimeStat("art.gc.blocking-gc-count"), Debug.getRuntimeStat("art.gc.bytes-allocated"))
 
     fun start() { stats.clear(); uiStats.clear(); lastReport = System.nanoTime(); warmUpUntil = lastReport + WARMUP_NS; window.addOnFrameMetricsAvailableListener(listener, handler) }
     fun stop() { window.removeOnFrameMetricsAvailableListener(listener) }
