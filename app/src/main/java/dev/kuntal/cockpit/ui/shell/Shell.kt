@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -76,7 +77,7 @@ fun StatusBar(state: State<VehicleUiState>) {
             19, 23, p.dim, Modifier.at(118, 16), letterSpacing = 0.02.em,
         )
         // connection indicators, centred on the bar: dot + label. Only OBD has a live source so far; the rest read "off" instead of pretending.
-        val link = state.value.link
+        val link by remember { derivedStateOf { state.value.link } }       // recompose on a link change, not on every sample
         val obdOn = link == Link.Connected || link == Link.Simulated
         Row(Modifier.at(0, 17).width(1280.dp), horizontalArrangement = Arrangement.spacedBy(22.dp, Alignment.CenterHorizontally)) {
             LinkItem("OBD", if (link == Link.Simulated && !snap) "sim" else null, on = obdOn, warn = link == Link.Lost)

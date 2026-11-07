@@ -31,6 +31,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     testOptions { unitTests.isReturnDefaultValues = true }
+    lint {
+        // Play Store rule; this app is sideloaded onto an Android 11 head unit, and targetSdk 30 is deliberate (see targetSdk above).
+        disable += "ExpiredTargetSdkVersion"
+    }
 }
 
 kotlin { jvmToolchain(17) }
