@@ -24,11 +24,15 @@ html[data-theme="ford"] .gcap{letter-spacing:0}
 html[data-theme="ford"] .zl{stroke:var(--dim);stroke-dasharray:5 5;stroke-width:1.5}
 html[data-theme="ford"] .gridl{stroke:var(--hair)}
 html[data-theme="ford"] .s-rpm{stroke:var(--text);stroke-dasharray:10 6;stroke-width:2.5}
-html[data-theme="ford"] .lbl.ttl{color:var(--text);font-weight:600}
+html[data-theme="ford"] .lbl.ttl{color:var(--dim)}
 html[data-theme="ford"] .badge.armed{background:transparent;color:var(--lime);box-shadow:inset 0 0 0 1px rgba(var(--lime-rgb),.5)}
 html[data-theme="ford"] .best,html[data-theme="ford"] .best b.white,html[data-theme="ford"] .best .unit{color:var(--lime)}
 html[data-theme="ford"] .best{font-size:22px;font-weight:600}
 html[data-theme="ford"] .badge.src:not(.lime):not(.fill):not(.warn){color:var(--dim)}   /* a source note, not a value: dim text */
+
+.fx{display:none} html[data-theme="ford"] .fx{display:inline} html[data-theme="ford"] .cx{display:none}   /* Ford-only / Cockpit-only variants */
+html[data-theme="ford"] .bv{color:var(--text)}   /* measured value: white */
+html[data-theme="ford"] .run>span:first-child{color:var(--text)}   /* list row titles: white */
 </style></head>
 <body><div class="stage"><div class="frame" data-active="drive">
 <main class="main row g24" data-od-id="drive-boost">
@@ -56,7 +60,7 @@ html[data-theme="ford"] .badge.src:not(.lime):not(.fill):not(.warn){color:var(--
       <div class="card tile grow" data-od-id="load"><span class="lbl">Engine load</span><div class="v"><span id="load">88</span><span class="unit t">%</span></div><div id="loadbar" class="seg sk" data-n="16" data-v=".88" data-split=".85" style="height:14px"></div></div>
     </div>
     <div class="row g12">
-      <div class="card tile grow" data-od-id="map"><span class="lbl">Manifold abs.</span><div class="v"><span id="map">195</span><span class="unit">kPa</span></div><span class="mono">baro 100 kPa</span></div>
+      <div class="card tile grow" data-od-id="map"><span class="lbl">Manifold abs.</span><div class="v"><span id="map">195</span><span class="unit">kPa</span></div><span class="mono cx">baro 100 kPa</span><span class="mono fx">baro <span class="bv">100</span> kPa</span></div>
       <div class="card tile grow" data-od-id="iat"><span class="lbl">Intake air</span><div class="v"><span id="iat">44</span><span class="unit t">°C</span></div><div id="iatbar" class="seg sk" data-n="16" data-v=".4" data-split=".8" style="height:14px"></div></div>
     </div>
     <div class="card col grow" data-od-id="timer">
@@ -78,51 +82,86 @@ UI.onready = function () {
   var peak = 1.04;
   /* semicircle bipolar boost gauge: -1.0 .. +1.5 bar over 200deg, 50 segments of 0.05 bar.
      The lit part is clipped to the exact value, so the fill ends where the printed scale says it does. */
-  function arc(b) {
-    var cx = 304, cy = 292, r1 = 226, r2 = 278, a0 = -100, a1 = 100, n = 50, zero = .4, v = Math.max(0, Math.min(1, (b + 1) / 2.5)), s = '', eps = 1e-6;
-    var ang = function (f) { return a0 + f * (a1 - a0); }, A0 = ang(Math.min(zero, v)), A1 = ang(Math.max(zero, v)), neg = b < 0 ? ' neg' : '';
-    for (var i = 0; i < n; i++) {
-      var S0 = ang(i / n), S1 = ang((i + 1) / n);
-      s += '<path d="' + UI.sector(cx, cy, r1, r2, S0 + .6, S1 - .6) + '" fill="rgba(var(--cobalt-rgb),.24)"/>';
-      if (Math.min(S1, A1) - Math.max(S0, A0) > .05) {
-        var l0 = A0 > S0 + eps ? A0 : (A0 < S0 - eps ? S0 + .6 : S0), l1 = A1 < S1 - eps ? A1 : (A1 > S1 + eps ? S1 - .6 : S1);
-        s += '<path class="gl' + neg + '" d="' + UI.sector(cx, cy, r1, r2, l0, l1) + '"/>';
-      }
+  /* Built once: 50 base segments, 50 lit overlays, ticks, labels. Each frame only the lit overlay that changed, the number and (when it moves) the peak marker are touched. */
+  var AR = null;
+  function arcBuild() {
+    var cx = 304, cy = 292, r1 = 226, r2 = 278, a0 = -100, a1 = 100, n = 50, i, st = '';
+    var ang = function (f) { return a0 + f * (a1 - a0); };
+    AR = { cx: cx, cy: cy, r1: r1, r2: r2, n: n, ang: ang, st: [], neg: null, peak: null, num: null };
+    for (i = 0; i < n; i++) {
+      st += '<path d="' + UI.sector(cx, cy, r1, r2, ang(i / n) + .6, ang((i + 1) / n) - .6) + '" fill="rgba(var(--cobalt-rgb),.24)"/>';
+      AR.st.push('');
     }
+    for (i = 0; i < n; i++) st += '<path class="gl" d="" style="display:none"/>';
     [[-1, '−1.0'], [-.5, '−0.5'], [0, '0'], [.5, '+0.5'], [1, '+1.0'], [1.5, '+1.5']].forEach(function (t) {
       var a = ang((t[0] + 1) / 2.5), p1 = UI.pol(cx, cy, r1 - 10, a), p2 = UI.pol(cx, cy, r1 - 26, a), tp = UI.pol(cx, cy, r1 - 52, a);
-      s += '<line x1="' + p1[0] + '" y1="' + p1[1] + '" x2="' + p2[0] + '" y2="' + p2[1] + '" stroke="' + (t[0] > 0 ? 'var(--lime)' : 'var(--cobalt-lt)') + '" stroke-width="3"/>' +
+      st += '<line x1="' + p1[0] + '" y1="' + p1[1] + '" x2="' + p2[0] + '" y2="' + p2[1] + '" stroke="' + (t[0] > 0 ? 'var(--lime)' : 'var(--cobalt-lt)') + '" stroke-width="3"/>' +
         '<text x="' + tp[0] + '" y="' + (tp[1] + 8) + '" text-anchor="middle" font-family="var(--f-ui)" font-weight="600" font-size="21" fill="var(--dim)">' + t[1] + '</text>';
     });
-    var pa = ang((peak + 1) / 2.5), q = [UI.pol(cx, cy, r2 + 4, pa), UI.pol(cx, cy, r2 + 24, pa - 2.2), UI.pol(cx, cy, r2 + 24, pa + 2.2)];
-    s += '<polygon points="' + q.join(' ') + '" fill="var(--lime)"/>';
-    s += '<text class="pk" x="632" y="104" text-anchor="end">Peak</text><text class="pk" x="632" y="128" text-anchor="end">+' + peak.toFixed(2) + ' bar</text>';
-    s += '<text class="gn' + neg + '" x="' + cx + '" y="' + (cy - 14) + '" text-anchor="middle" font-family="var(--f-display)" font-weight="800" font-size="118">' + (b >= 0 ? '+' : '−') + Math.abs(b).toFixed(2) + '</text>';
-    s += '<text class="gcap" x="' + cx + '" y="' + (cy + 34) + '" text-anchor="middle" font-family="var(--f-ui)" font-weight="600" font-size="24" letter-spacing="4" fill="var(--dim)">bar · gauge</text>';
-    $('arc').innerHTML = s;
+    st += '<polygon id="pkmark" points="" fill="var(--lime)"/>';
+    st += '<text class="pk" x="632" y="104" text-anchor="end">Peak</text><text class="pk" id="pkval" x="632" y="128" text-anchor="end"></text>';
+    st += '<text class="gn" id="gnum" x="' + cx + '" y="' + (cy - 14) + '" text-anchor="middle" font-family="var(--f-display)" font-weight="800" font-size="118"></text>';
+    st += '<text class="gcap" x="' + cx + '" y="' + (cy + 34) + '" text-anchor="middle" font-family="var(--f-ui)" font-weight="600" font-size="24" letter-spacing="4" fill="var(--dim)">bar · gauge</text>';
+    $('arc').innerHTML = st;
+    AR.lit = $('arc').querySelectorAll('path.gl'); AR.pk = $('pkmark'); AR.pkv = $('pkval'); AR.gn = $('gnum');
+  }
+  function arc(b) {
+    if (!AR) arcBuild();
+    var cx = AR.cx, cy = AR.cy, r1 = AR.r1, r2 = AR.r2, n = AR.n, ang = AR.ang, eps = 1e-6, zero = .4;
+    var v = Math.max(0, Math.min(1, (b + 1) / 2.5)), A0 = ang(Math.min(zero, v)), A1 = ang(Math.max(zero, v)), neg = b < 0, i, d, el;
+    if (neg !== AR.neg) { AR.neg = neg; for (i = 0; i < n; i++) AR.lit[i].setAttribute('class', 'gl' + (neg ? ' neg' : '')); }
+    for (i = 0; i < n; i++) {
+      var S0 = ang(i / n), S1 = ang((i + 1) / n);
+      d = '';
+      if (Math.min(S1, A1) - Math.max(S0, A0) > .05) {
+        var l0 = A0 > S0 + eps ? A0 : (A0 < S0 - eps ? S0 + .6 : S0), l1 = A1 < S1 - eps ? A1 : (A1 > S1 + eps ? S1 - .6 : S1);
+        d = UI.sector(cx, cy, r1, r2, l0, l1);
+      }
+      if (d !== AR.st[i]) {                                   /* full and empty segments never change; only the end segment moves */
+        el = AR.lit[i];
+        if (d) { el.setAttribute('d', d); el.style.display = ''; } else el.style.display = 'none';
+        AR.st[i] = d;
+      }
+    }
+    if (peak !== AR.peak) {
+      AR.peak = peak;
+      var pa = ang((peak + 1) / 2.5), q = [UI.pol(cx, cy, r2 + 4, pa), UI.pol(cx, cy, r2 + 24, pa - 2.2), UI.pol(cx, cy, r2 + 24, pa + 2.2)];
+      AR.pk.setAttribute('points', q.join(' '));
+      AR.pkv.textContent = '+' + peak.toFixed(2) + ' bar';
+    }
+    var num = (b >= 0 ? '+' : '−') + Math.abs(b).toFixed(2);
+    if (num !== AR.num) { AR.num = num; AR.gn.setAttribute('class', 'gn' + (neg ? ' neg' : '')); AR.gn.textContent = num; }
   }
   /* 25 s history: boost on the left axis (-1.0..+1.5 bar, same scale as the gauge), rpm on the right axis (0..7,500), time along the bottom */
+  /* Axes, grid and labels are built once; the two lines are refreshed only when the 25 s window has moved by a visible amount (50 ms = 1 px). */
+  var CH = null;
   function chart(t0) {
     var X0 = 52, W = 504, Y0 = 34, H = 120, s = '', pb = [], pr = [], i, k, d;
     var yb = function (b) { return Y0 + H - (Math.max(-1, Math.min(1.5, b)) + 1) / 2.5 * H; }, yr = function (r) { return Y0 + H - Math.min(1, r / 7500) * H; };
+    if (!CH) {
+      var bl = ['+1.5', '+1.0', '+0.5', '0 bar', '−0.5', '−1.0'], rl = ['7,500', '6,000', '4,500', '3,000', '1,500', '0'];
+      for (k = 0; k <= 5; k++) {
+        var y = Y0 + k * H / 5;
+        s += '<line class="gridl" x1="' + X0 + '" x2="' + (X0 + W) + '" y1="' + y + '" y2="' + y + '"/>' +
+          '<text class="ax" x="44" y="' + (y + 6) + '" text-anchor="end">' + bl[k] + '</text><text class="ax" x="564" y="' + (y + 6) + '" text-anchor="start">' + rl[k] + '</text>';
+      }
+      s += '<text class="ax" x="44" y="16" text-anchor="end">bar</text><text class="ax" x="564" y="16" text-anchor="start">rpm</text>';
+      for (k = 0; k <= 5; k++) {
+        var tx = X0 + k * W / 5;
+        s += '<line class="gridl" x1="' + tx + '" x2="' + tx + '" y1="' + (Y0 + H) + '" y2="' + (Y0 + H + 6) + '"/><text class="ax" x="' + tx + '" y="178" text-anchor="middle">' + (k < 5 ? '−' + (25 - 5 * k) : '0') + ' s</text>';
+      }
+      s += '<line class="zl" x1="' + X0 + '" x2="' + (X0 + W) + '" y1="' + yb(0) + '" y2="' + yb(0) + '"/>';
+      s += '<polyline class="s-rpm" id="plr" fill="none" points=""/><polyline class="s-boost" id="plb" fill="none" points=""/>';
+      $('chart').innerHTML = s;
+      CH = { pr: $('plr'), pb: $('plb'), t: null };
+    }
+    if (CH.t !== null && Math.abs(t0 - CH.t) < .05) return;
+    CH.t = t0;
     for (i = 0; i <= 50; i++) {
       d = UI.Sim.at(Math.max(0, t0 - 25 + i * .5)); var x = (X0 + i / 50 * W).toFixed(1);
       pb.push(x + ',' + yb(d.boost).toFixed(1)); pr.push(x + ',' + yr(d.rpm).toFixed(1));
     }
-    var bl = ['+1.5', '+1.0', '+0.5', '0 bar', '−0.5', '−1.0'], rl = ['7,500', '6,000', '4,500', '3,000', '1,500', '0'];
-    for (k = 0; k <= 5; k++) {
-      var y = Y0 + k * H / 5;
-      s += '<line class="gridl" x1="' + X0 + '" x2="' + (X0 + W) + '" y1="' + y + '" y2="' + y + '"/>' +
-        '<text class="ax" x="44" y="' + (y + 6) + '" text-anchor="end">' + bl[k] + '</text><text class="ax" x="564" y="' + (y + 6) + '" text-anchor="start">' + rl[k] + '</text>';
-    }
-    s += '<text class="ax" x="44" y="16" text-anchor="end">bar</text><text class="ax" x="564" y="16" text-anchor="start">rpm</text>';
-    for (k = 0; k <= 5; k++) {
-      var tx = X0 + k * W / 5;
-      s += '<line class="gridl" x1="' + tx + '" x2="' + tx + '" y1="' + (Y0 + H) + '" y2="' + (Y0 + H + 6) + '"/><text class="ax" x="' + tx + '" y="178" text-anchor="middle">' + (k < 5 ? '−' + (25 - 5 * k) : '0') + ' s</text>';
-    }
-    s += '<line class="zl" x1="' + X0 + '" x2="' + (X0 + W) + '" y1="' + yb(0) + '" y2="' + yb(0) + '"/>';
-    s += '<polyline class="s-rpm" fill="none" points="' + pr.join(' ') + '"/><polyline class="s-boost" fill="none" points="' + pb.join(' ') + '"/>';
-    $('chart').innerHTML = s;
+    CH.pr.setAttribute('points', pr.join(' ')); CH.pb.setAttribute('points', pb.join(' '));
   }
   UI.live(function (s) {
     peak = Math.max(peak, s.boost); arc(s.boost); chart(s.t);

@@ -117,8 +117,22 @@
       };
     }
   };
+  var textGuard = false;
+  function guardText() {                  /* live/bench only: assigning the same text still replaces the node and forces layout, so skip it */
+    if (textGuard) return; textGuard = true;
+    var d = Object.getOwnPropertyDescriptor(Node.prototype, 'textContent');
+    Object.defineProperty(Node.prototype, 'textContent', {
+      configurable: true, get: d.get,
+      set: function (v) {
+        v = v == null ? '' : String(v); var c = this.firstChild;
+        if (c && c.nodeType === 3 && c === this.lastChild && c.data === v) return;
+        d.set.call(this, v);
+      }
+    });
+  }
   UI.live = function (cb) {
     var snap = UI.Sim.snapT; if (Q.has('t')) snap = parseFloat(Q.get('t'));
+    if (Q.has('live') || Q.has('bench')) guardText();
     if (Q.has('bench')) {                         /* scripting cost of one frame's update (not rasterisation): tools/design.sh bench drive */
       var n = 600, tt = [], i; for (i = 0; i < 30; i++) cb(UI.Sim.at(snap + i * .016));
       for (i = 0; i < n; i++) { var a = performance.now(); cb(UI.Sim.at(snap + i * .016)); tt.push(performance.now() - a); }
@@ -211,8 +225,10 @@
       el.setAttribute('viewBox', '0 0 ' + o.w + ' ' + o.h); el.innerHTML = s;
       el._ford = { lit: litEl, tip: el.querySelector('.tip') };
     }
-    var v = Math.max(0, Math.min(1, o.rpm / o.max));
-    el._ford.lit.style.setProperty('--p', v.toFixed(4));
+    var v = Math.max(0, Math.min(1, o.rpm / o.max)), vs = v.toFixed(4);
+    if (el._ford.last === vs) return;                                         /* nothing moved: no style write, no repaint */
+    el._ford.last = vs;
+    el._ford.lit.style.setProperty('--p', vs);
     el._ford.tip.setAttribute('transform', 'rotate(' + (a0 + v * (a1 - a0)).toFixed(2) + ' ' + o.cx + ' ' + o.cy + ')');
   };
 
@@ -292,14 +308,18 @@
   /* ---------------- hydrators ---------------- */
   /* segmented bar: value v in 0..1 (or position for bipolar bars: lit between zero and v) */
   UI.setSeg = function (e, v) {
-    var o = e._o, h = '';
-    for (var i = 0; i < o.n; i++) {
-      var f = (i + 0.5) / o.n, c = '';
-      if (o.zero != null) { if (v >= o.zero) { if (f >= o.zero && f <= v) c = 'l'; } else if (f <= o.zero && f >= v) c = 'c'; }
-      else if (f <= v) c = (UI.theme === 'ford' && o.c !== 'w') ? 'l' : (o.c || (f >= o.sp ? 'l' : 'c'));
-      h += '<i class="' + c + '"></i>';
+    var o = e._o, n = o.n, i, h = '';
+    if (!e._cs || e._cs.length !== n || e.children.length !== n) {          /* build once; the nodes then persist (no per-frame DOM churn) */
+      for (i = 0; i < n; i++) h += '<i class=""></i>';
+      e.innerHTML = h; e._cs = []; for (i = 0; i < n; i++) e._cs.push('');
     }
-    e.innerHTML = h;
+    var kids = e.children, cs = e._cs, ford = UI.theme === 'ford';
+    for (i = 0; i < n; i++) {
+      var f = (i + 0.5) / n, c = '';
+      if (o.zero != null) { if (v >= o.zero) { if (f >= o.zero && f <= v) c = 'l'; } else if (f <= o.zero && f >= v) c = 'c'; }
+      else if (f <= v) c = (ford && o.c !== 'w') ? 'l' : (o.c || (f >= o.sp ? 'l' : 'c'));
+      if (c !== cs[i]) { kids[i].className = c; cs[i] = c; }                 /* only the segments that changed */
+    }
   };
   function hydrate(root) {
     root.querySelectorAll('i[data-i]').forEach(function (e) { e.innerHTML = UI.icon(e.dataset.i, +e.dataset.s || 24); e.removeAttribute('data-i'); });

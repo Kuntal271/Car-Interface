@@ -32,5 +32,11 @@ case "${1:-}" in
   rvshots) mkdir -p "$ROOT/shots/_rv"; cd "$ROOT/screens" && for f in *.html; do n="${f%.html}"
               if [ "$n" = overlays ]; then for i in 1 2 3 4 5 6 7 8; do "$SELF" shotq overlays "_rv/overlays-$i" "one=$i&noanim=1"; done; else "$SELF" shotq "$n" "_rv/$n" "noanim=1"; fi; done ;;
   qaall) cd "$ROOT/screens" && for f in *.html; do "$SELF" qa "${f%.html}"; done ;;
-  *) echo "usage: $0 serve | shot | shotq | shotall | qa | qaall | probe | probeall | bench"; exit 2 ;;
+  verify) ROOTREPO="$(cd "$(dirname "$SELF")/.." && pwd)"   # one command: links + every screen's layout QA + measured probes (all overlay states); prints only problems, then VERIFY-CLEAN or VERIFY-FAIL
+          bad=0
+          out=$(python3 "$ROOTREPO/tools/design-check.py" 2>&1); echo "$out" | grep -qE "BROKEN: none" && echo "$out" | grep -qE "EXTERNAL: none" && echo "$out" | grep -q "screens with >1 logo: none" || { echo "design-check:"; echo "$out"; bad=1; }
+          out=$("$SELF" qaall 2>&1 | grep -v "^== " | grep -v "QA-CLEAN" || true); [ -n "$out" ] && { echo "qa:"; echo "$out"; bad=1; }
+          out=$("$SELF" probeall 2>&1 | grep -v "^== " | grep -v "PROBE-CLEAN" || true); [ -n "$out" ] && { echo "probe:"; echo "$out"; bad=1; }
+          [ "$bad" = 0 ] && echo VERIFY-CLEAN || { echo VERIFY-FAIL; exit 1; } ;;
+  *) echo "usage: $0 serve | shot | shotq | shotall | qa | qaall | probe | probeall | rvshots | bench | verify"; exit 2 ;;
 esac

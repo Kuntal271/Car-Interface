@@ -16,6 +16,7 @@ html[data-theme="ford"] .badge.close{background:var(--warn);color:var(--on-warn)
 html[data-theme="ford"] .rd{color:var(--text)}
 html[data-theme="ford"] .dl .dn{fill:var(--text)}
 html[data-theme="ford"] .dl .du{fill:var(--dim);font-family:var(--f-ui);font-weight:500;font-size:22px}
+html[data-theme="ford"] a.btn.exit{opacity:1!important;color:var(--text)}   /* neutral control: white text */
 </style></head>
 <body><div class="stage"><div class="frame" data-active="parking" data-dock="0">
 <main class="main full" data-od-id="parking">
@@ -43,7 +44,7 @@ html[data-theme="ford"] .dl .du{fill:var(--dim);font-family:var(--f-ui);font-wei
       <div class="opt" style="gap:12px"><span class="grow nm">Beep volume</span><div class="slider" style="width:100px" data-v=".6" data-n="10"></div><span class="num val">60<span class="unit t">%</span></span></div>
       <div class="opt" style="gap:12px"><span class="grow nm">Brightness</span><div class="slider" style="width:100px" data-v=".7" data-n="10"></div><span class="num val">70<span class="unit t">%</span></span></div>
     </div>
-    <a class="btn" style="opacity:.75">Exit · available in P</a>
+    <a class="btn exit" style="opacity:.75">Exit · available in P</a>
   </section>
 </main>
 </div></div>
@@ -56,6 +57,7 @@ UI.onready = function () {
   s += '<path d="M' + (cx - half(660) * .72) + ' 660Q' + (cx - half(450) * .72) + ' 430 ' + (cx - half(250) * .72) + ' 250M' + (cx + half(660) * .72) + ' 660Q' + (cx + half(450) * .72) + ' 430 ' + (cx + half(250) * .72) + ' 250" stroke="var(--lime)" stroke-width="5" fill="none"/>';
   /* distance bars: far / mid / near */
   [[270, '2.0', 'var(--cobalt)'], [390, '1.0', 'var(--cobalt-lt)'], [520, '0.5', 'var(--lime)']].forEach(function (b) {
+    if (UI.theme === 'ford') b[2] = 'var(--lime)';   /* Ford: distance bars are data fills, all ice-cyan */
     var h = half(b[0]) ;
     s += '<line x1="' + (cx - h) + '" x2="' + (cx + h) + '" y1="' + b[0] + '" y2="' + b[0] + '" stroke="' + b[2] + '" stroke-width="8"/>' +
       '<text x="' + (cx + h + 14) + '" y="' + (b[0] + 10) + '" font-family="var(--f-display)" font-weight="800" font-size="32" fill="' + b[2] + '" class="dl"><tspan class="dn">' + b[1] + '</tspan><tspan class="du"> m</tspan></text>';

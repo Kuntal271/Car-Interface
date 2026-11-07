@@ -43,7 +43,7 @@
   </div>
 </div></section>
 
-<footer class="wrap foot">Fonts: Big Shoulders Display, Space Grotesk, JetBrains Mono (SIL Open Font License, bundled in <code>assets/fonts</code>). Static site, no build step, no network calls: publish the <code>site/</code> folder anywhere.</footer>
+<footer class="wrap foot foot-in"><span class="cx">Fonts: Big Shoulders Display, Space Grotesk, JetBrains Mono (SIL Open Font License, bundled in <code>assets/fonts</code>).</span><span class="fx">Fonts: Barlow and Barlow Condensed under the SIL Open Font License, bundled in <code>assets/fonts</code>. Ford's own typeface is proprietary and not included.</span> Static site, no build step, no network calls: publish the <code>site/</code> folder anywhere.</footer>
 
 <script>
 UI.hydrate(document);
@@ -51,8 +51,8 @@ var g = document.getElementById('gallery'), h = '';
 GROUPS.forEach(function (grp) {
   h += '<div class="grp" id="g-' + grp.replace(/\W+/g, '') + '">' + grp + '</div><div class="cards">';
   SCREENS.filter(function (s) { return s.g === grp; }).forEach(function (s) {
-    h += '<a class="sc" href="screens/' + s.id + '.html"><div class="th"><img loading="lazy" src="shots/' + (s.id === 'overlays' ? 'overlays-thumb' : s.id) + '.png" alt="' + s.t + '"></div><div class="bd"><h3>' + s.t + '</h3><p>' + s.b + '</p>' +
-      s.src.map(function (x) { return '<span class="tag">' + x + '</span>'; }).join('') + '<span class="tag ' + (s.risk === 'High' ? 'hi' : s.risk === 'Med' ? 'md' : '') + '">Risk · ' + s.risk + '</span></div></a>';
+    h += '<a class="sc" href="screens/' + s.id + '.html"><div class="th"><img loading="lazy" src="shots/' + (s.id === 'overlays' ? 'overlays-thumb' : s.id) + '.png" alt="' + s.t + '"></div><div class="bd"><h3>' + s.t + '</h3><p>' + s.b + '</p><div class="tags">' +
+      s.src.map(function (x) { return '<span class="tag">' + x + '</span>'; }).join('') + '<span class="tag ' + (s.risk === 'High' ? 'hi' : s.risk === 'Med' ? 'md' : '') + '">Risk · ' + s.risk + '</span></div></div></a>';
   });
   h += '</div>';
 });

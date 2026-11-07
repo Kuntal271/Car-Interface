@@ -8,9 +8,10 @@
 .q .n{font:500 18px var(--f-mono);color:var(--dim);width:28px}
 .q .t{font:600 22px var(--f-ui)} .q .a{font:400 18px var(--f-ui);color:var(--dim)} .q .d{margin-left:auto;font:500 18px var(--f-mono);color:var(--dim)}
 .q.on{background:linear-gradient(90deg,var(--l12),transparent);box-shadow:inset 4px 0 0 var(--accent)} .q.on .n,.q.on .t{color:var(--lime)}
-html[data-theme="ford"] .tm,html[data-theme="ford"] .q .n,html[data-theme="ford"] .q.on .n,html[data-theme="ford"] .q .d{color:var(--text)}   /* measured values: white */
+html[data-theme="ford"] .tm,html[data-theme="ford"] .q .n,html[data-theme="ford"] .q.on .n,html[data-theme="ford"] .q .d,html[data-theme="ford"] .q.on .t{color:var(--text)}   /* measured values: white */
 html[data-theme="ford"] .q .n,html[data-theme="ford"] .q .d{font-family:var(--f-display);font-size:20px;letter-spacing:.02em}   /* numerals: Barlow Condensed */
 .fx{display:none} html[data-theme="ford"] .fx{display:inline}   /* Ford-only additions; the Cockpit theme renders exactly as before */
+html[data-theme="ford"] .vnum{font-size:40px}   /* secondary to the track title */
 </style></head>
 <body><div class="stage"><div class="frame" data-active="media">
 <main class="main row g24" data-od-id="media">
@@ -25,7 +26,7 @@ html[data-theme="ford"] .q .n,html[data-theme="ford"] .q .d{font-family:var(--f-
       </div>
     </div>
     <div class="card col grow jb" data-od-id="output">
-      <div class="row jb c"><span class="lbl row c g8"><i data-i="vol" data-s="22"></i>Volume</span><span class="num n-m lime">18<span class="unit fx"> / 30</span></span></div>
+      <div class="row jb c"><span class="lbl row c g8"><i data-i="vol" data-s="22"></i>Volume</span><span class="num n-m lime vnum">18<span class="unit fx"> / 30</span></span></div>
       <div class="slider" data-v=".6" data-n="36"></div>
       <div class="row g12"><span class="chip on" style="height:44px"><i data-i="shuffle" data-s="20"></i>Shuffle</span><span class="chip" style="height:44px"><i data-i="repeat" data-s="20"></i>Repeat</span><span class="chip" style="height:44px"><i data-i="eq" data-s="20"></i>EQ · Flat</span></div>
     </div>

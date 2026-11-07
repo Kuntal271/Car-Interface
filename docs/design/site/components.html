@@ -15,7 +15,7 @@
   <div class="cap">Chips, tabs and badges</div>
   <div class="demo"><div class="tabs"><span class="chip on">Selected</span><span class="chip">Option</span><span class="chip">Option</span></div><span class="chip c">Info</span><span class="badge">Read-only</span><span class="badge lime">Live</span><span class="badge fill">Armed</span></div>
 
-  <div class="cap">Segmented bars · <span class="ci">cobalt below the threshold, lime above</span><span class="fi">lit segments ice-cyan, unlit a blue tint</span></div>
+  <div class="cap">Segmented bars · <span class="ci">cobalt below the threshold, lime above</span><span class="fi">lit segments ice-cyan (vacuum blue), unlit a blue tint</span></div>
   <div class="demo" style="display:block"><div class="lbl" style="margin-bottom:8px">Rpm · <span class="ci">threshold 64 %</span><span class="fi">lit to the current value</span></div><div class="seg sk" data-n="40" data-v=".78" data-split=".64"></div>
     <div class="lbl" style="margin:18px 0 8px">Boost · bipolar around zero (<span class="ci">vacuum cobalt, boost lime</span><span class="fi">vacuum blue, boost cyan</span>)</div><div class="seg sk" data-n="40" data-zero=".4" data-v=".78"></div>
     <div class="lbl" style="margin:18px 0 8px">Vacuum</div><div class="seg sk" data-n="40" data-zero=".4" data-v=".18"></div>
@@ -41,7 +41,7 @@
 
   <div class="cap">Vehicle top view and radar</div>
   <div class="demo" style="gap:40px;align-items:flex-start"><div><div id="car1" style="width:260px;height:420px"></div><div class="lbl" style="text-align:center">Doors closed · radar levels</div></div><div><div id="car2" style="width:260px;height:420px"></div><div class="lbl" style="text-align:center">Doors, tailgate and bonnet open</div></div>
-    <div class="pnl" style="max-width:320px"><h3>States</h3><p><span class="ci">Closed doors are solid cobalt. An open door swings out in lime and leaves a dashed outline where it was. Radar arcs light from the car outward: one ring cobalt, two cobalt-light, three lime.</span><span class="fi">Closed doors are solid blue. An open door swings out in cyan and leaves a dashed outline where it was. Radar arcs light from the car outward: one ring blue, two sky blue, three cyan.</span></p></div></div>
+    <div class="pnl" style="max-width:320px"><h3>States</h3><p><span class="ci">Closed doors are solid cobalt. An open door swings out in lime and leaves a dashed outline where it was. Radar arcs light from the car outward: one ring cobalt, two cobalt-light, three lime.</span><span class="fi">Closed doors are solid blue. An open door swings out in amber and leaves a dashed outline where it was. Radar arcs light from the car outward in cyan; the closest ring turns amber.</span></p></div></div>
 
   <div class="foot">Mapping: <code>CockpitCard</code>, <code>CockpitButton</code>, <code>SegBar</code>, <code>ArcGauge</code>, <code>SettingRow</code>, <code>WarningBanner</code>, <code>VehicleTopView</code>. All draw with Canvas or clip shapes; none uses blur, shadow or blend modes.</div>
 </div>

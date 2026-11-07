@@ -14,11 +14,12 @@
 .endc{font-size:30px;min-height:120px}
 .fx{display:none} html[data-theme="ford"] .fx{display:inline} html[data-theme="ford"] .cx{display:none}   /* Ford-only / Cockpit-only variants */
 /* Ford theme: the caller is the primary element, the timer and End call step back */
-html[data-theme="ford"] .avatar{width:250px;height:250px;font-size:128px}
+html[data-theme="ford"] .avatar{width:250px;height:250px;font-size:128px;color:var(--text)}
 html[data-theme="ford"] .cname{font-size:76px}
 html[data-theme="ford"] .callno{color:var(--text);font-family:var(--f-display);font-size:28px;font-weight:600;letter-spacing:.02em}   /* caller number: Barlow Condensed */
 html[data-theme="ford"] .ctl .ic{color:var(--text)}      /* control glyphs: white, not periwinkle */
-html[data-theme="ford"] .micv{color:var(--text);margin-left:6px}   /* measured level: white; the label stays dim */
+html[data-theme="ford"] .micv{color:var(--text);margin-left:6px;font:600 24px var(--f-display)}
+html[data-theme="ford"] i.cobalt{color:var(--text)}   /* neutral glyph: white */   /* measured level: white; the label stays dim */
 html[data-theme="ford"] .timer{font-size:64px}
 html[data-theme="ford"] .ctls{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(3,minmax(0,1fr));flex:1;min-height:0}
 html[data-theme="ford"] .ctl{height:auto}

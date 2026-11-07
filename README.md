@@ -39,6 +39,7 @@ Open `prototype.html` (interactive, press L for the live drive), `index.html` (o
     cd tools && python3 -m unittest test_canbox_decode # Canbox decoder
     source tools/env.sh && ./gradlew :vehicle:test     # Kotlin tests (edit the paths in env.sh for your machine)
     tools/design.sh qa home && tools/design.sh probe home   # layout QA and measured design probes (Chrome, macOS path)
+    tools/design.sh verify                             # everything above for all 21 screens: VERIFY-CLEAN or the list of problems
 
 The ELM327 integration test runs only when `ELM_TCP=host:port` is set (`tools/elm-emu.sh` starts an emulator).
 

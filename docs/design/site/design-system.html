@@ -69,18 +69,18 @@
   <table class="t" style="margin-top:20px"><thead><tr><th>Role</th><th>Face</th><th>Size</th><th>Weight</th><th>Notes</th></tr></thead><tbody>
     <tr><td>Hero numeral</td><td data-fn="displayshort"></td><td style="white-space:nowrap">236 / 200 px</td><td>800</td><td>Speed. Tabular figures<span class="ci">, lime</span><span class="fi">, white</span>.</td></tr>
     <tr><td>Value</td><td data-fn="displayshort"></td><td>40–120 px</td><td>800</td><td>Card values, units in 20 px <span class="ci">Space Grotesk</span><span class="fi">Barlow</span>.</td></tr>
-    <tr><td>Heading</td><td data-fn="displayshort"></td><td style="white-space:nowrap">26–54 px</td><td style="white-space:nowrap">700–800</td><td>Uppercase, tracked 3–6 %.</td></tr>
+    <tr><td>Heading</td><td data-fn="displayshort"></td><td style="white-space:nowrap">26–54 px</td><td style="white-space:nowrap">700–800</td><td><span class="cx">Uppercase, tracked 3–6 %.</span><span class="fx">Sentence case, no tracking.</span></td></tr>
     <tr><td>Body / list</td><td data-fn="uishort"></td><td>21–23 px</td><td>600</td><td>Readable at arm's length in a moving car.</td></tr>
-    <tr><td>Label</td><td data-fn="uishort"></td><td>18 px</td><td>500</td><td>Uppercase, tracked 12 %. <b>Minimum size for anything a driver must read.</b></td></tr>
+    <tr><td>Label</td><td data-fn="uishort"></td><td>18 px</td><td>500</td><td><span class="cx">Uppercase, tracked 12 %.</span><span class="fx">Sentence case, no tracking.</span> <b>Minimum size for anything a driver must read.</b></td></tr>
     <tr><td>Caption / data</td><td><span class="ci">JetBrains Mono</span><span class="fi">Barlow</span></td><td>18 px</td><td>500</td><td>Provenance, ids and timestamps. Never below the 18 px floor.</td></tr>
   </tbody></table>
 
   <div class="cap">Layout (1280 × 800, 160 dpi so 1 dp = 1 px)</div>
   <div class="two">
-    <div class="pnl" style="padding:18px"><div style="position:relative;width:640px;height:400px;margin:0 auto;background:#05070D;box-shadow:0 0 0 1px var(--hair)">
-      <div style="position:absolute;left:0;top:0;width:640px;height:28px;background:rgba(36,87,255,.25);font:600 12px var(--f-mono);display:flex;align-items:center;padding-left:8px">STATUS BAR · 1280 × 56</div>
-      <div style="position:absolute;right:0;top:28px;width:56px;bottom:0;background:rgba(200,255,0,.14);font:600 12px var(--f-mono);writing-mode:vertical-rl;display:flex;align-items:center;justify-content:center">DOCK · 112 × 744</div>
-      <div style="position:absolute;left:12px;top:40px;right:68px;bottom:12px;border:1px dashed #3D6BFF;font:600 12px var(--f-mono);padding:6px;color:#8190B8">CONTENT · 1168 × 744 · 24 px padding</div></div></div>
+    <div class="pnl" style="padding:18px"><div style="position:relative;width:640px;height:400px;margin:0 auto;background:var(--bg);box-shadow:0 0 0 1px var(--hair)">
+      <div style="position:absolute;left:0;top:0;width:640px;height:28px;background:rgba(var(--cobalt-rgb),.25);font:600 14px var(--f-mono);display:flex;align-items:center;padding-left:8px"><span class="cx">STATUS BAR · 1280 × 56</span><span class="fx">Status bar · 1280 × 56</span></div>
+      <div style="position:absolute;right:0;top:28px;width:56px;bottom:0;background:rgba(var(--lime-rgb),.14);font:600 14px var(--f-mono);writing-mode:vertical-rl;display:flex;align-items:center;justify-content:center"><span class="cx">DOCK · 112 × 744</span><span class="fx">Dock · 112 × 744</span></div>
+      <div style="position:absolute;left:12px;top:40px;right:68px;bottom:12px;border:1px dashed var(--cobalt);font:600 14px var(--f-mono);padding:6px;color:var(--dim)"><span class="cx">CONTENT · 1168 × 744 · 24 px padding</span><span class="fx">Content · 1168 × 744 · 24 px padding</span></div></div></div>
     <div class="pnl"><h3>Rules</h3><ul><li>The dock lives on the <b>right</b> edge: the car is right-hand drive, so it sits under the driver's hand. Settings can mirror it.</li><li>Touch targets are 56 px or larger (a smaller visible control gets a hit area that reaches 56 px); primary actions 80–96 px.</li><li>Gaps are 12 px between related cards, 24 px between columns.</li><li>Cards align to a shared top and bottom edge in each column.</li><li>Nothing important sits in the bottom 24 px.</li></ul></div>
   </div>
 
@@ -150,7 +150,7 @@ rows.forEach(function (r) { var f = V(r[1]); T += '<tr><td><b>' + r[0] + '</b> '
 T += '<tr><td><b>On accent</b> ' + V('--on-accent').toUpperCase() + '</td><td>' + cr(V('--on-accent'), V('--accent')).toFixed(1) + '</td><td colspan="2" class="dim">on accent ' + V('--accent').toUpperCase() + '</td><td>Text on selected and primary fills</td></tr>';
 T += '<tr><td><b>On warning</b> ' + V('--on-warn').toUpperCase() + '</td><td>' + cr(V('--on-warn'), V('--warn')).toFixed(1) + '</td><td colspan="2" class="dim">on warning ' + V('--warn').toUpperCase() + '</td><td>Text on warning blocks</td></tr>';
 document.getElementById('ctr').innerHTML = T;
-document.getElementById('ctrnote').textContent = F ? 'Unlit bar segments are sky blue at 18 %: a track, not information. Every lit segment is also readable from its position and a printed value.' : 'Unlit bar segments are cobalt at 25 %, which sits at 1.2:1 against the background. They are a track, not information, so every lit segment is also readable from its position and a printed value.';
+document.getElementById('ctrnote').textContent = F ? 'Unlit bar segments are sky blue at 18%: a track, not information. Every lit segment is also readable from its position and a printed value.' : 'Unlit bar segments are cobalt at 25 %, which sits at 1.2:1 against the background. They are a track, not information, so every lit segment is also readable from its position and a printed value.';
 document.querySelectorAll('[data-fn]').forEach(function (e) { var k = e.dataset.fn; e.textContent = k === 'display' ? (F ? 'Barlow Condensed' : 'Big Shoulders Display') : k === 'ui' ? (F ? 'Barlow' : 'Space Grotesk') : k === 'displayshort' ? (F ? 'Barlow Condensed' : 'Big Shoulders') : (F ? 'Barlow' : 'Space Grotesk'); });
 var lb = document.getElementById('logobox'); if (lb) lb.innerHTML = UI.logo(120);
 </script></body></html>

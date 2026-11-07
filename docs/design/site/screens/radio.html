@@ -17,7 +17,8 @@ html[data-theme="ford"] #ruler{flex:none}
 html[data-theme="ford"] .btn .unit{font-size:19px}
 html[data-theme="ford"] .btn .stv{font:600 26px var(--f-display)}                                 /* 0.1 step value: Barlow Condensed */
 html[data-theme="ford"] .badge.rds:not(.lime):not(.fill):not(.warn){color:var(--lime);box-shadow:inset 0 0 0 1px rgba(var(--lime-rgb),.5)}   /* RDS: ice-cyan outline like Stereo */
-html[data-theme="ford"] .btn.pri.sv{background:rgba(var(--cobalt-lt-rgb),.14);color:var(--text);box-shadow:inset 0 0 0 1px var(--hair)}   /* Save preset is secondary */
+html[data-theme="ford"] .btn.pri.sv{background:rgba(var(--cobalt-lt-rgb),.14);color:var(--lime);box-shadow:inset 0 0 0 1px var(--hair)}   /* Save preset: secondary action, ice-cyan */
+html[data-theme="ford"] .badge.st,html[data-theme="ford"] .badge.rds{height:40px;display:inline-flex;align-items:center;padding:0 20px}   /* same height as the band chips */   /* Save preset is secondary */
 html[data-theme="ford"] .pre{height:98px;padding:10px 16px}                                      /* two rows + 24 px bottom margin */
 html[data-theme="ford"] .pre b{line-height:.8}
 html[data-theme="ford"] .pre .p{line-height:1} html[data-theme="ford"] .pre .n{line-height:1.1}
@@ -29,7 +30,7 @@ html[data-theme="ford"] .pre.sel .p,html[data-theme="ford"] .pre.sel b,html[data
 <main class="main col g12" data-od-id="radio">
   <div class="row jb c" style="height:48px">
     <div class="tabs"><a href="media.html" class="chip">Bluetooth</a><a href="media.html" class="chip">USB</a><span class="chip on">Radio</span><a class="chip">Streaming</a></div>
-    <div class="row g12 c"><span class="chip c fm" style="height:40px">FM</span><span class="chip" style="height:40px">AM</span><span class="badge lime">Stereo</span><span class="badge rds">RDS</span><span class="row c g8 lime"><i data-i="signal" data-s="26"></i><span class="lbl white">Strong</span><span class="sg fx">48<span class="unit">dBµV</span></span></span></div>
+    <div class="row g12 c"><span class="chip c fm" style="height:40px">FM</span><span class="chip" style="height:40px">AM</span><span class="badge lime st">Stereo</span><span class="badge rds">RDS</span><span class="row c g8 lime"><i data-i="signal" data-s="26"></i><span class="lbl white">Strong</span><span class="sg fx">48<span class="unit">dBµV</span></span></span></div>
   </div>
   <div class="card col" style="height:308px;padding:16px 22px" data-od-id="tuner">
     <div class="row g24 c" style="flex:1">

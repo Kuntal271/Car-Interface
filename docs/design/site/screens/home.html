@@ -23,6 +23,7 @@ html[data-theme="ford"] .tm{color:var(--text)}
 /* Ford: the two mini cards are 4 px wider each (column split 680 / 416) so number + 64 px bar keep a >= 12 px gap */
 .hleft{width:690px}
 html[data-theme="ford"] .hleft{width:680px}
+.fx{display:none} html[data-theme="ford"] .fx{display:block} html[data-theme="ford"] .cx{display:none}   /* Ford-only / Cockpit-only variants */
 </style></head>
 <body><div class="stage"><div class="frame" data-active="home">
 <main class="main row g24" data-od-id="home">
@@ -50,7 +51,7 @@ html[data-theme="ford"] .hleft{width:680px}
     <div class="row g12" style="height:170px">
       <a href="projection.html" class="card mini grow col jb" data-od-id="tile-maps"><span class="lbl row c g8"><i data-i="nav" data-s="22"></i>Maps</span><div class="big lime act">Launch</div><div><div class="h3">Android Auto</div><div class="lbl" style="letter-spacing:.04em;text-transform:none">Connected</div></div></a>
       <a href="radio.html" class="card mini grow col jb" data-od-id="tile-radio"><span class="lbl row c g8"><i data-i="radio" data-s="22"></i>Radio · FM</span><div class="big lime">93.5<span class="unit mhz"> MHz</span></div><div><div class="h3">Red FM</div><div class="lbl" style="letter-spacing:.04em;text-transform:none">Preset 3 · stereo</div></div></a>
-      <a href="car.html" class="card mini grow col jb" data-od-id="tile-climate"><span class="lbl row c g8"><i data-i="snow" data-s="22"></i>Climate</span><div class="big">22.0°</div><div><div class="h3">A/C on</div><div class="lbl" style="letter-spacing:.04em;text-transform:none">Fan 3 · recirculate</div></div></a>
+      <a href="car.html" class="card mini grow col jb" data-od-id="tile-climate"><span class="lbl row c g8"><i data-i="snow" data-s="22"></i>Climate</span><div class="big cx">22.0°</div><div class="big fx">22.0<span class="unit">°C</span></div><div><div class="h3">A/C on</div><div class="lbl" style="letter-spacing:.04em;text-transform:none">Fan 3 · recirculate</div></div></a>
     </div>
     <div class="col rcb" data-od-id="recents">
       <div class="lbl" style="margin-bottom:10px">Recent</div>
