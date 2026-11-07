@@ -14,13 +14,22 @@ object AppIndex {
     /** Lower case, accents stripped: "eclair" finds "Éclair". */
     private fun key(s: String) = Normalizer.normalize(s, Normalizer.Form.NFD).replace(Regex("\\p{M}+"), "").lowercase(Locale.ROOT)
 
+    const val MAX_LABEL = 64
+    const val MAX_QUERY = 64
+
+    /** What the grid may show for an app name: no control characters, at most [MAX_LABEL] characters, the package name when nothing is left. */
+    fun cleanLabel(raw: String, fallback: String = ""): String =
+        raw.filterNot { it.isISOControl() }.trim().take(MAX_LABEL).ifBlank { fallback.take(MAX_LABEL) }
+
+    fun clampQuery(q: String): String = q.take(MAX_QUERY)
+
     /** Everything except this launcher, sorted by label (case-insensitive), then package. */
     fun visible(apps: List<AppEntry>, own: String): List<AppEntry> =
         apps.filter { it.pkg != own }.sortedWith(order)
 
     /** Case-insensitive substring search. Labels that start with the query come first, then the rest; each group alphabetical. */
     fun filter(apps: List<AppEntry>, query: String): List<AppEntry> {
-        val q = key(query.trim())
+        val q = key(clampQuery(query).trim())
         val sorted = apps.sortedWith(order)
         if (q.isEmpty()) return sorted
         val hits = sorted.filter { key(it.label).contains(q) }
