@@ -25,9 +25,8 @@ object Perf {
  * Every 5 s the window is summarised, handed to the [PerfGovernor], and (when [log]) written to logcat under tag CockpitPerf.
  */
 class FrameMeter(private val window: Window, private val log: Boolean) {
-    private val stats = FrameStats(600)             // about 10 s at 60 Hz: total cost, vsync to swap
+    private val pipeline = FramePipeline()          // total cost (vsync to swap): a rolling 600 frames to show, a per-report window for the governor
     private val uiStats = FrameStats(600)           // app-side CPU cost: animation + layout/measure + draw + sync (no GPU wait)
-    private val governor = PerfGovernor()
     private val thread = HandlerThread("frame-meter").also { it.start() }
     private val handler = Handler(thread.looper)
     private var lastReport = 0L
@@ -35,14 +34,14 @@ class FrameMeter(private val window: Window, private val log: Boolean) {
 
     private val listener = Window.OnFrameMetricsAvailableListener { _, fm, _ ->
         if (System.nanoTime() < warmUpUntil) return@OnFrameMetricsAvailableListener      // first composition and JIT are not steady-state cost
-        stats.record(fm.getMetric(FrameMetrics.TOTAL_DURATION) / 1_000_000.0)
+        pipeline.record(fm.getMetric(FrameMetrics.TOTAL_DURATION) / 1_000_000.0)
         uiStats.record((fm.getMetric(FrameMetrics.ANIMATION_DURATION) + fm.getMetric(FrameMetrics.LAYOUT_MEASURE_DURATION) +
             fm.getMetric(FrameMetrics.DRAW_DURATION) + fm.getMetric(FrameMetrics.SYNC_DURATION)) / 1_000_000.0)
         val now = System.nanoTime()
         if (now - lastReport >= REPORT_NS) {
             lastReport = now
-            val s = stats.summary()
-            val mode = DebugHooks.pinMode ?: governor.update(s)
+            val (s, governed) = pipeline.report()
+            val mode = DebugHooks.pinMode ?: governed
             Perf.publish(s, mode)
             val u = uiStats.summary()
             if (log) Log.i(TAG, "n=${s.count} total p50=%.1f p99=%.1f max=%.1f over12=%.1f%% missed=%.1f%% | app-cpu p50=%.1f p99=%.1f max=%.1f | gate=%s mode=%s".format(
@@ -54,7 +53,7 @@ class FrameMeter(private val window: Window, private val log: Boolean) {
     private fun gcStats() = " | gc=%s blk=%s alloc=%s".format(
         Debug.getRuntimeStat("art.gc.gc-count"), Debug.getRuntimeStat("art.gc.blocking-gc-count"), Debug.getRuntimeStat("art.gc.bytes-allocated"))
 
-    fun start() { stats.clear(); uiStats.clear(); lastReport = System.nanoTime(); warmUpUntil = lastReport + WARMUP_NS; window.addOnFrameMetricsAvailableListener(listener, handler) }
+    fun start() { pipeline.clear(); uiStats.clear(); lastReport = System.nanoTime(); warmUpUntil = lastReport + WARMUP_NS; window.addOnFrameMetricsAvailableListener(listener, handler) }
     fun stop() { window.removeOnFrameMetricsAvailableListener(listener) }
     fun release() { stop(); thread.quitSafely() }
 
