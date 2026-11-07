@@ -32,6 +32,7 @@ import dev.kuntal.cockpit.ui.components.Txt
 import dev.kuntal.cockpit.ui.components.at
 import dev.kuntal.cockpit.ui.components.pill
 import dev.kuntal.cockpit.ui.screens.AppsScreen
+import dev.kuntal.cockpit.ui.screens.CarScreen
 import dev.kuntal.cockpit.ui.screens.DriveScreen
 import dev.kuntal.cockpit.ui.screens.HomeAction
 import dev.kuntal.cockpit.ui.screens.HomeScreen
@@ -54,6 +55,7 @@ import kotlinx.coroutines.withContext
 @Composable
 fun CockpitApp(startOn: Dest = Dest.Home, startPage: SettingsPage = SettingsPage.Display, vm: CockpitViewModel = viewModel()) {
     val state = vm.state.collectAsStateWithLifecycle()      // pass the State itself: screens read .value in leaf/draw scopes
+    val canbox = vm.canbox.collectAsStateWithLifecycle()
     val settings by vm.settings.flow.collectAsStateWithLifecycle()
     val ctx = LocalContext.current
     var screen by rememberSaveable { mutableStateOf(startOn) }
@@ -79,6 +81,7 @@ fun CockpitApp(startOn: Dest = Dest.Home, startPage: SettingsPage = SettingsPage
                         }
                     }
                     Dest.Drive -> DriveScreen(state)
+                    Dest.Car -> CarScreen(canbox) { screen = Dest.Parking }
                     Dest.Apps -> {
                         val apps by produceState(emptyList<AppEntry>()) { value = withContext(Dispatchers.IO) { InstalledApps.query(ctx) } }
                         var recents by remember { mutableStateOf(InstalledApps.recents(ctx)) }

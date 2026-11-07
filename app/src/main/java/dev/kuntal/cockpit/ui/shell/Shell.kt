@@ -50,14 +50,26 @@ import kotlinx.coroutines.delay
 import java.time.LocalDateTime
 import java.util.Locale
 
-enum class Dest(val label: String, val icon: Ic) {
+enum class Dest(val label: String, val icon: Ic, val dock: Boolean = true) {
     Home("Home", Ic.Home), Drive("Drive", Ic.Gauge), Car("Car", Ic.Car), Media("Media", Ic.Music),
     Phone("Phone", Ic.Phone), Maps("Maps", Ic.Nav), Apps("Apps", Ic.Grid), Settings("Settings", Ic.Sliders),
+    // screens without a dock slot of their own (reached from Home, Drive, Car, Media and Settings)
+    Trips("Trips", Ic.Route, dock = false), Parking("Parking", Ic.Park, dock = false), Diagnostics("Diagnose", Ic.Pulse, dock = false),
+    Sound("Sound", Ic.Eq, dock = false), PhoneDemo("Phone", Ic.Phone, dock = false), RadioDemo("Radio", Ic.Radio, dock = false),
+    Projection("Projection", Ic.Cast, dock = false),
+}
+
+/** Which dock slot lights up for a screen (the design: Trips and Diagnose live under Apps, Sound and Radio under Media). */
+fun Dest.dockSlot(): Dest? = when (this) {
+    Dest.Trips, Dest.Diagnostics -> Dest.Apps
+    Dest.Sound, Dest.RadioDemo -> Dest.Media
+    Dest.PhoneDemo -> Dest.Phone
+    else -> if (dock) this else null
 }
 
 /** 1280 x 56 status bar. Positions are the measured design coordinates. */
 @Composable
-fun StatusBar(state: State<VehicleUiState>) {
+fun StatusBar(state: State<VehicleUiState>, onTap: () -> Unit = {}) {
     val p = LocalPalette.current
     val ctx = LocalContext.current
     var now by remember { mutableStateOf(LocalDateTime.now()) }
@@ -71,7 +83,7 @@ fun StatusBar(state: State<VehicleUiState>) {
     }
     val snap = DebugHooks.snapshot
     val st = LocalSettings.current
-    Box(Modifier.at(0, 0).width(1280.dp).height(56.dp).background(Brush.verticalGradient(listOf(p.bg.copy(alpha = .94f), p.bg.copy(alpha = .5f))))) {
+    Box(Modifier.at(0, 0).width(1280.dp).height(56.dp).background(Brush.verticalGradient(listOf(p.bg.copy(alpha = .94f), p.bg.copy(alpha = .5f)))).clickable(remember { MutableInteractionSource() }, null, onClick = onTap)) {
         Box(Modifier.at(0, 55).width(1280.dp).height(1.dp).background(p.hairSoft))
         Txt(if (snap) DebugHooks.CLOCK else Fmt.clock(now.hour, now.minute, st.clock), 36, 36, p.text, Modifier.baselineAt(28, 42), CockpitFonts.Condensed, FontWeight.SemiBold, letterSpacing = 0.03.em)
         Txt(
@@ -83,7 +95,7 @@ fun StatusBar(state: State<VehicleUiState>) {
         val obdOn = link == Link.Connected || link == Link.Simulated
         Row(Modifier.at(0, 17).width(1280.dp), horizontalArrangement = Arrangement.spacedBy(22.dp, Alignment.CenterHorizontally)) {
             LinkItem("OBD", if (link == Link.Simulated && !snap) "sim" else null, on = obdOn, warn = link == Link.Lost)
-            LinkItem("Canbox", null, on = snap)
+            LinkItem("Canbox", if (st.demoData && !snap) "sim" else null, on = snap || st.demoData)
             LinkItem("BT", null, on = snap)
             LinkItem("Android Auto", null, on = snap)
         }
@@ -122,9 +134,9 @@ fun Dock(current: Dest, onSelect: (Dest) -> Unit) {
     val p = LocalPalette.current
     Box(Modifier.at(1168, 56).width(112.dp).height(744.dp).background(p.s1.copy(alpha = .72f))) {
         Box(Modifier.width(1.dp).fillMaxSize().background(p.hairSoft))
-        Dest.entries.forEachIndexed { i, d ->
+        Dest.entries.filter { it.dock }.forEachIndexed { i, d ->
             val top = 8 + 91 * i
-            val on = d == current
+            val on = d == current.dockSlot()
             Box(
                 Modifier.at(11, top + 3).size(91.dp, 85.dp)
                     .clip(RoundedCornerShape(20.dp))

@@ -40,6 +40,7 @@ import dev.kuntal.cockpit.data.PressureUnit
 import dev.kuntal.cockpit.data.Settings
 import dev.kuntal.cockpit.data.SourceKind
 import dev.kuntal.cockpit.data.SpeedUnit
+import dev.kuntal.cockpit.data.Standby
 import dev.kuntal.cockpit.data.TempUnit
 import dev.kuntal.cockpit.data.ThemeId
 import dev.kuntal.cockpit.data.Thresholds
@@ -101,8 +102,14 @@ private fun DisplayPage(s: Settings, set: ((Settings) -> Settings) -> Unit) {
         Chips(ThemeId.entries, s.theme, { it.label }) { t -> set { it.copy(theme = t) } }
     }
     SettingRow(X, Y0 + 72, "Clock") { Chips(ClockFormat.entries, s.clock, { it.label }) { v -> set { it.copy(clock = v) } } }
-    SettingRow(X, Y0 + 144, "Motion", "Reduced snaps gauges instead of gliding", last = true) {
+    SettingRow(X, Y0 + 144, "Motion", "Reduced snaps gauges instead of gliding") {
         Chips(MotionMode.entries, s.motion, { it.label }) { v -> set { it.copy(motion = v) } }
+    }
+    SettingRow(X, Y0 + 216, "Start-up splash", "A short welcome on a cold start; any touch skips it") {
+        Chips(listOf(true, false), s.bootSplash, { if (it) "On" else "Off" }) { v -> set { it.copy(bootSplash = v) } }
+    }
+    SettingRow(X, Y0 + 288, "Standby clock", "Only while parked", last = true) {
+        Chips(Standby.CHOICES, s.standbyMin, { Standby.label(it) }) { v -> set { it.copy(standbyMin = v) } }
     }
 }
 
@@ -146,7 +153,7 @@ private fun ConnectionsPage(s: Settings, link: Link, set: ((Settings) -> Setting
             if (paired.isEmpty()) {
                 Para("None found. Pair the adapter in Android's Bluetooth settings first, then come back here.", 19, 24, p.dim, 708, Modifier.at(X, 462))
             } else {
-                paired.take(3).forEachIndexed { i, (name, addr) ->
+                paired.take(2).forEachIndexed { i, (name, addr) ->
                     val on = addr == s.btAddress
                     Row(
                         Modifier.at(X, 456 + 62 * i).size(708.dp, 56.dp).pill(fill = if (on) p.accent else p.sky.copy(alpha = .12f), border = if (on) Color.Transparent else p.hair).tap { set { it.copy(btAddress = addr, btName = name) } },
@@ -159,7 +166,7 @@ private fun ConnectionsPage(s: Settings, link: Link, set: ((Settings) -> Setting
                 }
             }
             Row(
-                Modifier.at(X, 650).size(300.dp, 56.dp).pill(fill = p.sky.copy(alpha = .12f)).tap {
+                Modifier.at(X, 590).size(300.dp, 56.dp).pill(fill = p.sky.copy(alpha = .12f)).tap {
                     runCatching { ctx.startActivity(Intent(AndroidSettings.ACTION_BLUETOOTH_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
                 },
                 horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
@@ -174,6 +181,10 @@ private fun ConnectionsPage(s: Settings, link: Link, set: ((Settings) -> Setting
         else -> {
             Para("Replaying a built-in drive cycle. None of these numbers come from the car. Choose an OBD adapter to see real data.", 18, 24, p.dim, 708, Modifier.at(X, 428))
         }
+    }
+    // Canbox and media have no real source yet: a labelled mock stands in. Off = the screens say "Waiting for ..." instead.
+    SettingRow(X, 676, "Canbox and media", "Simulated doors, climate, radar and a demo player", last = true) {
+        Chips(listOf(true, false), s.demoData, { if (it) "Demo data" else "Off" }) { v -> set { it.copy(demoData = v) } }
     }
 }
 

@@ -2,6 +2,7 @@ package dev.kuntal.cockpit.data
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class SettingsTest {
@@ -85,4 +86,24 @@ class ThresholdsTest {
         assertEquals(120, Thresholds.speedScale(Settings(speedScaleKmh = 120), -1).speedScaleKmh)
         assertEquals(300, Thresholds.speedScale(Settings(speedScaleKmh = 300), +1).speedScaleKmh)
     }
+
+    @Test fun demoDataBootAndStandbyDefaults() {
+        val s = Settings()
+        assertTrue(s.demoData)                      // on for now: Canbox and media have no real source yet
+        assertTrue(s.bootSplash); assertEquals(0, s.standbyMin)         // standby never starts unless the owner asks
+    }
+
+    @Test fun demoDataBootAndStandbyRoundTrip() {
+        val s = Settings(demoData = false, bootSplash = false, standbyMin = 10)
+        assertEquals(s, Settings.fromMap(s.toMap()))
+        assertEquals("false", s.toMap()["demoData"])
+    }
+
+    @Test fun badStandbyValueFallsBackToOff() {
+        assertEquals(0, Settings.fromMap(mapOf("standbyMin" to "7")).standbyMin)
+        assertEquals(30, Settings.fromMap(mapOf("standbyMin" to "30")).standbyMin)
+        assertEquals(Settings(), Settings.fromMap(mapOf("demoData" to "maybe", "bootSplash" to "1")))      // strict booleans only
+    }
+
+    @Test fun demoDataIsNotAReconnect() = assertEquals(Settings().sourceKey, Settings(demoData = false).sourceKey)
 }
