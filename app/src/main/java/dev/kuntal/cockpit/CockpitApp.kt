@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -21,10 +22,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import dev.kuntal.cockpit.data.AppEntry
 import dev.kuntal.cockpit.data.HomeContent
 import dev.kuntal.cockpit.ui.components.Txt
 import dev.kuntal.cockpit.ui.components.at
 import dev.kuntal.cockpit.ui.components.pill
+import dev.kuntal.cockpit.ui.screens.AppsScreen
 import dev.kuntal.cockpit.ui.screens.DriveScreen
 import dev.kuntal.cockpit.ui.screens.HomeAction
 import dev.kuntal.cockpit.ui.screens.HomeScreen
@@ -32,11 +35,14 @@ import dev.kuntal.cockpit.perf.Perf
 import dev.kuntal.cockpit.ui.shell.AppLauncher
 import dev.kuntal.cockpit.ui.shell.Dest
 import dev.kuntal.cockpit.ui.shell.Dock
+import dev.kuntal.cockpit.ui.shell.InstalledApps
 import dev.kuntal.cockpit.ui.shell.StatusBar
 import dev.kuntal.cockpit.ui.theme.CockpitFonts
 import dev.kuntal.cockpit.ui.theme.DesignCanvas
 import dev.kuntal.cockpit.ui.theme.LocalPalette
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 
 @Composable
 fun CockpitApp(startOn: Dest = Dest.Home, vm: CockpitViewModel = viewModel()) {
@@ -64,6 +70,14 @@ fun CockpitApp(startOn: Dest = Dest.Home, vm: CockpitViewModel = viewModel()) {
                     }
                 }
                 Dest.Drive -> DriveScreen(state)
+                Dest.Apps -> {
+                    val apps by produceState(emptyList<AppEntry>()) { value = withContext(Dispatchers.IO) { InstalledApps.query(ctx) } }
+                    var recents by remember { mutableStateOf(InstalledApps.recents(ctx)) }
+                    AppsScreen(apps, recents) { a ->
+                        if (InstalledApps.launch(ctx, a)) { InstalledApps.remember(ctx, a.pkg); recents = InstalledApps.recents(ctx) }
+                        else notice = "Could not open ${a.label}"
+                    }
+                }
                 else -> NotYet(screen)
             }
             StatusBar(state)

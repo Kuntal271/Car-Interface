@@ -30,6 +30,8 @@ enum class Ic(val d: String, val dots: List<Triple<Float, Float, Float>> = empty
     Vol("M4 9.5h3.5L12 6v12l-4.5-3.5H4zM15.5 9a4 4 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"),
     Bolt("M13 2.5 5 13.5h6l-1 8 8-11h-6z"),
     Thermo("M10 14.5V5a2 2 0 1 1 4 0v9.5a4 4 0 1 1-4 0zM12 9v8"),
+    Search("M15 15l5.5 5.5", listOf(Triple(10.5f, 10.5f, 6f))),
+    Close("M5 5l14 14M19 5 5 19"),
     Radio("M3 9h18v11H3zM7 9l11-5.5M13 13.5h5M13 16.5h5", listOf(Triple(8f, 14.5f, 2f))),
     Camera("M3 8h4l1.5-2.5h7L17 8h4v11H3z", listOf(Triple(12f, 13.5f, 3.5f))),
     Park("M4 4h16v16H4zM9.5 17V7.5H13a2.5 2.5 0 0 1 0 5H9.5"),
