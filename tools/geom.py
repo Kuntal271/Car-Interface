@@ -18,7 +18,7 @@ const walk=(e)=>{ if(e.nodeType!==1)return; const cs=w.getComputedStyle(e); if(c
  const bg=cs.backgroundColor; if(bg&&bg!=='rgba(0, 0, 0, 0)')o.bg=bg; if(cs.backgroundImage!=='none')o.bgi=cs.backgroundImage.slice(0,160);
  if(parseFloat(cs.borderTopWidth)>0&&cs.borderTopStyle!=='none')o.bd=cs.borderTopWidth+' '+cs.borderTopColor; if(cs.borderRadius!=='0px')o.rad=cs.borderRadius; if(cs.boxShadow!=='none')o.sh=cs.boxShadow.slice(0,100);
  if(cs.opacity!=='1')o.op=cs.opacity; if(tag==='svg'){o.vb=e.getAttribute('viewBox')}
- if(['path','rect','circle','line','polygon','ellipse','polyline'].includes(tag)){o.fill=cs.fill;o.stroke=cs.stroke;o.sw=cs.strokeWidth;o.d=(e.getAttribute('d')||e.getAttribute('points')||'').slice(0,90);}
+ if(['path','rect','circle','line','polygon','ellipse','polyline'].includes(tag)){o.fill=cs.fill;o.stroke=cs.stroke;o.sw=cs.strokeWidth;o.d=(e.getAttribute("d")||e.getAttribute("points")||"").slice(0,6000);}
  if(tag==='text'){}
  const interesting=own||o.bg||o.bgi||o.bd||o.sh||o.fill&&o.fill!=='none'||o.stroke&&o.stroke!=='none'||tag==='svg';
  if(interesting)out.push(o);

@@ -57,6 +57,8 @@ enum class Dest(val label: String, val icon: Ic, val dock: Boolean = true) {
     Trips("Trips", Ic.Route, dock = false), Parking("Parking", Ic.Park, dock = false), Diagnostics("Diagnose", Ic.Pulse, dock = false),
     Sound("Sound", Ic.Eq, dock = false), PhoneDemo("Phone", Ic.Phone, dock = false), RadioDemo("Radio", Ic.Radio, dock = false),
     Projection("Projection", Ic.Cast, dock = false),
+    // full-screen states with no status bar or dock
+    Boot("Boot", Ic.Power, dock = false), Standby("Standby", Ic.Moon, dock = false),
 }
 
 /** Which dock slot lights up for a screen (the design: Trips and Diagnose live under Apps, Sound and Radio under Media). */

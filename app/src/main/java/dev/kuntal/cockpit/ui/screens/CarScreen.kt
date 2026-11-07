@@ -37,6 +37,8 @@ import dev.kuntal.cockpit.data.Radar
 import dev.kuntal.cockpit.data.TempUnit
 import dev.kuntal.cockpit.data.Units
 import dev.kuntal.cockpit.ui.components.DemoMark
+import dev.kuntal.cockpit.ui.components.drawCarTop
+import dev.kuntal.cockpit.ui.components.rememberCarArt
 import dev.kuntal.cockpit.ui.components.Ic
 import dev.kuntal.cockpit.ui.components.Icon
 import dev.kuntal.cockpit.ui.components.IconLabelAt
@@ -196,89 +198,17 @@ private const val OY = 136f
 private fun sx(x: Float) = OX + (x + 50f) * S
 private fun sy(y: Float) = OY + (y + 78f) * S
 
-private val BODY = "M70 96Q70 40 124 40H196Q250 40 250 96V468Q250 490 228 490H92Q70 490 70 468Z"
-private val BONNET = "M90 64Q90 58 98 58H222Q230 58 230 64V158H90Z"
-private val WS = "M94 166H226L216 214H104Z"
-private val RW = "M104 404H216L224 438H96Z"
-private val MIRRORS = "M52 196l-14 7 6 10 12-4zM268 196l14 7-6 10-12-4z"
-
-private fun pol(cx: Float, cy: Float, r: Float, deg: Float): Offset { val a = Math.toRadians(deg.toDouble()); return Offset(cx + r * sin(a).toFloat(), cy - r * cos(a).toFloat()) }
-
-/** Radar arcs hugging a bumper at svg y = [y]; dir -1 = front (up), +1 = rear (down). One path per (sensor, band). */
-private fun radarArcs(y: Float, dir: Int): List<List<Path>> {
-    val xs = floatArrayOf(92f, 133f, 187f, 228f); val angs = floatArrayOf(-26f, -9f, 9f, 26f)
-    return List(4) { i ->
-        List(3) { k0 ->
-            val k = k0 + 1; val r = 8f + k * 17f
-            val a = (if (dir < 0) 0f else 180f) + angs[i] * (if (dir < 0) 1f else -1f)
-            val p1 = pol(xs[i], y, r, a - 17f); val p2 = pol(xs[i], y, r, a + 17f)
-            PathParser().parsePathString("M${p1.x} ${p1.y}A$r $r 0 0 1 ${p2.x} ${p2.y}").toPath()
-        }
-    }
-}
-
 @Composable
 private fun CarTopView(canbox: State<CanboxState?>) {
     val p = LocalPalette.current
     val cond = CockpitFonts.Condensed
-    val paths = remember {
-        fun path(d: String) = PathParser().parsePathString(d).toPath()
-        listOf(path(BODY), path(BONNET), path(WS), path(RW), path(MIRRORS), path("M160 62V156"), path("M160 484v-4"))
-    }
-    val front = remember { radarArcs(38f, -1) }
-    val rear = remember { radarArcs(548f, +1) }
+    val art = rememberCarArt()
     Canvas(Modifier.at(0, 0).fillMaxSize()) {
         val u = 1.dp.toPx()
         val c = canbox.value ?: return@Canvas
         withTransform({ scale(u, u, Offset.Zero); translate(OX, OY); scale(S, S, Offset.Zero); translate(50f, 78f) }) {
-            fun rrect(x: Float, y: Float, w: Float, h: Float, rx: Float, fill: Color?, stroke: Color?, sw: Float, dash: Boolean = false) {
-                if (fill != null) drawRoundRect(fill, Offset(x, y), Size(w, h), CornerRadius(rx))
-                if (stroke != null) drawRoundRect(stroke, Offset(x, y), Size(w, h), CornerRadius(rx), style = Stroke(sw, pathEffect = if (dash) PathEffect.dashPathEffect(floatArrayOf(4f, 4f)) else null))
-            }
-            // wheels
-            for ((x, y) in listOf(52f to 84f, 246f to 84f, 52f to 368f, 246f to 368f)) rrect(x, y, 22f, 66f, 7f, p.s3, p.sky, 2.5f)
-            // body, lamps, bonnet
-            drawPath(paths[0], p.s1); drawPath(paths[0], p.sky, style = Stroke(2.5f))
-            rrect(82f, 46f, 30f, 6f, 2f, p.sky, null, 0f); rrect(208f, 46f, 30f, 6f, 2f, p.sky, null, 0f)
-            val bonOpen = Door.Bonnet in c.doorsOpen
-            withTransform({ if (bonOpen) translate(0f, -16f) }) {
-                drawPath(paths[1], if (bonOpen) p.warn.copy(alpha = .35f) else p.blue.copy(alpha = .10f))
-                drawPath(paths[1], if (bonOpen) p.warn else p.blue, style = Stroke(if (bonOpen) 2.5f else 1.5f))
-                drawPath(paths[5], p.blue, style = Stroke(1.5f))
-            }
-            for (g in listOf(paths[2], paths[3])) { drawPath(g, p.sky.copy(alpha = .30f)); drawPath(g, p.sky, style = Stroke(1.5f)) }
-            rrect(104f, 214f, 112f, 190f, 8f, p.blue.copy(alpha = .16f), p.blue, 1.5f)
-            // doors: left side hinges swing out +62 degrees, right side -62
-            fun door(open: Boolean, x: Float, y: Float, left: Boolean) {
-                if (open) rrect(x, y, 10f, 104f, 2f, p.cyan.copy(alpha = .14f), p.cyan, 1.5f, dash = true)
-                rotate(if (open) (if (left) 62f else -62f) else 0f, Offset(x + 5f, y)) {
-                    if (open) { rrect(x, y, 10f, 104f, 2f, p.warn, p.warn, 1f) } else { rrect(x, y, 10f, 104f, 2f, p.blue, p.sky, 1f) }
-                }
-            }
-            door(Door.FrontLeft in c.doorsOpen, 60f, 190f, true); door(Door.RearLeft in c.doorsOpen, 60f, 300f, true)
-            door(Door.FrontRight in c.doorsOpen, 250f, 190f, false); door(Door.RearRight in c.doorsOpen, 250f, 300f, false)
-            drawPath(paths[4], p.s3); drawPath(paths[4], p.sky, style = Stroke(1.5f))
-            // tailgate and spare wheel
-            val gateOpen = Door.Trunk in c.doorsOpen
-            rotate(if (gateOpen) -70f else 0f, Offset(236f, 490f)) {
-                rrect(84f, 456f, 152f, 34f, 6f, if (gateOpen) p.warn.copy(alpha = .35f) else p.blue.copy(alpha = .22f), if (gateOpen) p.warn else p.sky, if (gateOpen) 2.5f else 1.5f)
-                drawCircle(p.s3, 30f, Offset(160f, 514f)); drawCircle(p.sky, 30f, Offset(160f, 514f), style = Stroke(3f))
-                drawCircle(p.blue, 13f, Offset(160f, 514f), style = Stroke(2.5f)); drawPath(paths[6], p.sky, style = Stroke(3f))
-            }
-            // radar arcs
-            c.radar?.let { r ->
-                val unlit = p.blue.copy(alpha = .22f)
-                val rearClose = (r.nearestRearM ?: 9.0) < 0.8
-                fun draw(arcs: List<List<Path>>, levels: List<Int>, warnAll: Boolean) {
-                    for (i in 0 until 4) for (k in 1..3) {
-                        val lit = k <= (levels.getOrNull(i) ?: 0)
-                        drawPath(arcs[i][k - 1], if (!lit) unlit else if (warnAll || k == 3) p.warn else p.cyan, style = Stroke(9f))
-                    }
-                }
-                draw(front, r.front, false); draw(rear, r.rear, rearClose)
-            }
-            // driver marker line (the car is right-hand drive)
-            drawLine(p.text, Offset(266f, 242f), Offset(284f, 242f), 2f)
+            drawCarTop(art, c, p)
+            drawLine(p.text, Offset(266f, 242f), Offset(284f, 242f), 2f)          // driver marker line (the car is right-hand drive)
         }
     }
     // tyre pressures, radar distances and the driver label: text on top of the drawing

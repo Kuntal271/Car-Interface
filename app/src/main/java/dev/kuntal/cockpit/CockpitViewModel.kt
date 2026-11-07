@@ -9,6 +9,7 @@ import dev.kuntal.cockpit.data.FileTripStore
 import dev.kuntal.cockpit.data.Link
 import dev.kuntal.cockpit.data.MemoryTripStore
 import dev.kuntal.cockpit.data.MockMediaSource
+import dev.kuntal.cockpit.data.Radar
 import dev.kuntal.cockpit.data.TripRecorder
 import dev.kuntal.cockpit.data.VehicleUiState
 import dev.kuntal.cockpit.perf.Perf
@@ -57,8 +58,13 @@ class CockpitViewModel(app: Application) : AndroidViewModel(app) {
             .stateIn(viewModelScope, SharingStarted.Eagerly, CockpitData(settings.flow.value.demoData, realTrips))
 
     val canbox: StateFlow<CanboxState?> =
-        if (DebugHooks.snapshot) MutableStateFlow(SnapshotFixtures.canbox)
+        if (DebugHooks.snapshot) MutableStateFlow(SnapshotFixtures.canboxFor(DebugHooks.screen))
         else data.flatMapLatest { d -> flow<CanboxState?> { emit(null); d.canbox?.states()?.collect { emit(it) } } }     // null first: a stale mock never outlives "Demo data: off"
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    val radar: StateFlow<Radar?> =
+        if (DebugHooks.snapshot) MutableStateFlow(SnapshotFixtures.canboxFor(DebugHooks.screen).radar)
+        else data.flatMapLatest { d -> flow<Radar?> { emit(null); d.radar?.readings()?.collect { emit(it) } } }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     init {

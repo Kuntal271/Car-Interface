@@ -31,8 +31,29 @@ import dev.kuntal.cockpit.perf.Perf
 import dev.kuntal.cockpit.ui.components.Txt
 import dev.kuntal.cockpit.ui.components.at
 import dev.kuntal.cockpit.ui.components.pill
+import dev.kuntal.cockpit.ui.SnapshotFixtures
+import android.os.SystemClock
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
+import dev.kuntal.cockpit.data.SourceKind
+import dev.kuntal.cockpit.data.Standby
+import dev.kuntal.cockpit.ui.screens.BootScreen
+import dev.kuntal.cockpit.ui.screens.QuickPanel
+import dev.kuntal.cockpit.ui.screens.StandbyScreen
+import dev.kuntal.cockpit.ui.shell.OverlayLayer
+import dev.kuntal.cockpit.ui.shell.rememberBrightness
+import dev.kuntal.cockpit.ui.shell.rememberOverlay
+import dev.kuntal.cockpit.ui.shell.rememberQuickControls
 import dev.kuntal.cockpit.ui.screens.AppsScreen
 import dev.kuntal.cockpit.ui.screens.CarScreen
+import dev.kuntal.cockpit.ui.screens.MediaScreen
+import dev.kuntal.cockpit.ui.screens.DiagnosticsScreen
+import dev.kuntal.cockpit.ui.screens.ParkingScreen
+import dev.kuntal.cockpit.ui.screens.SoundScreen
+import dev.kuntal.cockpit.ui.screens.TripsScreen
+import dev.kuntal.cockpit.ui.shell.TripExport
+import dev.kuntal.cockpit.ui.shell.rememberSystemVolume
 import dev.kuntal.cockpit.ui.screens.DriveScreen
 import dev.kuntal.cockpit.ui.screens.HomeAction
 import dev.kuntal.cockpit.ui.screens.HomeScreen
@@ -53,18 +74,43 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 @Composable
-fun CockpitApp(startOn: Dest = Dest.Home, startPage: SettingsPage = SettingsPage.Display, vm: CockpitViewModel = viewModel()) {
+fun CockpitApp(startOn: Dest = Dest.Home, startPage: SettingsPage = SettingsPage.Display, boot: Boolean = false, vm: CockpitViewModel = viewModel()) {
     val state = vm.state.collectAsStateWithLifecycle()      // pass the State itself: screens read .value in leaf/draw scopes
     val canbox = vm.canbox.collectAsStateWithLifecycle()
+    val radar = vm.radar.collectAsStateWithLifecycle()
+    val reverse = remember { derivedStateOf { canbox.value?.reverse == true } }
+    val data by vm.data.collectAsStateWithLifecycle()
+    val volume = rememberSystemVolume()
+    val nowMs = remember { if (DebugHooks.snapshot) SnapshotFixtures.NOW_MS else System.currentTimeMillis() }
     val settings by vm.settings.flow.collectAsStateWithLifecycle()
     val ctx = LocalContext.current
-    var screen by rememberSaveable { mutableStateOf(startOn) }
+    var screen by rememberSaveable {
+        mutableStateOf(when {
+            DebugHooks.snapshot && DebugHooks.screen.startsWith("overlay") -> Dest.Drive        // overlays are shot over the Drive screen
+            boot && settings.bootSplash && !DebugHooks.snapshot -> Dest.Boot
+            else -> startOn
+        })
+    }
+    var returnTo by rememberSaveable { mutableStateOf(if (startOn == Dest.Boot || startOn == Dest.Standby) Dest.Home else startOn) }
+    var quick by remember { mutableStateOf(DebugHooks.snapshot && DebugHooks.screen == "quick") }
+    var night by remember { mutableStateOf(false) }
+    val touch = remember { longArrayOf(SystemClock.elapsedRealtime()) }
+    val brightness = rememberBrightness()
+    val controls = rememberQuickControls()
+    val forcedOverlay = remember { if (DebugHooks.snapshot) SnapshotFixtures.overlayFor(DebugHooks.screen) else null }
+    val overlay = rememberOverlay(state, canbox, data.demo, volume, screen, quick, forcedOverlay, settings)
     var notice by remember { mutableStateOf<String?>(null) }
     val content = remember { if (DebugHooks.snapshot) HomeContent.DEMO else HomeContent.EMPTY }
 
     fun launch(what: String, nice: String) { if (!AppLauncher.launch(ctx, what)) notice = "No $nice app found on this unit" }
+    fun sleep() { returnTo = screen; screen = Dest.Standby; quick = false }
+    LaunchedEffect(settings.standbyMin) {
+        while (true) {
+            delay(10_000)
+            if (screen != Dest.Standby && screen != Dest.Boot && Standby.shouldSleep(SystemClock.elapsedRealtime() - touch[0], settings.standbyMin, state.value.sample?.speedKmh)) sleep()
+        }
+    }
     fun go(d: Dest) = when (d) {
-        Dest.Media -> launch("media", "media")
         Dest.Phone -> launch("phone", "phone")
         Dest.Maps -> launch("maps", "navigation")
         else -> screen = d
@@ -72,7 +118,9 @@ fun CockpitApp(startOn: Dest = Dest.Home, startPage: SettingsPage = SettingsPage
 
     DesignCanvas(paletteFor(settings.theme)) {
         CompositionLocalProvider(LocalSettings provides settings) {
-            Box(Modifier.fillMaxSize()) {
+            Box(Modifier.fillMaxSize().pointerInput(Unit) {
+                awaitPointerEventScope { while (true) { awaitPointerEvent(PointerEventPass.Initial); touch[0] = SystemClock.elapsedRealtime() } }
+            }) {
                 when (screen) {
                     Dest.Home -> HomeScreen(state, content) { a ->
                         when (a) {
@@ -82,6 +130,14 @@ fun CockpitApp(startOn: Dest = Dest.Home, startPage: SettingsPage = SettingsPage
                     }
                     Dest.Drive -> DriveScreen(state)
                     Dest.Car -> CarScreen(canbox) { screen = Dest.Parking }
+                    Dest.Parking -> ParkingScreen(radar, reverse, onExit = { screen = Dest.Car }, onOpenCamera = { launch("camera", "camera") })
+                    Dest.Diagnostics -> DiagnosticsScreen(state, data.diag)
+                    Dest.Sound -> SoundScreen(data.audio, volume) { launch("eq", "equalizer") }
+                    Dest.Trips -> TripsScreen(state, data, nowMs, java.time.ZoneId.systemDefault(), { trips -> TripExport.save(ctx, trips) }) { notice = it }
+                    Dest.Media -> {
+                        val eq = data.audio?.state?.collectAsStateWithLifecycle()
+                        MediaScreen(data.media, volume, eq?.value?.preset, onSound = { screen = Dest.Sound }, onRadio = { launch("radio", "radio") }, onOpenPlayer = { launch("media", "media") })
+                    }
                     Dest.Apps -> {
                         val apps by produceState(emptyList<AppEntry>()) { value = withContext(Dispatchers.IO) { InstalledApps.query(ctx) } }
                         var recents by remember { mutableStateOf(InstalledApps.recents(ctx)) }
@@ -94,10 +150,27 @@ fun CockpitApp(startOn: Dest = Dest.Home, startPage: SettingsPage = SettingsPage
                         val link by remember { derivedStateOf { state.value.link } }        // only a link change recomposes the page
                         SettingsScreen(settings, link, { change -> vm.settings.update(change) }, startPage)
                     }
+                    Dest.Boot -> BootScreen { screen = returnTo.takeIf { it != Dest.Boot } ?: startOn.takeIf { it != Dest.Boot } ?: Dest.Home }
+                    Dest.Standby -> StandbyScreen(state, canbox, remember(data) { data.trips.all().firstOrNull()?.distanceKm }) { touch[0] = SystemClock.elapsedRealtime(); screen = returnTo }
                     else -> NotYet(screen)
                 }
-                StatusBar(state)
-                Dock(screen) { go(it) }
+                val chrome = screen != Dest.Boot && screen != Dest.Standby
+                if (chrome) StatusBar(state) { quick = !quick }
+                if (chrome && screen != Dest.Parking) Dock(screen) { quick = false; go(it) }      // the parking view uses the whole width (design: no dock)
+                if (quick && chrome) QuickPanel(
+                    brightness, volume, controls, night,
+                    onNight = { night = !night }, onStandby = { sleep() }, onSettings = { quick = false; screen = Dest.Settings },
+                    onDashcam = { quick = false; launch("dashcam", "dash cam") },
+                    onSimulator = {
+                        val real = when { settings.tcpHost.isNotBlank() -> SourceKind.ObdTcp; settings.btName.isNotBlank() -> SourceKind.ObdBluetooth; else -> null }
+                        if (settings.source == SourceKind.Simulator) { if (real == null) notice = "Choose an OBD adapter in Settings first" else vm.settings.update { it.copy(source = real) } }
+                        else vm.settings.update { it.copy(source = SourceKind.Simulator) }
+                    },
+                    onPower = { notice = "The power menu belongs to the unit, not the launcher" },
+                    onNotice = { notice = it }, onClose = { quick = false },
+                )
+                OverlayLayer(overlay.current, data.demo, onDismiss = overlay.dismiss, onAnswer = overlay.dismiss, onDecline = overlay.dismiss)
+                if (night) Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = .45f)))
                 if (DebugHooks.perf || settings.perfOverlay) PerfOverlay()
                 notice?.let { n ->
                     LaunchedEffect(n) { delay(2_500); notice = null }

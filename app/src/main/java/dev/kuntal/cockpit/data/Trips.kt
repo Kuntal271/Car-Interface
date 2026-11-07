@@ -11,7 +11,7 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 
 /** One point of a trip's speed / boost history, every [TripRecord.STEP_SEC] seconds. */
-data class TripPoint(val speedKmh: Double, val boostBar: Double?)
+data class TripPoint(val speedKmh: Double, val boostBar: Double?, val rpm: Int? = null)
 
 enum class TripEventKind { PeakBoost, TopSpeed, LongestStop }
 data class TripEvent(val kind: TripEventKind, val text: String, val atSec: Int)
@@ -56,6 +56,12 @@ object TripFmt {
     fun duration(sec: Int): String = "${sec / 3600} h ${((sec % 3600) / 60).toString().padStart(2, '0')}"
     fun sub(t: TripRecord, u: SpeedUnit): String = "${duration(t.durationSec)} \u00B7 avg ${Fmt.speed(t.avgKmh, u)} ${Units.label(u)}"
     fun clockAt(t: TripRecord, offsetSec: Int, zone: ZoneId): String { val e = at(t.startMs + offsetSec * 1000L, zone); return Fmt.clock(e.hour, e.minute) }
+    /** The event line as the design words it; the rpm comes from the trip's own series when it has one. */
+    fun eventText(t: TripRecord, e: TripEvent, boostLabel: (Double) -> String, speed: (Double) -> String): String = when (e.kind) {
+        TripEventKind.PeakBoost -> t.points.getOrNull(e.atSec / TripRecord.STEP_SEC)?.rpm?.let { "Peak boost at ${Fmt.grouped(it)} rpm" } ?: t.maxBoostBar?.let { "Peak boost ${boostLabel(it)}" } ?: e.text
+        TripEventKind.TopSpeed -> "Top speed ${speed(t.topKmh)}"
+        TripEventKind.LongestStop -> e.text
+    }
     fun isWeek(t: TripRecord, nowMs: Long, zone: ZoneId): Boolean = at(t.startMs, zone).toLocalDate().isAfter(at(nowMs, zone).toLocalDate().minusDays(7))
 }
 
@@ -70,7 +76,7 @@ class MockTripStore(private val nowMs: Long, private val zone: ZoneId = ZoneId.s
         val today = Instant.ofEpochMilli(nowMs).atZone(zone).toLocalDate()
         rows.forEachIndexed { n, r ->
             val start = today.minusDays(r[0].toLong()).atTime(r[1], r[2]).atZone(zone).toInstant().toEpochMilli()
-            add(synth(n + 1L, start, r[3] * 60, r[4] / 10.0, r[5].toDouble(), r[6].toDouble(), seed + n))
+            add(synth(n + 1L, start, r[3] * 60, r[4] / 10.0, r[5].toDouble(), r[6].toDouble(), seed + n, PEAKS[n]))
         }
     }
     override fun all(): List<TripRecord> = trips.toList()
@@ -78,22 +84,47 @@ class MockTripStore(private val nowMs: Long, private val zone: ZoneId = ZoneId.s
     override fun delete(id: Long) { trips.removeAll { it.id == id } }
 
     companion object {
-        /** A plausible speed / boost series for a trip: accelerate, cruise with wiggles, brake to a stop. Deterministic in [seed]. */
-        fun synth(id: Long, startMs: Long, durSec: Int, km: Double, avg: Double, top: Double, seed: Long): TripRecord {
+        private val PEAKS = doubleArrayOf(1.04, .92, .98, .85, .90, .88)
+
+        // The shape of the design's example trip (80 points, svg y: 111 = standing, 41 = top speed; boost 84.1 = 0 bar, 56 = +1.04 bar).
+        private val TEMPLATE_Y_SPEED = intArrayOf(
+            111, 111, 109, 107, 105, 103, 101, 99, 97, 95, 94, 92, 90, 88, 86, 84, 82, 80, 78, 76, 74, 72, 70, 68, 66, 64, 62, 60, 58, 56, 54, 52, 51, 49, 47, 45,
+            43, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 44, 48, 51, 55, 58, 62, 65, 69, 72, 76, 79, 83, 86, 90, 94, 97, 100, 104, 108, 111, 111, 111,
+            111, 111, 111, 111, 111, 111, 111, 111,
+        )
+        private val TEMPLATE_Y_BOOST = intArrayOf(
+            84, 84, 83, 74, 66, 57, 56, 56, 64, 59, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56,
+            56, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+            102, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101,
+        )
+        private fun lerp(a: IntArray, f: Double): Double {
+            val x = f.coerceIn(0.0, 1.0) * (a.size - 1); val i = x.toInt().coerceAtMost(a.size - 2)
+            return a[i] + (a[i + 1] - a[i]) * (x - i)
+        }
+
+        /**
+         * A plausible speed / boost series for a trip: accelerate, cruise with wiggles, brake to a stop. Deterministic in [seed].
+         * The peak boost, top speed and longest stop sit at fixed fractions of the trip (the design's 6, 31 and 59 minutes of 68).
+         */
+        fun synth(id: Long, startMs: Long, durSec: Int, km: Double, avg: Double, top: Double, seed: Long, peakBar: Double = 1.04): TripRecord {
             val n = max(8, durSec / TripRecord.STEP_SEC)
+            val peakI = Math.round(n * 0.088).toInt(); val topI = Math.round(n * 0.456).toInt(); val stopI = Math.round(n * 0.868).toInt()
             val pts = List(n) { i ->
                 val f = i / (n - 1.0)
-                val shape = when { f < .18 -> f / .18; f < .72 -> 1.0 - .08 * Math.sin(f * 40 + seed); f < .94 -> 1 - (f - .72) / .22 * .85; else -> .15 * (1 - (f - .94) / .06) }
-                val v = (top * shape.coerceIn(0.0, 1.0)).coerceAtLeast(0.0)
-                val boost = if (f >= .05 && f < .62 && ((i + seed) % 9L) < 5) .95 + .09 * Math.sin(i * 1.3) else if (v > 5) -.3 else -.62
-                TripPoint(((v * 10).roundToInt() / 10.0), ((boost * 100).roundToInt() / 100.0))
+                val v0 = lerp(TEMPLATE_Y_SPEED, f)
+                var v = top * ((111.0 - v0) / 70.0).coerceIn(0.0, 1.0)
+                if (seed != 1L && v > 5) v = (v + 2.5 * Math.sin(i * 0.9 + seed)).coerceIn(0.0, top)
+                if (i == topI) v = top else if (v > top - .5) v = top - .5
+                var boost = (84.1 - lerp(TEMPLATE_Y_BOOST, f)) / 27.0
+                if (boost > 0) boost *= peakBar / 1.04
+                var rpm = if (v < 5) 0 else 1_500 + (v * 22).toInt()
+                if (i == peakI) { boost = peakBar; rpm = 4_800 } else if (boost > peakBar - .005) boost = peakBar - .005
+                TripPoint(((v * 10).roundToInt() / 10.0), ((boost * 100).roundToInt() / 100.0), rpm)
             }
-            val peakI = pts.indices.maxByOrNull { pts[it].boostBar ?: -9.0 } ?: 0
-            val topI = pts.indices.maxByOrNull { pts[it].speedKmh } ?: 0
             val events = listOf(
                 TripEvent(TripEventKind.PeakBoost, "Peak boost", peakI * TripRecord.STEP_SEC),
                 TripEvent(TripEventKind.TopSpeed, "Top speed ${top.roundToInt()} km/h", topI * TripRecord.STEP_SEC),
-                TripEvent(TripEventKind.LongestStop, "Longest stop \u00B7 9 min", (durSec * .93).toInt()),
+                TripEvent(TripEventKind.LongestStop, "Longest stop \u00B7 9 min", stopI * TripRecord.STEP_SEC),
             )
             return TripRecord(id, startMs, startMs + durSec * 1000L, km, avg, top, pts.maxOfOrNull { it.boostBar ?: -9.0 }, km * 0.068, pts, events, demo = true)
         }
@@ -129,7 +160,7 @@ class FileTripStore(private val file: File, private val maxTrips: Int = 200) : T
         private fun clean(s: String) = s.replace('\t', ' ').replace(';', ' ').replace(',', ' ').replace('\n', ' ')
         fun encode(t: TripRecord): String = listOf(
             t.id, t.startMs, t.endMs, t.distanceKm, t.avgKmh, t.topKmh, d(t.maxBoostBar), d(t.fuelL),
-            t.points.joinToString(";") { "${it.speedKmh},${d(it.boostBar)}" },
+            t.points.joinToString(";") { "${it.speedKmh},${d(it.boostBar)},${it.rpm ?: "-"}" },
             t.events.joinToString(";") { "${it.kind.name},${it.atSec},${clean(it.text)}" },
         ).joinToString("\t")
 
@@ -138,7 +169,7 @@ class FileTripStore(private val file: File, private val maxTrips: Int = 200) : T
             if (f.size < 10) null else TripRecord(
                 id = f[0].toLong(), startMs = f[1].toLong(), endMs = f[2].toLong(), distanceKm = f[3].toDouble(), avgKmh = f[4].toDouble(), topKmh = f[5].toDouble(),
                 maxBoostBar = f[6].toDoubleOrNull(), fuelL = f[7].toDoubleOrNull(),
-                points = f[8].split(';').filter { it.isNotEmpty() }.map { p -> val q = p.split(','); TripPoint(q[0].toDouble(), q.getOrNull(1)?.toDoubleOrNull()) },
+                points = f[8].split(';').filter { it.isNotEmpty() }.map { p -> val q = p.split(','); TripPoint(q[0].toDouble(), q.getOrNull(1)?.toDoubleOrNull(), q.getOrNull(2)?.toIntOrNull()) },
                 events = f[9].split(';').filter { it.isNotEmpty() }.map { e -> val q = e.split(',', limit = 3); TripEvent(TripEventKind.valueOf(q[0]), q[2], q[1].toInt()) },
                 demo = false,
             )
@@ -188,7 +219,7 @@ class TripRecorder(private val nextId: () -> Long = { System.currentTimeMillis()
         if (v >= MOVE_KMH) stopSec = 0.0 else { stopSec += dt / 1000.0; longestStop = max(longestStop, stopSec) }
         if (v > top) { top = v; topAt = ((t - startMs) / 1000).toInt() }
         s.boostKpa?.let { b -> val bar = b / 100.0; if (maxBoost.let { m -> m == null || bar > m }) { maxBoost = bar; peakAt = ((t - startMs) / 1000).toInt() } }
-        if (t >= nextPointMs) { points.add(TripPoint(Math.round(v * 10) / 10.0, s.boostKpa?.let { Math.round(it) / 100.0 })); nextPointMs += TripRecord.STEP_SEC * 1000L }
+        if (t >= nextPointMs) { points.add(TripPoint(Math.round(v * 10) / 10.0, s.boostKpa?.let { Math.round(it) / 100.0 }, s.rpm?.roundToInt())); nextPointMs += TripRecord.STEP_SEC * 1000L }
         lastMs = t; lastKmh = v
         if (stopSec >= STOP_END_SEC) { val r = finish(t - (stopSec * 1000).toLong()); active = false; return r }
         return null
@@ -209,4 +240,15 @@ class TripRecorder(private val nextId: () -> Long = { System.currentTimeMillis()
     }
 
     private fun reset() { km = 0.0; top = 0.0; maxBoost = null; stopSec = 0.0; longestStop = 0.0; points.clear(); peakAt = 0; topAt = 0 }
+}
+
+/** CSV for "Export": one row per trip, then nothing fancy. Units are fixed (km, km/h, bar) so the file means the same everywhere. */
+object TripCsv {
+    fun build(trips: List<TripRecord>, zone: ZoneId): String = buildString {
+        append("start,end,distance_km,avg_kmh,top_kmh,max_boost_bar,fuel_l_est,demo\n")
+        for (t in trips) append(listOf(
+            TripFmt.at(t.startMs, zone).toString(), TripFmt.at(t.endMs, zone).toString(), Fmt.dec(t.distanceKm, 2), Fmt.dec(t.avgKmh, 1), Fmt.dec(t.topKmh, 1),
+            t.maxBoostBar?.let { Fmt.dec(it, 2) } ?: "", t.fuelL?.let { Fmt.dec(it, 2) } ?: "", t.demo.toString(),
+        ).joinToString(",")).append('\n')
+    }
 }

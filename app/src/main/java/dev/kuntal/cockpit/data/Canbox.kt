@@ -58,6 +58,7 @@ data class CanboxState(
     val radar: Radar? = null,
     val reverse: Boolean = false,
     val batteryV: Double? = null,
+    val locked: Boolean? = null,                  // central locking; null = the car does not say
 ) {
     /** "Rear left door open", "2 doors open", or null when everything is shut. */
     val doorSummary: String?
@@ -109,6 +110,7 @@ class MockCanbox(private val seed: Long = 1L, private val tickMs: Long = 500L) :
             radar = Radar(front = if (reversing) List(4) { 0 } else listOf(0, 1, 1, 0), rear = rear),
             reverse = reversing,
             batteryV = 14.2,
+            locked = false,
         )
     }
 

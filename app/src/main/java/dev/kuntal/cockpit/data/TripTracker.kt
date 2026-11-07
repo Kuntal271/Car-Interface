@@ -8,6 +8,7 @@ data class TripState(
     val topKmh: Double = 0.0,
     val zeroTo100Best: Double? = null,
     val peakBoostKpa: Double? = null,
+    val elapsedSec: Long = 0,
 )
 
 /**
@@ -69,9 +70,13 @@ class TripTracker {
         topKmh = topKmh,
         zeroTo100Best = best,
         peakBoostKpa = peakBoost,
+        elapsedSec = elapsedMs / 1000,
     )
 
     fun reset() {
         lastT = null; lastKmh = 0.0; distanceKm = 0.0; firstT = null; elapsedMs = 0; topKmh = 0.0; best = null; runStartMs = null; peakBoost = null
     }
 }
+
+/** "Reset Trip A" from the UI: the tracker lives inside the data source, so the request is a flag the repository honours on the next sample. */
+object TripResets { val a = java.util.concurrent.atomic.AtomicBoolean(false) }

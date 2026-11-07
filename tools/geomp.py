@@ -3,8 +3,21 @@
 import sys, json
 def col(s):
     return s.replace("rgb(","").replace("rgba(","").replace(")","").replace(" ","")
-for l in open(sys.argv[1]):
-    o = json.loads(l); x, y, w, h = o["r"]
+rows = [json.loads(l) for l in open(sys.argv[1])]
+out = []; i = 0
+while i < len(rows):                     # collapse runs of <i> segment cells into one SEG line
+    o = rows[i]
+    if o["t"] == "i" and "rad" in o:
+        j = i
+        while j + 1 < len(rows) and rows[j + 1]["t"] == "i" and rows[j + 1]["r"][1] == o["r"][1]: j += 1
+        run = rows[i:j + 1]; lit = sum(1 for r in run if r.get("c") == "l")
+        out.append({"seg": True, "n": len(run), "lit": lit, "r": [run[0]["r"][0], run[0]["r"][1], run[-1]["r"][0] + run[-1]["r"][2] - run[0]["r"][0], run[0]["r"][3]], "sw": run[0]["r"][2], "bg": run[0].get("bg", "")})
+        i = j + 1; continue
+    out.append(o); i += 1
+for o in out:
+    x, y, w, h = o["r"]
+    if o.get("seg"):
+        print(f'SEG n={o["n"]} lit={o["lit"]} [{x:g},{y:g} {w:g}x{h:g}] cell={o["sw"]:g}'); continue
     if y < 56 and h < 60 and o["t"] != "svg": continue
     if x >= 1168 and y >= 56 and len(sys.argv) < 3: continue
     t = o["t"]; c = o.get("c","")

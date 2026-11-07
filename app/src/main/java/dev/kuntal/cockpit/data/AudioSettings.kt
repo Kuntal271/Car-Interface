@@ -31,7 +31,7 @@ object AudioPresets {
     fun bands(name: String): List<Int>? = when (name) {
         "Flat" -> listOf(0, 0, 0, 0, 0, 0, 0, 0)
         "Bass" -> listOf(6, 5, 3, 1, 0, 0, 0, 0)
-        "Punch" -> listOf(4, 3, 1, 0, -1, 0, 2, 3)
+        "Punch" -> listOf(5, 3, 1, 0, -1, 0, 2, 3)
         "Vocal" -> listOf(-2, -1, 0, 2, 3, 3, 1, 0)
         else -> null
     }
