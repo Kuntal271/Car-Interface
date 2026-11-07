@@ -1,6 +1,9 @@
 package dev.kuntal.cockpit.ui.shell
 
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.media.AudioManager
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -16,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
@@ -48,6 +52,7 @@ import dev.kuntal.cockpit.ui.theme.LocalPalette
 import dev.kuntal.cockpit.ui.theme.LocalSettings
 import kotlinx.coroutines.delay
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 enum class Dest(val label: String, val icon: Ic) {
@@ -55,19 +60,33 @@ enum class Dest(val label: String, val icon: Ic) {
     Phone("Phone", Ic.Phone), Maps("Maps", Ic.Nav), Apps("Apps", Ic.Grid), Settings("Settings", Ic.Sliders),
 }
 
+private val DATE_FORMAT = java.time.format.DateTimeFormatter.ofPattern("EEE d MMM", Locale.US)
+
 /** 1280 x 56 status bar. Positions are the measured design coordinates. */
 @Composable
 fun StatusBar(state: State<VehicleUiState>) {
     val p = LocalPalette.current
     val ctx = LocalContext.current
-    var now by remember { mutableStateOf(LocalDateTime.now()) }
+    // The face shows hours and minutes only, so `now` is truncated to the minute: an equal value writes nothing, invalidates nothing
+    // and an idle screen draws no frame between two minute changes (it used to draw one every second).
+    var now by remember { mutableStateOf(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)) }
     var volume by remember { mutableStateOf(0) }
+    var clockEpoch by remember { mutableStateOf(0) }              // bumped when the system clock or zone is set: re-aim the minute timer
+    DisposableEffect(ctx) {
+        val r = object : BroadcastReceiver() { override fun onReceive(c: Context?, i: Intent?) { clockEpoch++ } }
+        ctx.registerReceiver(r, IntentFilter().apply { addAction(Intent.ACTION_TIME_CHANGED); addAction(Intent.ACTION_TIMEZONE_CHANGED) })
+        onDispose { ctx.unregisterReceiver(r) }
+    }
+    LaunchedEffect(clockEpoch) {
+        while (true) {
+            val t = LocalDateTime.now()
+            now = t.truncatedTo(ChronoUnit.MINUTES)
+            delay(60_000L - (t.second * 1_000L + t.nano / 1_000_000L) + 25)      // wake just after the next minute boundary
+        }
+    }
     LaunchedEffect(Unit) {
         val am = ctx.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        while (true) {
-            now = LocalDateTime.now(); volume = am.getStreamVolume(AudioManager.STREAM_MUSIC)
-            delay(1_000)
-        }
+        while (true) { volume = am.getStreamVolume(AudioManager.STREAM_MUSIC); delay(1_000) }      // an unchanged value costs no frame
     }
     val snap = DebugHooks.snapshot
     val st = LocalSettings.current
@@ -75,7 +94,7 @@ fun StatusBar(state: State<VehicleUiState>) {
         Box(Modifier.at(0, 55).width(1280.dp).height(1.dp).background(p.hairSoft))
         Txt(if (snap) DebugHooks.CLOCK else Fmt.clock(now.hour, now.minute, st.clock), 36, 36, p.text, Modifier.baselineAt(28, 42), CockpitFonts.Condensed, FontWeight.SemiBold, letterSpacing = 0.03.em)
         Txt(
-            if (snap) DebugHooks.DATE else java.time.format.DateTimeFormatter.ofPattern("EEE d MMM", Locale.US).format(now),
+            if (snap) DebugHooks.DATE else DATE_FORMAT.format(now),
             19, 23, p.dim, Modifier.at(118, 16), letterSpacing = 0.02.em,
         )
         // connection indicators, centred on the bar: dot + label. Only OBD has a live source so far; the rest read "off" instead of pretending.
