@@ -61,4 +61,15 @@ class TripTrackerTest {
         t.reset()
         assertEquals(0.0, t.snapshot().distanceKm, 0.0); assertEquals(0.0, t.snapshot().topKmh, 0.0)
     }
+
+    @Test fun tracksPeakBoost() {
+        val t = TripTracker()
+        listOf(-60.0, 40.0, 104.0, 20.0).forEachIndexed { i, b -> t.accept(VehicleSample(tsMs = i * 1000L, speedKmh = 50.0, mapKpa = 100.0 + b, baroKpa = 100.0)) }
+        assertEquals(104.0, t.snapshot().peakBoostKpa!!, 1e-9)
+    }
+
+    @Test fun peakBoostIsNullWithoutMapAndBaro() {
+        val t = TripTracker(); t.accept(s(0, 50.0))
+        assertNull(t.snapshot().peakBoostKpa)
+    }
 }

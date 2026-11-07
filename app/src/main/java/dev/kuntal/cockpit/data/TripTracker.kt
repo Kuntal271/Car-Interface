@@ -7,6 +7,7 @@ data class TripState(
     val avgKmh: Double = 0.0,
     val topKmh: Double = 0.0,
     val zeroTo100Best: Double? = null,
+    val peakBoostKpa: Double? = null,
 )
 
 /**
@@ -22,8 +23,10 @@ class TripTracker {
     private var topKmh = 0.0
     private var best: Double? = null
     private var runStartMs: Long? = null
+    private var peakBoost: Double? = null
 
     fun accept(s: VehicleSample) {
+        s.boostKpa?.let { b -> if (peakBoost.let { p -> p == null || b > p }) peakBoost = b }
         val v = s.speedKmh ?: return
         val t = s.tsMs
         if (firstT == null) firstT = t
@@ -53,9 +56,10 @@ class TripTracker {
         avgKmh = if (elapsedMs > 0) distanceKm / (elapsedMs / 3_600_000.0) else 0.0,
         topKmh = topKmh,
         zeroTo100Best = best,
+        peakBoostKpa = peakBoost,
     )
 
     fun reset() {
-        lastT = null; lastKmh = 0.0; distanceKm = 0.0; firstT = null; elapsedMs = 0; topKmh = 0.0; best = null; runStartMs = null
+        lastT = null; lastKmh = 0.0; distanceKm = 0.0; firstT = null; elapsedMs = 0; topKmh = 0.0; best = null; runStartMs = null; peakBoost = null
     }
 }
