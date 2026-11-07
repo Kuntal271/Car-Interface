@@ -1,6 +1,13 @@
 package dev.kuntal.cockpit.ui.components
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -132,11 +139,59 @@ fun Modifier.baselineAt(x: Int, y: Int): Modifier = layout { m, c ->
 @Composable
 fun ValueUnit(x: Int, baseline: Int, value: @Composable () -> Unit, unit: @Composable () -> Unit, gap: Int = 6) {
     Layout({ value(); unit() }, Modifier) { ms, _ ->
-        val v = ms[0].measure(Constraints()); val u = ms[1].measure(Constraints())
-        val gp = gap.dp.roundToPx()
-        layout(v.width + gp + u.width, 0) {
+        val v = ms[0].measure(Constraints())
+        val u = ms.getOrNull(1)?.measure(Constraints())          // a tile may have no unit
+        val gp = if (u == null) 0 else gap.dp.roundToPx()
+        layout(v.width + gp + (u?.width ?: 0), 0) {
             v.place(x.dp.roundToPx(), baseline.dp.roundToPx() - v[FirstBaseline])
-            u.place(x.dp.roundToPx() + v.width + gp, baseline.dp.roundToPx() - u[FirstBaseline])
+            u?.place(x.dp.roundToPx() + v.width + gp, baseline.dp.roundToPx() - u[FirstBaseline])
         }
     }
+}
+
+/** Recents / app tile surface: s1 with a soft sheen and a soft hairline, radius 22. */
+@Composable
+fun Modifier.tile(): Modifier {
+    val p = LocalPalette.current
+    return drawBehind {
+        val r = CornerRadius(22.dp.toPx())
+        drawRoundRect(p.s1, cornerRadius = r)
+        drawRoundRect(Brush.verticalGradient(listOf(Color.White.copy(alpha = .06f), Color.White.copy(alpha = .02f))), cornerRadius = r)
+        val hw = 1.dp.toPx()
+        drawRoundRect(p.hairSoft, topLeft = Offset(hw / 2, hw / 2), size = Size(size.width - hw, size.height - hw), cornerRadius = CornerRadius(r.x - hw / 2), style = Stroke(hw))
+    }
+}
+
+/** Transport / action button: round, sky tint with a hairline; the primary one is solid Ford blue. */
+@Composable
+fun Modifier.roundBtn(primary: Boolean = false): Modifier {
+    val p = LocalPalette.current
+    return if (primary) pill(fill = p.accent, border = Color.Transparent) else pill(fill = p.sky.copy(alpha = .14f))
+}
+
+/**
+ * Children laid out left to right on one shared baseline at design y = [baseline]. Anchored by their left edge at [x],
+ * or by their right edge when [alignEnd] (x is then the right edge). [gap] design px between children.
+ */
+@Composable
+fun BaselineRow(x: Int, baseline: Int, gap: Int = 6, alignEnd: Boolean = false, content: @Composable () -> Unit) {
+    Layout(content, Modifier) { ms, _ ->
+        val ps = ms.map { it.measure(Constraints()) }
+        val gp = gap.dp.roundToPx()
+        val total = ps.sumOf { it.width } + gp * (ps.size - 1)
+        val x0 = if (alignEnd) x.dp.roundToPx() - total else x.dp.roundToPx()
+        layout(total, 0) {
+            var cx = x0
+            for (pl in ps) { pl.place(cx, baseline.dp.roundToPx() - pl[FirstBaseline]); cx += pl.width + gp }
+        }
+    }
+}
+
+/** Tap target with press feedback (a 3 % squeeze) and no ripple. Min touch size is the caller's job (56 dp). */
+@Composable
+fun Modifier.tap(onClick: () -> Unit): Modifier {
+    val src = remember { MutableInteractionSource() }
+    val pressed by src.collectIsPressedAsState()
+    val sc by animateFloatAsState(if (pressed) .97f else 1f, tween(90), label = "tap")
+    return this.graphicsLayer { scaleX = sc; scaleY = sc }.clickable(interactionSource = src, indication = null, onClick = onClick)
 }

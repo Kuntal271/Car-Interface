@@ -40,6 +40,7 @@ import dev.kuntal.cockpit.ui.components.Icon
 import dev.kuntal.cockpit.ui.components.LiveTxt
 import dev.kuntal.cockpit.ui.components.Txt
 import dev.kuntal.cockpit.ui.components.at
+import dev.kuntal.cockpit.ui.components.tap
 import dev.kuntal.cockpit.ui.components.baselineAt
 import dev.kuntal.cockpit.ui.theme.CockpitFonts
 import dev.kuntal.cockpit.ui.theme.LocalPalette
@@ -125,7 +126,7 @@ fun Dock(current: Dest, onSelect: (Dest) -> Unit) {
                 Modifier.at(11, top + 3).size(91.dp, 85.dp)
                     .clip(RoundedCornerShape(20.dp))
                     .then(if (on) Modifier.background(p.accent) else Modifier)
-                    .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { onSelect(d) },
+                    .tap { onSelect(d) },
             ) {
                 Icon(d.icon, 32, if (on) p.onAccent else p.sky, Modifier.at(29, 12))
                 Txt(
