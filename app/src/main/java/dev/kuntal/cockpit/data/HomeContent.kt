@@ -26,8 +26,8 @@ data class HomeContent(
         /** Real app, before any source is connected: honest placeholders, no invented values. */
         val EMPTY = HomeContent(
             media = null,
-            maps = Shortcut("Launch", null, "Maps", "Opens your navigation app", accent = true),
-            radio = Shortcut("FM", null, "Radio", "Opens the stock radio"),
+            maps = Shortcut("Launch", null, "Maps", "Opens navigation"),
+            radio = Shortcut("FM", null, "Radio", "Opens the radio"),
             climate = Shortcut(Fmt.DASH, null, "Climate", "Waiting for Canbox"),
         )
 

@@ -45,6 +45,7 @@ import dev.kuntal.cockpit.ui.components.tap
 import dev.kuntal.cockpit.ui.components.baselineAt
 import dev.kuntal.cockpit.ui.theme.CockpitFonts
 import dev.kuntal.cockpit.ui.theme.LocalPalette
+import dev.kuntal.cockpit.ui.theme.LocalSettings
 import kotlinx.coroutines.delay
 import java.time.LocalDateTime
 import java.util.Locale
@@ -69,9 +70,10 @@ fun StatusBar(state: State<VehicleUiState>) {
         }
     }
     val snap = DebugHooks.snapshot
+    val st = LocalSettings.current
     Box(Modifier.at(0, 0).width(1280.dp).height(56.dp).background(Brush.verticalGradient(listOf(p.bg.copy(alpha = .94f), p.bg.copy(alpha = .5f))))) {
         Box(Modifier.at(0, 55).width(1280.dp).height(1.dp).background(p.hairSoft))
-        Txt(if (snap) DebugHooks.CLOCK else Fmt.clock(now.hour, now.minute), 36, 36, p.text, Modifier.baselineAt(28, 42), CockpitFonts.Condensed, FontWeight.SemiBold, letterSpacing = 0.03.em)
+        Txt(if (snap) DebugHooks.CLOCK else Fmt.clock(now.hour, now.minute, st.clock), 36, 36, p.text, Modifier.baselineAt(28, 42), CockpitFonts.Condensed, FontWeight.SemiBold, letterSpacing = 0.03.em)
         Txt(
             if (snap) DebugHooks.DATE else java.time.format.DateTimeFormatter.ofPattern("EEE d MMM", Locale.US).format(now),
             19, 23, p.dim, Modifier.at(118, 16), letterSpacing = 0.02.em,
@@ -87,7 +89,7 @@ fun StatusBar(state: State<VehicleUiState>) {
         }
         // readouts, right-aligned 28 px from the edge
         Row(Modifier.at(0, 16).width(1252.dp), horizontalArrangement = Arrangement.spacedBy(22.dp, Alignment.End)) {
-            StatusReadout(Ic.Sun) { Fmt.whole(state.value.sample?.ambientC) + "\u00B0" }
+            StatusReadout(Ic.Sun) { state.value.sample?.ambientC?.let { Fmt.temp(it, st.tempUnit) + "\u00B0" } ?: Fmt.DASH }
             StatusReadout(Ic.Batt) { state.value.sample?.batteryV?.let { Fmt.dec(it, 1) + " V" } ?: Fmt.DASH }
             StatusReadout(Ic.Vol) { (if (snap) DebugHooks.VOLUME else volume).toString() }
         }

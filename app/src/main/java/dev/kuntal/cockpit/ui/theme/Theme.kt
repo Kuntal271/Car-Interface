@@ -43,6 +43,7 @@ class Palette(
     val hairSoft: Color,
     val bgTop: Color,       // top of the frame gradient
     val glowA: Color, val glowB: Color, val glowC: Color,   // the three soft glows behind the content
+    val fordMark: Boolean = true,                           // Home header: Ford oval + model name, or the neutral Cockpit mark
 )
 
 val FordPalette = Palette(
@@ -56,7 +57,28 @@ val FordPalette = Palette(
     glowA = Color(0x57 shl 24 or 0x1F63F0), glowB = Color(0x75 shl 24 or 0x003478), glowC = Color(0x24 shl 24 or 0x2B72FF),
 )
 
+/**
+ * Midnight: the original Cockpit colours (midnight navy, cobalt structure, lime for live data) on the same layout and fonts as Ford.
+ * Warnings stay amber so they never read as data. No red.
+ */
+val MidnightPalette = Palette(
+    bg = Color(0xFF05070D), s1 = Color(0xFF0A0F1E), s2 = Color(0xFF101830), s3 = Color(0xFF162244),
+    text = Color(0xFFEAF0FF), dim = Color(0xFF8190B8),
+    blue = Color(0xFF2457FF), sky = Color(0xFF3D6BFF), cyan = Color(0xFFC8FF00),
+    accent = Color(0xFFC8FF00), onAccent = Color(0xFF05070D),
+    warn = Color(0xFFFFB81C), onWarn = Color(0xFF1A1200),
+    hair = Color(0x57 shl 24 or 0x2457FF), hairSoft = Color(0x29 shl 24 or 0x2457FF),
+    bgTop = Color(0xFF0A1226),
+    glowA = Color(0x38 shl 24 or 0x2457FF), glowB = Color(0x66 shl 24 or 0x101E5A), glowC = Color(0x1F shl 24 or 0x2457FF),
+    fordMark = false,
+)
+
+fun paletteFor(t: dev.kuntal.cockpit.data.ThemeId): Palette = if (t == dev.kuntal.cockpit.data.ThemeId.Midnight) MidnightPalette else FordPalette
+
 val LocalPalette = staticCompositionLocalOf { FordPalette }
+
+/** The owner's settings, available to every screen. A change recomposes the tree (rare), telemetry never does. */
+val LocalSettings = staticCompositionLocalOf { dev.kuntal.cockpit.data.Settings() }
 
 object CockpitFonts {
     val Barlow = FontFamily(

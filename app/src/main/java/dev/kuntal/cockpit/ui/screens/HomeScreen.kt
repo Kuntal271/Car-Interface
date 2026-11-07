@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -26,6 +27,8 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import dev.kuntal.cockpit.data.BoostBar
 import dev.kuntal.cockpit.data.Fmt
+import dev.kuntal.cockpit.data.SpeedUnit
+import dev.kuntal.cockpit.data.Units
 import dev.kuntal.cockpit.data.HomeContent
 import dev.kuntal.cockpit.data.Range
 import dev.kuntal.cockpit.data.Shortcut
@@ -48,6 +51,7 @@ import dev.kuntal.cockpit.ui.components.tile
 import dev.kuntal.cockpit.ui.shell.Dest
 import dev.kuntal.cockpit.ui.theme.CockpitFonts
 import dev.kuntal.cockpit.ui.theme.LocalPalette
+import dev.kuntal.cockpit.ui.theme.LocalSettings
 
 /** Where a Home tap goes. Dock destinations stay in-app; the rest launch stock apps (wired in CockpitApp). */
 sealed interface HomeAction {
@@ -62,13 +66,20 @@ sealed interface HomeAction {
 @Composable
 fun HomeScreen(s: State<VehicleUiState>, content: HomeContent, onAction: (HomeAction) -> Unit) {
     val p = LocalPalette.current
+    val st = LocalSettings.current
+    val u = st.speedUnit; val pu = st.pressureUnit; val tu = st.tempUnit
     val cond = CockpitFonts.Condensed
     val m = content.media
     Box(Modifier.fillMaxSize()) {
         // Static layer: cards, labels, icons, artwork, buttons. Cached as one render node; telemetry never re-records it.
         Layer {
-            FordMark(38, Modifier.at(24, 81))
-            Txt("EcoSport", 34, 34, p.text, Modifier.baselineAt(146, 113), cond, FontWeight.SemiBold)
+            if (p.fordMark) {
+                FordMark(38, Modifier.at(24, 81))
+                Txt("EcoSport", 34, 34, p.text, Modifier.baselineAt(146, 113), cond, FontWeight.SemiBold)
+            } else {
+                Canvas(Modifier.at(24, 88).size(24.dp)) { rotate(45f) { drawRect(p.cyan, topLeft = Offset(size.width * .18f, size.height * .18f), size = Size(size.width * .64f, size.height * .64f)) } }
+                Txt("Cockpit", 34, 34, p.text, Modifier.baselineAt(62, 113), cond, FontWeight.SemiBold)
+            }
 
             Box(Modifier.at(24, 132).size(680.dp, 310.dp).card())
             AlbumArt(Modifier.at(44, 152).size(270.dp))
@@ -85,7 +96,7 @@ fun HomeScreen(s: State<VehicleUiState>, content: HomeContent, onAction: (HomeAc
             Txt(clock(m?.elapsedSec ?: 0), 20, 24, p.text, Modifier.baselineAt(338, 336), cond, FontWeight.Medium, tnum = true)
             Txt(clock(m?.durationSec ?: 0), 20, 24, p.text, Modifier.width(346.dp).baselineAt(338, 336), cond, FontWeight.Medium, TextAlign.End, tnum = true)
             Box(Modifier.at(338, 350).size(107.dp, 64.dp).roundBtn()) { Icon(Ic.Prev, 30, p.text, Modifier.at(39, 15)) }
-            Box(Modifier.at(457, 342).size(107.dp, 80.dp).roundBtn(primary = true)) { Icon(if (m?.playing == false) Ic.Play else Ic.Pause, 40, p.onAccent, Modifier.at(34, 18)) }
+            Box(Modifier.at(457, 342).size(107.dp, 80.dp).roundBtn(primary = true)) { Icon(if (m?.playing == true) Ic.Pause else Ic.Play, 40, p.onAccent, Modifier.at(34, 18)) }
             Box(Modifier.at(577, 350).size(107.dp, 64.dp).roundBtn()) { Icon(Ic.Next, 30, p.text, Modifier.at(40, 15)) }
 
             ShortcutTile(24, Ic.Nav, "Maps", content.maps) { onAction(HomeAction.Launch("maps")) }
@@ -114,7 +125,7 @@ fun HomeScreen(s: State<VehicleUiState>, content: HomeContent, onAction: (HomeAc
         Layer {
             BaselineRow(x = 704, baseline = 107, gap = 4, alignEnd = true) {
                 LiveTxt({ (if ((s.value.sample?.rpm ?: 0.0) > 400.0) "Engine on" else "Engine off") + " \u00B7 Trip A" }, 19, 21, p.dim)
-                LiveTxt({ Fmt.dec(s.value.trip.distanceKm, 1) + " km" }, 19, 21, p.text, weight = FontWeight.SemiBold)
+                LiveTxt({ Fmt.distance(s.value.trip.distanceKm, u) + (if (u == SpeedUnit.KMH) " km" else " mi") }, 19, 21, p.text, weight = FontWeight.SemiBold)
             }
 
             Row(Modifier.at(1037, 100).size(83.dp, 32.dp).pill(), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally), verticalAlignment = Alignment.CenterVertically) {
@@ -123,20 +134,20 @@ fun HomeScreen(s: State<VehicleUiState>, content: HomeContent, onAction: (HomeAc
             }
             ValueUnit(
                 752, 282,
-                value = { LiveTxt({ Fmt.whole(s.value.sample?.speedKmh) }, 168, 168, p.text, family = cond, weight = FontWeight.SemiBold, letterSpacing = 0.sp, tnum = true) },
-                unit = { Txt("km/h", 23, 28, p.dim, family = cond) },
+                value = { LiveTxt({ Fmt.speed(s.value.sample?.speedKmh, u) }, 168, 168, p.text, family = cond, weight = FontWeight.SemiBold, letterSpacing = 0.sp, tnum = true) },
+                unit = { Txt(Units.label(u), 23, 28, p.dim, family = cond) },
                 gap = 20,
             )
-            SegBar(40, 10.dp, Modifier.at(752, 300).width(368.dp), litCount = { Fmt.lit(Fmt.fraction(s.value.sample?.speedKmh, 0.0, 200.0), 40) })
+            SegBar(40, 10.dp, Modifier.at(752, 300).width(368.dp), litCount = { Fmt.lit(Fmt.fraction(s.value.sample?.speedKmh, 0.0, st.speedScaleKmh.toDouble()), 40) })
 
             BaselineRow(1120, 396, gap = 11, alignEnd = true) {
                 LiveTxt({ Fmt.grouped(Math.round(s.value.sample?.rpm ?: 0.0).toInt()) }, 40, 40, p.text, family = cond, weight = FontWeight.SemiBold, tnum = true)
                 Txt("rpm", 23, 28, p.dim, family = cond)
             }
-            SegBar(34, 8.dp, Modifier.at(752, 413).width(368.dp), litCount = { Fmt.lit(Fmt.fraction(s.value.sample?.rpm, 0.0, 7000.0), 34) })
+            SegBar(34, 8.dp, Modifier.at(752, 413).width(368.dp), litCount = { Fmt.lit(Fmt.fraction(s.value.sample?.rpm, 0.0, st.tachMaxRpm.toDouble()), 34) })
             BaselineRow(1120, 467, gap = 11, alignEnd = true) {
-                LiveTxt({ Fmt.signed((s.value.sample?.boostKpa ?: 0.0) / 100.0, 2) }, 40, 40, p.text, family = cond, weight = FontWeight.SemiBold, tnum = true)
-                Txt("bar", 23, 28, p.dim, family = cond)
+                LiveTxt({ Fmt.boost(s.value.sample?.boostKpa ?: 0.0, pu) }, 40, 40, p.text, family = cond, weight = FontWeight.SemiBold, tnum = true)
+                Txt(Units.label(pu), 23, 28, p.dim, family = cond)
             }
             val segs = { BoostBar.segments((s.value.sample?.boostKpa ?: 0.0) / 100.0, 34) }
             SegBar(
@@ -153,7 +164,7 @@ fun HomeScreen(s: State<VehicleUiState>, content: HomeContent, onAction: (HomeAc
             SegBar(20, 24.dp, Modifier.at(930, 563).width(190.dp), litCount = { Fmt.lit(Fmt.fraction(s.value.sample?.fuelPct, 0.0, 100.0), 20) })
             LiveTxt({ Range.km(s.value.sample?.fuelPct)?.let { "\u2248 $it km range" } ?: Fmt.DASH }, 19, 21, p.dim, Modifier.at(930, 595).width(190.dp), align = TextAlign.End)
 
-            VitalValue(728, "\u00B0C", { Fmt.whole(s.value.sample?.coolantC) }, 842) { Fmt.lit(Fmt.fraction(s.value.sample?.coolantC, 60.0, 120.0), 6) }
+            VitalValue(728, Units.label(tu), { Fmt.temp(s.value.sample?.coolantC, tu) }, 842) { Fmt.lit(Fmt.fraction(s.value.sample?.coolantC, 60.0, 120.0), 6) }
             VitalValue(942, "%", { Fmt.whole(s.value.sample?.loadPct) }, 1056) { Fmt.lit(Fmt.fraction(s.value.sample?.loadPct, 0.0, 100.0), 6) }
         }
     }

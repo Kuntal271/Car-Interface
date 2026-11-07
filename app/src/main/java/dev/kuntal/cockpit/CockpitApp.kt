@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -24,6 +26,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.kuntal.cockpit.data.AppEntry
 import dev.kuntal.cockpit.data.HomeContent
+import dev.kuntal.cockpit.perf.Perf
 import dev.kuntal.cockpit.ui.components.Txt
 import dev.kuntal.cockpit.ui.components.at
 import dev.kuntal.cockpit.ui.components.pill
@@ -31,7 +34,8 @@ import dev.kuntal.cockpit.ui.screens.AppsScreen
 import dev.kuntal.cockpit.ui.screens.DriveScreen
 import dev.kuntal.cockpit.ui.screens.HomeAction
 import dev.kuntal.cockpit.ui.screens.HomeScreen
-import dev.kuntal.cockpit.perf.Perf
+import dev.kuntal.cockpit.ui.screens.SettingsPage
+import dev.kuntal.cockpit.ui.screens.SettingsScreen
 import dev.kuntal.cockpit.ui.shell.AppLauncher
 import dev.kuntal.cockpit.ui.shell.Dest
 import dev.kuntal.cockpit.ui.shell.Dock
@@ -40,13 +44,16 @@ import dev.kuntal.cockpit.ui.shell.StatusBar
 import dev.kuntal.cockpit.ui.theme.CockpitFonts
 import dev.kuntal.cockpit.ui.theme.DesignCanvas
 import dev.kuntal.cockpit.ui.theme.LocalPalette
+import dev.kuntal.cockpit.ui.theme.LocalSettings
+import dev.kuntal.cockpit.ui.theme.paletteFor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 @Composable
-fun CockpitApp(startOn: Dest = Dest.Home, vm: CockpitViewModel = viewModel()) {
+fun CockpitApp(startOn: Dest = Dest.Home, startPage: SettingsPage = SettingsPage.Display, vm: CockpitViewModel = viewModel()) {
     val state = vm.state.collectAsStateWithLifecycle()      // pass the State itself: screens read .value in leaf/draw scopes
+    val settings by vm.settings.flow.collectAsStateWithLifecycle()
     val ctx = LocalContext.current
     var screen by rememberSaveable { mutableStateOf(startOn) }
     var notice by remember { mutableStateOf<String?>(null) }
@@ -60,35 +67,41 @@ fun CockpitApp(startOn: Dest = Dest.Home, vm: CockpitViewModel = viewModel()) {
         else -> screen = d
     }
 
-    DesignCanvas {
-        Box(Modifier.fillMaxSize()) {
-            when (screen) {
-                Dest.Home -> HomeScreen(state, content) { a ->
-                    when (a) {
-                        is HomeAction.Go -> go(a.dest)
-                        is HomeAction.Launch -> launch(a.what, a.what)
+    DesignCanvas(paletteFor(settings.theme)) {
+        CompositionLocalProvider(LocalSettings provides settings) {
+            Box(Modifier.fillMaxSize()) {
+                when (screen) {
+                    Dest.Home -> HomeScreen(state, content) { a ->
+                        when (a) {
+                            is HomeAction.Go -> go(a.dest)
+                            is HomeAction.Launch -> launch(a.what, a.what)
+                        }
                     }
-                }
-                Dest.Drive -> DriveScreen(state)
-                Dest.Apps -> {
-                    val apps by produceState(emptyList<AppEntry>()) { value = withContext(Dispatchers.IO) { InstalledApps.query(ctx) } }
-                    var recents by remember { mutableStateOf(InstalledApps.recents(ctx)) }
-                    AppsScreen(apps, recents) { a ->
-                        if (InstalledApps.launch(ctx, a)) { InstalledApps.remember(ctx, a.pkg); recents = InstalledApps.recents(ctx) }
-                        else notice = "Could not open ${a.label}"
+                    Dest.Drive -> DriveScreen(state)
+                    Dest.Apps -> {
+                        val apps by produceState(emptyList<AppEntry>()) { value = withContext(Dispatchers.IO) { InstalledApps.query(ctx) } }
+                        var recents by remember { mutableStateOf(InstalledApps.recents(ctx)) }
+                        AppsScreen(apps, recents) { a ->
+                            if (InstalledApps.launch(ctx, a)) { InstalledApps.remember(ctx, a.pkg); recents = InstalledApps.recents(ctx) }
+                            else notice = "Could not open ${a.label}"
+                        }
                     }
+                    Dest.Settings -> {
+                        val link by remember { derivedStateOf { state.value.link } }        // only a link change recomposes the page
+                        SettingsScreen(settings, link, { change -> vm.settings.update(change) }, startPage)
+                    }
+                    else -> NotYet(screen)
                 }
-                else -> NotYet(screen)
-            }
-            StatusBar(state)
-            Dock(screen) { go(it) }
-            if (DebugHooks.perf) PerfOverlay()
-            notice?.let { n ->
-                LaunchedEffect(n) { delay(2_500); notice = null }
-                Row(
-                    Modifier.at(404, 700).size(360.dp, 56.dp).pill(fill = LocalPalette.current.s2, border = LocalPalette.current.hair),
-                    horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
-                ) { Txt(n, 20, 24, LocalPalette.current.text, weight = FontWeight.SemiBold) }
+                StatusBar(state)
+                Dock(screen) { go(it) }
+                if (DebugHooks.perf) PerfOverlay()
+                notice?.let { n ->
+                    LaunchedEffect(n) { delay(2_500); notice = null }
+                    Row(
+                        Modifier.at(404, 700).size(360.dp, 56.dp).pill(fill = LocalPalette.current.s2, border = LocalPalette.current.hair),
+                        horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
+                    ) { Txt(n, 20, 24, LocalPalette.current.text, weight = FontWeight.SemiBold) }
+                }
             }
         }
     }

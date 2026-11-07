@@ -2,6 +2,7 @@ package dev.kuntal.cockpit.ui.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -9,7 +10,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.withFrameNanos
+import dev.kuntal.cockpit.data.MotionMode
 import dev.kuntal.cockpit.data.Smoother
+import dev.kuntal.cockpit.ui.theme.LocalSettings
 import kotlinx.coroutines.flow.collectLatest
 
 /**
@@ -19,8 +22,11 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun smoothed(tauSec: Float = 0.07f, target: () -> Float): State<Float> {
     val read by rememberUpdatedState(target)
+    val reduced = LocalSettings.current.motion == MotionMode.Reduced
     val out = remember { mutableFloatStateOf(target()) }
-    LaunchedEffect(Unit) {
+    val snapped = remember { derivedStateOf { read() } }
+    LaunchedEffect(reduced) {
+        if (reduced) return@LaunchedEffect                       // reduced motion: no gliding, readers follow the reading directly
         snapshotFlow { read() }.collectLatest { goal ->
             var last = withFrameNanos { it }
             while (out.floatValue != goal) {
@@ -30,5 +36,5 @@ fun smoothed(tauSec: Float = 0.07f, target: () -> Float): State<Float> {
             }
         }
     }
-    return out
+    return if (reduced) snapped else out
 }

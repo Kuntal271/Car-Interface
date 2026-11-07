@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.graphicsLayer
@@ -66,6 +67,23 @@ fun Txt(
             lineHeightStyle = LineHeightStyle(LineHeightStyle.Alignment.Center, LineHeightStyle.Trim.None),
         ),
         maxLines = 1, softWrap = false, overflow = TextOverflow.Clip,
+    )
+}
+
+/** Wrapping paragraph for notices and help text: width is fixed by the caller, height follows the lines. Never truncates. */
+@Composable
+fun Para(
+    text: String, size: Int, h: Int, color: Color, width: Int,
+    modifier: Modifier = Modifier, weight: FontWeight = FontWeight.Medium,
+) {
+    BasicText(
+        text = text,
+        modifier = modifier.width(width.dp),
+        style = TextStyle(
+            color = color, fontSize = size.sp, fontFamily = CockpitFonts.Barlow, fontWeight = weight, lineHeight = h.sp,
+            letterSpacing = 0.012.em, platformStyle = PlatformTextStyle(includeFontPadding = false),
+            lineHeightStyle = LineHeightStyle(LineHeightStyle.Alignment.Center, LineHeightStyle.Trim.None),
+        ),
     )
 }
 

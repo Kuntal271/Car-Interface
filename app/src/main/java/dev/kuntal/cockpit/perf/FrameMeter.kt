@@ -29,8 +29,10 @@ class FrameMeter(private val window: Window, private val log: Boolean) {
     private val thread = HandlerThread("frame-meter").also { it.start() }
     private val handler = Handler(thread.looper)
     private var lastReport = 0L
+    @Volatile private var warmUpUntil = 0L
 
     private val listener = Window.OnFrameMetricsAvailableListener { _, fm, _ ->
+        if (System.nanoTime() < warmUpUntil) return@OnFrameMetricsAvailableListener      // first composition and JIT are not steady-state cost
         stats.record(fm.getMetric(FrameMetrics.TOTAL_DURATION) / 1_000_000.0)
         uiStats.record((fm.getMetric(FrameMetrics.ANIMATION_DURATION) + fm.getMetric(FrameMetrics.LAYOUT_MEASURE_DURATION) +
             fm.getMetric(FrameMetrics.DRAW_DURATION) + fm.getMetric(FrameMetrics.SYNC_DURATION)) / 1_000_000.0)
@@ -46,9 +48,9 @@ class FrameMeter(private val window: Window, private val log: Boolean) {
         }
     }
 
-    fun start() { stats.clear(); uiStats.clear(); lastReport = System.nanoTime(); window.addOnFrameMetricsAvailableListener(listener, handler) }
+    fun start() { stats.clear(); uiStats.clear(); lastReport = System.nanoTime(); warmUpUntil = lastReport + WARMUP_NS; window.addOnFrameMetricsAvailableListener(listener, handler) }
     fun stop() { window.removeOnFrameMetricsAvailableListener(listener) }
     fun release() { stop(); thread.quitSafely() }
 
-    private companion object { const val TAG = "CockpitPerf"; const val REPORT_NS = 5_000_000_000L }
+    private companion object { const val TAG = "CockpitPerf"; const val REPORT_NS = 5_000_000_000L; const val WARMUP_NS = 2_500_000_000L }
 }

@@ -18,6 +18,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.kuntal.cockpit.data.BoostBar
 import dev.kuntal.cockpit.data.Fmt
+import dev.kuntal.cockpit.data.PressureUnit
+import dev.kuntal.cockpit.data.SpeedUnit
+import dev.kuntal.cockpit.data.Units
 import dev.kuntal.cockpit.data.VehicleUiState
 import dev.kuntal.cockpit.ui.components.Ic
 import dev.kuntal.cockpit.ui.components.Icon
@@ -33,9 +36,8 @@ import dev.kuntal.cockpit.ui.components.pill
 import dev.kuntal.cockpit.ui.components.smoothed
 import dev.kuntal.cockpit.ui.theme.CockpitFonts
 import dev.kuntal.cockpit.ui.theme.LocalPalette
+import dev.kuntal.cockpit.ui.theme.LocalSettings
 
-private const val SHIFT_RPM = 5200f
-private const val SHIFT_LO = 3200f      // the shift-light bar fills from here to the shift point
 
 /**
  * Drive: tach + speed, boost, four vitals, trip strip. Layout is the measured design (1280 x 800 grid).
@@ -44,23 +46,25 @@ private const val SHIFT_LO = 3200f      // the shift-light bar fills from here t
 @Composable
 fun DriveScreen(s: State<VehicleUiState>) {
     val p = LocalPalette.current
+    val st = LocalSettings.current
+    val u = st.speedUnit; val pu = st.pressureUnit; val tu = st.tempUnit
     val cond = CockpitFonts.Condensed
     val rpm = smoothed(0.06f) { (s.value.sample?.rpm ?: 0.0).toFloat() }
     val boostBar = smoothed(0.09f) { ((s.value.sample?.boostKpa ?: 0.0) / 100.0).toFloat() }
 
     Box(Modifier.fillMaxSize()) {
         // shift-light bar (48 segments) and its label
-        val shiftLit = remember { derivedStateOf { Fmt.lit(((rpm.value - SHIFT_LO) / (SHIFT_RPM - SHIFT_LO)).toDouble().coerceIn(0.0, 1.0), 48) } }
+        val shiftLit = remember { derivedStateOf { Fmt.lit(((rpm.value - (st.shiftRpm - 2000)) / 2000f).toDouble().coerceIn(0.0, 1.0), 48) } }
         SegBar(48, 10.dp, Modifier.at(24, 75).width(977.dp), litCount = { shiftLit.value })
-        Txt("Shift 5,200 rpm", 19, 21, p.dim, Modifier.at(1013, 70))
+        Txt("Shift ${Fmt.grouped(st.shiftRpm)} rpm", 19, 21, p.dim, Modifier.at(1013, 70))
 
         // tach + speed + gear
-        Tach(rpm, Modifier.at(24, 96).size(600.dp))
+        Tach(rpm, Modifier.at(24, 96).size(600.dp), maxRpm = st.tachMaxRpm.toFloat(), redRpm = st.redlineRpm.toFloat())
         LiveTxt(
-            { Fmt.whole(s.value.sample?.speedKmh) }, 236, 236, p.text, Modifier.width(600.dp).baselineAt(24, 446),
+            { Fmt.speed(s.value.sample?.speedKmh, u) }, 236, 236, p.text, Modifier.width(600.dp).baselineAt(24, 446),
             cond, FontWeight.SemiBold, TextAlign.Center, letterSpacing = 0.sp, tnum = true,
         )
-        Txt("km/h", 22, 26, p.dim, Modifier.at(30, 460).width(594.dp), cond, FontWeight.Medium, TextAlign.Center)
+        Txt(Units.label(u), 22, 26, p.dim, Modifier.at(30, 460).width(594.dp), cond, FontWeight.Medium, TextAlign.Center)
         Row(
             Modifier.at(248, 566).size(151.dp, 40.dp).pill(), horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically,
@@ -78,13 +82,13 @@ fun DriveScreen(s: State<VehicleUiState>) {
             horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally), verticalAlignment = Alignment.CenterVertically,
         ) {
             Txt("Peak", 18, 22, p.cyan, weight = FontWeight.SemiBold)
-            LiveTxt({ Fmt.signed((s.value.trip.peakBoostKpa ?: 0.0) / 100.0, 2) }, 18, 22, p.cyan, weight = FontWeight.SemiBold)
-            Txt("bar", 18, 22, p.cyan, weight = FontWeight.SemiBold)
+            LiveTxt({ Fmt.boost(s.value.trip.peakBoostKpa ?: 0.0, pu) }, 18, 22, p.cyan, weight = FontWeight.SemiBold)
+            Txt(Units.label(pu), 18, 22, p.cyan, weight = FontWeight.SemiBold)
         }
         ValueUnit(
             676, 261,
-            value = { LiveTxt({ Fmt.signed((s.value.sample?.boostKpa ?: 0.0) / 100.0, 2) }, 120, 120, p.text, family = cond, weight = FontWeight.SemiBold, letterSpacing = 0.sp, tnum = true) },
-            unit = { Txt("bar", 23, 28, p.dim, family = cond) },
+            value = { LiveTxt({ Fmt.boost(s.value.sample?.boostKpa ?: 0.0, pu) }, 120, 120, p.text, family = cond, weight = FontWeight.SemiBold, letterSpacing = 0.sp, tnum = true) },
+            unit = { Txt(Units.label(pu), 23, 28, p.dim, family = cond) },
         )
         val segs = { BoostBar.segments(boostBar.value.toDouble()) }
         SegBar(
@@ -92,19 +96,19 @@ fun DriveScreen(s: State<VehicleUiState>) {
             litFrom = { segs().litFrom }, litCount = { segs().litCount },
             vacuumFrom = { segs().vacFrom }, vacuumCount = { segs().vacCount },
         )
-        BoostScale()
+        BoostScale(pu)
 
         // four vitals
-        Tile(652, 374, Ic.Thermo, "Coolant", "\u00B0C", { Fmt.whole(s.value.sample?.coolantC) }) { Fmt.lit(Fmt.fraction(s.value.sample?.coolantC, 40.0, 120.0), 20) }
-        Tile(904, 374, Ic.Fan, "Intake air", "\u00B0C", { Fmt.whole(s.value.sample?.intakeC) }) { Fmt.lit(Fmt.fraction(s.value.sample?.intakeC, 0.0, 110.0), 20) }
+        Tile(652, 374, Ic.Thermo, "Coolant", Units.label(tu), { Fmt.temp(s.value.sample?.coolantC, tu) }) { Fmt.lit(Fmt.fraction(s.value.sample?.coolantC, 40.0, 120.0), 20) }
+        Tile(904, 374, Ic.Fan, "Intake air", Units.label(tu), { Fmt.temp(s.value.sample?.intakeC, tu) }) { Fmt.lit(Fmt.fraction(s.value.sample?.intakeC, 0.0, 110.0), 20) }
         Tile(652, 536, Ic.Gauge, "Throttle", "%", { Fmt.whole(s.value.sample?.throttlePct) }) { Fmt.lit(Fmt.fraction(s.value.sample?.throttlePct, 0.0, 100.0), 20) }
         Tile(904, 536, Ic.Fuel, "Fuel", "%", { Fmt.whole(s.value.sample?.fuelPct) }) { Fmt.lit(Fmt.fraction(s.value.sample?.fuelPct, 0.0, 100.0), 20) }
 
         // trip strip
         Box(Modifier.at(24, 698).size(1120.dp, 78.dp).card(fillAlpha = .55f, flat = true))
-        TripCell(46, "Trip A", "km", { Fmt.dec(s.value.trip.distanceKm, 1) })
-        TripCell(270, "Average", "km/h", { Fmt.whole(s.value.trip.avgKmh) })
-        TripCell(494, "Top speed", "km/h", { Fmt.whole(s.value.trip.topKmh) })
+        TripCell(46, "Trip A", if (u == SpeedUnit.KMH) "km" else "mi", { Fmt.distance(s.value.trip.distanceKm, u) })
+        TripCell(270, "Average", Units.label(u), { Fmt.speed(s.value.trip.avgKmh, u) })
+        TripCell(494, "Top speed", Units.label(u), { Fmt.speed(s.value.trip.topKmh, u) })
         TripCell(719, "0\u2013100 best", "s", { s.value.trip.zeroTo100Best?.let { Fmt.dec(it, 1) } ?: Fmt.DASH }, accent = true)
         TripCell(943, "Engine load", "%", { Fmt.whole(s.value.sample?.loadPct) })
     }
@@ -121,14 +125,15 @@ private fun IconLabel(x: Int, y: Int, ic: Ic, text: String) {
 }
 
 @Composable
-private fun BoostScale() {
+private fun BoostScale(pu: PressureUnit) {
     val p = LocalPalette.current
     val w = 444; val x0 = 676
     fun cx(bar: Double) = x0 + ((bar - BoostBar.MIN_BAR) / (BoostBar.MAX_BAR - BoostBar.MIN_BAR) * w).toInt()
-    Txt("\u22121.0", 18, 22, p.dim, Modifier.at(x0, 310))
-    Txt("0", 18, 22, p.dim, Modifier.at(cx(0.0) - 5, 310))
-    for (b in listOf(0.5, 1.0)) Txt("+" + Fmt.dec(b, 1), 18, 22, p.dim, Modifier.at(cx(b) - 16, 310))
-    Txt("+1.5", 18, 22, p.dim, Modifier.at(x0 + w - 30, 310))
+    fun tick(bar: Double) = Fmt.boostTick(bar * 100.0, pu)            // labels follow the chosen pressure unit, positions stay on the bar scale
+    Txt(tick(-1.0), 18, 22, p.dim, Modifier.at(x0, 310))
+    Txt(tick(0.0), 18, 22, p.dim, Modifier.at(cx(0.0) - 5, 310))
+    for (b in listOf(0.5, 1.0)) Txt(tick(b), 18, 22, p.dim, Modifier.at(cx(b) - 16, 310))
+    Txt(tick(1.5), 18, 22, p.dim, Modifier.width(60.dp).at(x0 + w - 60, 310), align = TextAlign.End)
 }
 
 @Composable

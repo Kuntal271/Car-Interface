@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 
-enum class Link { Simulated, Connecting, Connected, Lost }
+enum class Link { Simulated, Connecting, Connected, Lost, Off }     // Off = no data source chosen
 
 data class VehicleUiState(
     val sample: VehicleSample? = null,
