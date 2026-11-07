@@ -168,7 +168,7 @@ private fun ConnectionsPage(s: Settings, link: Link, set: ((Settings) -> Setting
         SourceKind.ObdTcp -> {
             Txt("Adapter address", 18, 22, p.dim, Modifier.at(X, 428))
             TextBox(X, 456, 420, s.tcpHost, "Host or IP") { v -> set { it.copy(tcpHost = v) } }
-            TextBox(X + 440, 456, 160, s.tcpPort.toString(), "Port", number = true) { v -> v.toIntOrNull()?.let { n -> set { it.copy(tcpPort = n) } } }
+            TextBox(X + 440, 456, 160, s.tcpPort.toString(), "Port", number = true, maxLen = 5) { v -> v.toIntOrNull()?.let { n -> set { it.copy(tcpPort = n) } } }
             Para("Join the adapter's own Wi-Fi network first. Most ELM327 adapters answer on 192.168.0.10, port 35000.", 18, 24, p.dim, 708, Modifier.at(X, 530))
         }
         else -> {
@@ -192,14 +192,14 @@ private fun SourceRow(y: Int, ic: Ic, title: String, sub: String, selected: Bool
 }
 
 @Composable
-private fun TextBox(x: Int, y: Int, w: Int, value: String, hint: String, number: Boolean = false, onValue: (String) -> Unit) {
+private fun TextBox(x: Int, y: Int, w: Int, value: String, hint: String, number: Boolean = false, maxLen: Int = Settings.MAX_HOST, onValue: (String) -> Unit) {
     val p = LocalPalette.current
     var text by remember(value) { mutableStateOf(value) }
     Box(Modifier.at(x, y).size(w.dp, 56.dp).pill(fill = p.s1), contentAlignment = Alignment.CenterStart) {
         if (text.isEmpty()) Txt(hint, 20, 26, p.dim, Modifier.padding(start = 22.dp))
         BasicTextField(
             // an empty box is mid-edit, not a new setting: only non-blank text is stored
-            value = text, onValueChange = { text = it; if (it.isNotBlank()) onValue(it) }, singleLine = true,
+            value = text, onValueChange = { v -> val c = v.take(maxLen); text = c; if (c.isNotBlank()) onValue(c) }, singleLine = true,       // the field itself is capped too: laying out a pasted megabyte on every keystroke froze the UI
             textStyle = TextStyle(color = p.text, fontSize = 20.sp, fontFamily = CockpitFonts.Barlow, fontWeight = FontWeight.Medium),
             cursorBrush = SolidColor(p.cyan),
             keyboardOptions = KeyboardOptions(keyboardType = if (number) KeyboardType.Number else KeyboardType.Uri),
