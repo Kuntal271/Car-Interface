@@ -10,7 +10,7 @@ the host is doing. Secondary: process CPU ms per second (/proc/<pid>/stat, split
   export ANDROID_SERIAL=emulator-5554
   tools/perf/bench.py --apk base=artifacts/apk/base-release.apk --apk new=app/build/outputs/apk/release/app-release.apk \\
         --screen home,drive --runs 3 --secs 30
-  tools/perf/bench.py --apk full=x.apk@full --apk light=x.apk@light --screen drive     # same APK, governor pinned to Full / Light
+  tools/perf/bench.py --apk full=x.apk@full --apk light=x.apk@light --screen drive     # same APK, governor pinned to Full / Light; `@full+flat` also turns on static-layer textures
   tools/perf/bench.py --summary artifacts/bench/<file>.jsonl        # re-print a table from a saved run
 
 Scenarios (--scenario): drive-sim / home-sim use the built-in simulator (20 Hz moving data, the worst case),
@@ -54,13 +54,15 @@ def pid():
 
 
 def thread_ticks(p):
-    """{(tid, comm): utime+stime ticks} for every thread of the process."""
-    out = sh(f"for t in /proc/{p}/task/*; do cat $t/stat; done", check=False)
-    res = {}
+    """{(tid, comm): (utime+stime ticks, voluntary context switches)} for every thread of the process."""
+    out = sh(f"for t in /proc/{p}/task/*; do cat $t/stat; grep voluntary_ctxt $t/status | head -1; done", check=False)
+    res, cur = {}, None
     for line in out.splitlines():
         m = re.match(r"(\d+) \((.*)\) \S (?:\S+ ){10}(\d+) (\d+)", line)
         if m:
-            res[(m.group(1), m.group(2))] = int(m.group(3)) + int(m.group(4))
+            cur = (m.group(1), m.group(2)); res[cur] = [int(m.group(3)) + int(m.group(4)), 0]
+        elif line.startswith("voluntary_ctxt_switches") and cur:
+            res[cur][1] = int(line.split()[1])
     return res
 
 
@@ -108,12 +110,12 @@ def parse_perf(log):
     return rows
 
 
-def scenario_args(scn, screen, obd_port, extra_set):
+def scenario_args(scn, screen, obd_port, extra_set, perf=True):
     sets = {"static": "source=ObdBluetooth,bt=", "sim": "source=Simulator",
             "obd": f"source=ObdTcp,tcpHost=10.0.2.2,tcpPort={obd_port}"}[scn]
     if extra_set:
         sets += "," + extra_set
-    return ["--es", "screen", screen, "--ez", "perf", "true", "--es", "set", sets]
+    return ["--es", "screen", screen] + (["--ez", "perf", "true"] if perf else []) + ["--es", "set", sets]
 
 
 _installed = {"apk": None}
@@ -128,14 +130,13 @@ def one_run(apk, label, screen, scn, a, perfmode):
     sh(f"am force-stop {PKG}")
     adb("logcat", "-c")
     time.sleep(1.0)
-    args = scenario_args(scn, screen, a.obd_port, a.set)
+    args = scenario_args(scn, screen, a.obd_port, a.set, perf=not a.noperf)
     if a.page:
         args += ["--es", "page", a.page]
+    if perfmode and perfmode.endswith("+flat"):         # label=path@full+flat : static layers as textures (--ez flatten true)
+        perfmode = perfmode[:-5]; args += ["--ez", "flatten", "true"]
     if perfmode:
         args += ["--es", "perfmode", perfmode]
-    if a.noperf:
-        args = [x for x in args if x != "perf"]
-        i = args.index("--ez"); del args[i:i + 3]     # drop `--ez perf true`: no FrameMeter logging, no overlay (idle measurements)
     hl0, gl0 = host_load(), guest_load()
     out = sh(f"am start -W -n {ACT} " + " ".join(args))
     start_ms = int(m.group(1)) if (m := re.search(r"TotalTime: (\d+)", out)) else None
@@ -158,10 +159,12 @@ def one_run(apk, label, screen, scn, a, perfmode):
         span = (len(perf) - 1) * 5.0
         gc_s = (last["gc"] - first["gc"]) / span
         alloc_kb_s = (last["alloc"] - first["alloc"]) / 1024.0 / span
-    by = {}
+    by, wake = {}, {}
     for k, v in t1.items():
-        d = (v - t0.get(k, 0)) * 10.0     # ticks (10 ms) -> ms
-        by[group_name(k[1])] = by.get(group_name(k[1]), 0.0) + d
+        v0 = t0.get(k, [0, 0])
+        g = group_name(k[1])
+        by[g] = by.get(g, 0.0) + (v[0] - v0[0]) * 10.0           # ticks (10 ms) -> ms
+        wake[g] = wake.get(g, 0.0) + (v[1] - v0[1])
     cpu_ms_s = sum(by.values()) / wall
     mem = sh(f"dumpsys meminfo {PKG}", check=False)
     pss = int(m.group(1)) if (m := re.search(r"TOTAL PSS:\s+(\d+)", mem)) or (m := re.search(r"TOTAL\s+(\d+)", mem)) else None
@@ -170,14 +173,14 @@ def one_run(apk, label, screen, scn, a, perfmode):
                start_ms=start_ms, wall=round(wall, 1), fps=round(gfx["frames"] / wall, 2) if gfx.get("frames") is not None else None,
                cpu_ms_s=round(cpu_ms_s, 1),
                main_ms_frame=round(by.get("main", 0.0) / wall / (gfx["frames"] / wall), 2) if gfx.get("frames") else None,
-               rt_ms_frame=round(by.get("RenderThread", 0.0) / wall / (gfx["frames"] / wall), 2) if gfx.get("frames") else None, thr={k: round(v / wall, 1) for k, v in sorted(by.items())}, threads=len(t1),
+               rt_ms_frame=round(by.get("RenderThread", 0.0) / wall / (gfx["frames"] / wall), 2) if gfx.get("frames") else None, thr={k: round(v / wall, 1) for k, v in sorted(by.items())}, threads=len(t1), wake_s=round(sum(wake.values()) / wall, 1), wake_main_s=round(wake.get("main", 0.0) / wall, 1),
                gc_s=gc_s, alloc_kb_s=alloc_kb_s, pss_kb=pss, java_heap_kb=heap, mode=last.get("mode"),
                n=last.get("n"), cpu_p50=last.get("cpu_p50"), cpu_p99=last.get("cpu_p99"), cpu_max=last.get("cpu_max"),
                tot_p50=last.get("tot_p50"), tot_p99=last.get("tot_p99"), over12=last.get("over12"), **{k: gfx[k] for k in ("janky", "missed_vsync", "slow_ui", "slow_draw")})
     return rec
 
 
-COLS = [("start_ms", "start ms", 0), ("fps", "fps", 1), ("cpu_p50", "app-cpu p50", 2), ("cpu_p99", "app-cpu p99", 1), ("cpu_ms_s", "proc cpu ms/s", 0),
+COLS = [("start_ms", "start ms", 0), ("fps", "fps", 1), ("cpu_p50", "app-cpu p50", 2), ("cpu_p99", "app-cpu p99", 1), ("cpu_ms_s", "proc cpu ms/s", 0), ("wake_s", "wakeups/s (all)", 1), ("wake_main_s", "wakeups/s main", 1),
         ("main_ms_frame", "main ms/frame", 2), ("rt_ms_frame", "render ms/frame", 2),
         ("gc_s", "gc/s", 2), ("alloc_kb_s", "alloc KB/s", 0), ("pss_kb", "PSS KB", 0), ("tot_p50", "total p50", 1), ("host_load", "host load", 1)]
 
