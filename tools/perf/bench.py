@@ -15,6 +15,7 @@ the host is doing. Secondary: process CPU ms per second (/proc/<pid>/stat, split
 
 Scenarios (--scenario): drive-sim / home-sim use the built-in simulator (20 Hz moving data, the worst case),
 `static` = no data source (source=ObdBluetooth without an adapter => Link.Off => nothing changes; the idle head unit),
+`frozen` = simulator repeating one set of values with fresh timestamps (parked / steady cruise, adapter connected: `--ez freeze true`),
 `obd` = ELM327 over TCP to 10.0.2.2:<--obd-port> (start the fake adapter first, see tools/perf/README.md).
 """
 import argparse, json, os, re, statistics, subprocess, sys, time
@@ -112,10 +113,10 @@ def parse_perf(log):
 
 def scenario_args(scn, screen, obd_port, extra_set, perf=True):
     sets = {"static": "source=ObdBluetooth,bt=", "sim": "source=Simulator",
-            "obd": f"source=ObdTcp,tcpHost=10.0.2.2,tcpPort={obd_port}"}[scn]
+            "frozen": "source=Simulator", "obd": f"source=ObdTcp,tcpHost=10.0.2.2,tcpPort={obd_port}"}[scn]
     if extra_set:
         sets += "," + extra_set
-    return ["--es", "screen", screen] + (["--ez", "perf", "true"] if perf else []) + ["--es", "set", sets]
+    return ["--es", "screen", screen] + (["--ez", "perf", "true"] if perf else []) + (["--ez", "freeze", "true"] if scn == "frozen" else []) + ["--es", "set", sets]
 
 
 _installed = {"apk": None}
@@ -155,7 +156,7 @@ def one_run(apk, label, screen, scn, a, perfmode):
     last = perf[-1] if perf else {}
     first = perf[0] if perf else {}
     gc_s = alloc_kb_s = None
-    if last.get("gc") is not None and len(perf) >= 2:
+    if last.get("gc") is not None and first.get("gc") is not None and len(perf) >= 2:
         span = (len(perf) - 1) * 5.0
         gc_s = (last["gc"] - first["gc"]) / span
         alloc_kb_s = (last["alloc"] - first["alloc"]) / 1024.0 / span
@@ -215,6 +216,26 @@ def summary(recs, out=sys.stdout):
                     overlap = not (hi1 < lo0 or lo1 > hi0)
                     verdict = f"{pct:+.0f}%" + ("  (within noise)" if overlap else "")
             print(f"{title:<16}" + "".join(f"{c:>28}" for c in cells) + ("   " + verdict if verdict else ""), file=out)
+        # paired comparison: per repetition the other variants are divided by the first one that ran in the same repetition (same minute, similar load)
+        if len(names) > 1:
+            def reps(v):
+                return variants[v]
+            out_lines = []
+            for key, title, nd in COLS:
+                if key in ("host_load", "start_ms"):
+                    continue
+                cells = []
+                for n in names[1:]:
+                    ratios = []
+                    for r0, r1 in zip(reps(names[0]), reps(n)):
+                        if r0.get(key) and r1.get(key) is not None:
+                            ratios.append(r1[key] / r0[key])
+                    if ratios:
+                        cells.append(f"{n}: x{statistics.median(ratios):.2f} [{min(ratios):.2f}..{max(ratios):.2f}]")
+                if cells:
+                    out_lines.append(f"  {title:<16}" + "   ".join(cells))
+            print("paired ratio to '" + names[0] + "' (median [min..max] of per-repetition ratios):", file=out)
+            print("\n".join(out_lines), file=out)
         # per-thread CPU
         keys = sorted({k for rs in variants.values() for r in rs for k in r["thr"]})
         print("thread cpu ms/s: " + "; ".join(f"{k}: " + "/".join(str(med_rng([r["thr"].get(k) for r in variants[n]], 1)[0]) for n in names) for k in keys), file=out)
@@ -224,7 +245,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--apk", action="append", default=[], help="label=path (repeat for A/B); the first is the baseline")
     ap.add_argument("--screen", default="home,drive", help="comma list of home,drive,apps,settings")
-    ap.add_argument("--scenario", default="sim", choices=["sim", "static", "obd"])
+    ap.add_argument("--scenario", default="sim", choices=["sim", "static", "frozen", "obd"])
     ap.add_argument("--runs", type=int, default=3)
     ap.add_argument("--secs", type=int, default=30, help="measurement window after warm-up")
     ap.add_argument("--warm", type=int, default=8)
