@@ -35,16 +35,25 @@ class TcpHangupTest {
         }
     }
 
-    @Test fun anEndlessStreamFromTheAdapterIsCutOffAfterAFewKilobytes() = runBlocking {
+    /**
+     * The client cuts an endless reply off and hangs up. The exact byte cap is pinned deterministically in StreamExchangeLimitsTest; here the
+     * contract is observed on a real socket: the exchange fails with IOException, and the adapter's writes start failing (it was hung up on)
+     * before it could push everything it had. How many bytes the OS had already buffered by then differs per kernel (macOS a few hundred KB,
+     * Linux loopback several MB), so that number is NOT asserted tightly.
+     */
+    @Test fun anEndlessStreamFromTheAdapterIsCutOffAndTheClientHangsUp() = runBlocking {
         ServerSocket(0).use { server ->
+            val total = 64L * 1024 * 1024
             val written = AtomicLong(0)
+            val hungUp = CountDownLatch(1)
             Thread {
                 val c = server.accept(); val o: OutputStream = c.getOutputStream(); c.getInputStream().read()
                 val chunk = ByteArray(1024) { 'A'.code.toByte() }
-                try { repeat(16 * 1024) { o.write(chunk); written.addAndGet(1024) } } catch (_: Exception) {}       // up to 16 MB, no newline, no prompt
+                try { while (written.get() < total) { o.write(chunk); written.addAndGet(1024) } } catch (_: Exception) { hungUp.countDown() }   // no newline, no prompt
             }.also { it.isDaemon = true; it.start() }
             try { withTimeout(10_000) { ElmClient(TcpTransport("127.0.0.1", server.localPort, timeoutMs = 4_000)).samples().first() }; fail("garbage is not a sample") } catch (_: IOException) {}
-            assertTrue("adapter was allowed to push ${written.get()} bytes", written.get() < 2L * 1024 * 1024)
+            assertTrue("the adapter was never hung up on (wrote ${written.get()} bytes)", hungUp.await(10, TimeUnit.SECONDS))
+            assertTrue("the adapter managed to push everything (${written.get()} bytes): nothing cut it off", written.get() < total)
         }
     }
 }
