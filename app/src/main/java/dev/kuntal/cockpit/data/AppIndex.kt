@@ -11,8 +11,10 @@ object AppIndex {
     private val collator: Collator = Collator.getInstance(Locale.ROOT).apply { strength = Collator.PRIMARY }       // a = A = a-acute for ordering
     private val order = Comparator<AppEntry> { a, b -> collator.compare(a.label, b.label).takeIf { it != 0 } ?: a.pkg.compareTo(b.pkg) }
 
+    private val MARKS = Regex("\\p{M}+")          // compiled once: it used to be rebuilt for every label on every keystroke
+
     /** Lower case, accents stripped: "eclair" finds "Éclair". */
-    private fun key(s: String) = Normalizer.normalize(s, Normalizer.Form.NFD).replace(Regex("\\p{M}+"), "").lowercase(Locale.ROOT)
+    private fun key(s: String) = Normalizer.normalize(s, Normalizer.Form.NFD).replace(MARKS, "").lowercase(Locale.ROOT)
 
     const val MAX_LABEL = 64
     const val MAX_QUERY = 64
@@ -27,14 +29,29 @@ object AppIndex {
     fun visible(apps: List<AppEntry>, own: String): List<AppEntry> =
         apps.filter { it.pkg != own }.sortedWith(order)
 
-    /** Case-insensitive substring search. Labels that start with the query come first, then the rest; each group alphabetical. */
-    fun filter(apps: List<AppEntry>, query: String): List<AppEntry> {
-        val q = key(clampQuery(query).trim())
-        val sorted = apps.sortedWith(order)
-        if (q.isEmpty()) return sorted
-        val hits = sorted.filter { key(it.label).contains(q) }
-        return hits.filter { key(it.label).startsWith(q) } + hits.filterNot { key(it.label).startsWith(q) }
+    /**
+     * An app list prepared for searching: sorted once, search keys computed once. Build it when the list changes (remember(apps)),
+     * then call [filter] per keystroke, which is a plain substring scan over precomputed strings (no collator, no Normalizer).
+     */
+    class Search(apps: List<AppEntry>) {
+        private val sorted = apps.sortedWith(order)
+        private val keys = sorted.map { key(it.label) }
+
+        /** Case-insensitive substring search. Labels that start with the query come first, then the rest; each group alphabetical. */
+        fun filter(query: String): List<AppEntry> {
+            val q = key(clampQuery(query).trim())
+            if (q.isEmpty()) return sorted
+            val starts = ArrayList<AppEntry>(); val inside = ArrayList<AppEntry>()
+            for (i in sorted.indices) {
+                val at = keys[i].indexOf(q)
+                if (at == 0) starts += sorted[i] else if (at > 0) inside += sorted[i]
+            }
+            return starts + inside
+        }
     }
+
+    /** One-shot form of [Search]; prefer [Search] when the same list is searched repeatedly. */
+    fun filter(apps: List<AppEntry>, query: String): List<AppEntry> = Search(apps).filter(query)
 }
 
 object RecentApps {

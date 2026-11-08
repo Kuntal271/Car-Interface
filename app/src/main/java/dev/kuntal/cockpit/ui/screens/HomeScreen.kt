@@ -39,6 +39,7 @@ import dev.kuntal.cockpit.ui.components.Ic
 import dev.kuntal.cockpit.ui.components.Icon
 import dev.kuntal.cockpit.ui.components.LiveTxt
 import dev.kuntal.cockpit.ui.components.SegBar
+import dev.kuntal.cockpit.ui.components.StaticLayer
 import dev.kuntal.cockpit.ui.components.Txt
 import dev.kuntal.cockpit.ui.components.ValueUnit
 import dev.kuntal.cockpit.ui.components.at
@@ -72,7 +73,7 @@ fun HomeScreen(s: State<VehicleUiState>, content: HomeContent, onAction: (HomeAc
     val m = content.media
     Box(Modifier.fillMaxSize()) {
         // Static layer: cards, labels, icons, artwork, buttons. Cached as one render node; telemetry never re-records it.
-        Layer {
+        StaticLayer {
             if (p.fordMark) {
                 FordMark(38, Modifier.at(24, 81))
                 Txt("EcoSport", 34, 34, p.text, Modifier.baselineAt(146, 113), cond, FontWeight.SemiBold)

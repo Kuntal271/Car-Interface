@@ -12,12 +12,14 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.withFrameNanos
 import dev.kuntal.cockpit.data.MotionMode
 import dev.kuntal.cockpit.data.Smoother
+import dev.kuntal.cockpit.perf.Perf
+import dev.kuntal.cockpit.perf.PerfMode
 import dev.kuntal.cockpit.ui.theme.LocalSettings
 import kotlinx.coroutines.flow.collectLatest
 
 /**
- * A value that glides to [target] with exponential smoothing, one step per display frame. The loop only runs while the value
- * is moving; when it has settled nothing is scheduled, so an idle dashboard costs no frames.
+ * A value that glides to [target] with exponential smoothing, one step per display frame (every second frame in Light mode).
+ * The loop only runs while the value is moving; when it has settled nothing is scheduled, so an idle dashboard costs no frames.
  */
 @Composable
 fun smoothed(tauSec: Float = 0.07f, target: () -> Float): State<Float> {
@@ -29,8 +31,12 @@ fun smoothed(tauSec: Float = 0.07f, target: () -> Float): State<Float> {
         if (reduced) return@LaunchedEffect                       // reduced motion: no gliding, readers follow the reading directly
         snapshotFlow { read() }.collectLatest { goal ->
             var last = withFrameNanos { it }
+            var skip = false
             while (out.floatValue != goal) {
                 val now = withFrameNanos { it }
+                // Light mode: glide on every second frame only (30 fps). The skipped frame writes no state, so nothing is invalidated and
+                // it draws nothing; the exponential step uses the real elapsed time, so the motion keeps its speed.
+                if (Perf.mode.value == PerfMode.Light) { skip = !skip; if (skip) continue }
                 out.floatValue = Smoother.step(out.floatValue, goal, (now - last) / 1e9f, tauSec)
                 last = now
             }

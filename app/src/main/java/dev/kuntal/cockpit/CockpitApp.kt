@@ -1,6 +1,7 @@
 package dev.kuntal.cockpit
 
 import androidx.activity.compose.BackHandler
+import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -65,6 +67,13 @@ fun CockpitApp(startOn: Dest = Dest.Home, startPage: SettingsPage = SettingsPage
     BackHandler(enabled = true) { screen = Dest.Home }
     val content = remember { if (DebugHooks.snapshot) HomeContent.DEMO else HomeContent.EMPTY }
 
+    // The theme's window background is a full-screen fill under everything and is only needed until Compose has drawn its first frames
+    // (it is what you see while the process starts). The canvas paints every pixel itself, so drop the fill: one full-screen draw less per frame.
+    LaunchedEffect(Unit) {
+        withFrameNanos { }; withFrameNanos { }
+        (ctx as? Activity)?.window?.setBackgroundDrawable(null)
+    }
+
     fun launch(what: String, nice: String) { if (!AppLauncher.launch(ctx, what)) notice = "No $nice app found on this unit" }
     fun go(d: Dest) = when (d) {
         Dest.Media -> launch("media", "media")
@@ -85,7 +94,7 @@ fun CockpitApp(startOn: Dest = Dest.Home, startPage: SettingsPage = SettingsPage
                     }
                     Dest.Drive -> DriveScreen(state)
                     Dest.Apps -> {
-                        val apps by produceState(emptyList<AppEntry>()) { value = withContext(Dispatchers.IO) { InstalledApps.query(ctx) } }
+                        val apps by produceState(InstalledApps.lastQuery) { value = withContext(Dispatchers.IO) { InstalledApps.query(ctx) } }
                         var recents by remember { mutableStateOf(InstalledApps.recents(ctx)) }
                         AppsScreen(apps, recents) { a ->
                             if (InstalledApps.launch(ctx, a)) { InstalledApps.remember(ctx, a.pkg); recents = InstalledApps.recents(ctx) }

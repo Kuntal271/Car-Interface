@@ -12,7 +12,10 @@ import dev.kuntal.cockpit.vehicle.VehicleSample
  * (no state, no data) and stays available because it is how a release build is measured on the unit. `screen` / `page` are
  * enum-validated navigation in MainActivity. Single entry point: [parse], called once from MainActivity.onCreate.
  */
-data class DevLaunch(val snapshot: Boolean, val perf: Boolean, val reset: Boolean, val set: Map<String, String>) {
+data class DevLaunch(
+    val snapshot: Boolean, val perf: Boolean, val reset: Boolean, val set: Map<String, String>,
+    val freeze: Boolean = false, val flatten: Boolean = false, val perfMode: String? = null,   // benchmark switches: debuggable builds only
+) {
     companion object {
         val NONE = DevLaunch(snapshot = false, perf = false, reset = false, set = emptyMap())
         private const val MAX_PAIRS = 32
@@ -25,6 +28,9 @@ data class DevLaunch(val snapshot: Boolean, val perf: Boolean, val reset: Boolea
                 perf = bool("perf"),
                 reset = debuggable && bool("reset"),
                 set = if (debuggable) parseSet(str("set")) else emptyMap(),
+                freeze = debuggable && bool("freeze"),
+                flatten = debuggable && bool("flatten"),
+                perfMode = if (debuggable) str("perfmode")?.take(16) else null,
             )
         } catch (_: Exception) { NONE }
 
@@ -46,6 +52,9 @@ data class DevLaunch(val snapshot: Boolean, val perf: Boolean, val reset: Boolea
 object DebugHooks {
     @Volatile var snapshot = false
     @Volatile var perf = false          // --ez perf true: log frame statistics to logcat (tag CockpitPerf) and show the overlay
+    @Volatile var freeze = false        // --ez freeze true: the simulator repeats the design values with a fresh timestamp (parked car, adapter connected, nothing changes)
+    @Volatile var flatten = false       // --ez flatten true: static layers become hardware textures (A/B switch for the GPU-fill experiment)
+    @Volatile var pinMode: dev.kuntal.cockpit.perf.PerfMode? = null   // --es perfmode full|light: bypass PerfGovernor (repeatable benchmarks)
 
     const val CLOCK = "21:47"
     const val DATE = "Fri 30 Oct"

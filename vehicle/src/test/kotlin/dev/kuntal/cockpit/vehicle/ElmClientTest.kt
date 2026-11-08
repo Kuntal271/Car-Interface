@@ -3,6 +3,7 @@ package dev.kuntal.cockpit.vehicle
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.Assert.*
 import org.junit.Test
 
@@ -45,5 +46,12 @@ class ElmClientTest {
         assertEquals(listOf(Pid.RPM, Pid.SPEED), sched.pidsForCycle(1))
         assertTrue(Pid.THROTTLE in sched.pidsForCycle(3) && Pid.COOLANT_TEMP !in sched.pidsForCycle(3))
         assertTrue(Pid.COOLANT_TEMP in sched.pidsForCycle(10))
+    }
+
+    @Test fun anInstantAdapterIsNotPolledInATightLoop() = runTest {
+        // Without pacing this never returns (virtual time does not advance while the loop never suspends); with it, one cycle per 40 ms.
+        var cycles = 0
+        withTimeoutOrNull(1_000) { ElmClient(FakeTransport(replies)).samples().collect { cycles++ } }
+        assertTrue("cycles in 1 s of virtual time: $cycles", cycles in 24..26)
     }
 }

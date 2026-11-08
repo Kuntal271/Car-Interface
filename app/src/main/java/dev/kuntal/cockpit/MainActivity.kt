@@ -11,6 +11,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import dev.kuntal.cockpit.data.Settings
 import dev.kuntal.cockpit.perf.FrameMeter
+import dev.kuntal.cockpit.perf.Perf
+import dev.kuntal.cockpit.perf.PerfMode
 import dev.kuntal.cockpit.ui.screens.SettingsPage
 import dev.kuntal.cockpit.ui.shell.Dest
 
@@ -28,6 +30,10 @@ class MainActivity : ComponentActivity() {
         )
         DebugHooks.snapshot = dev.snapshot
         DebugHooks.perf = dev.perf
+        DebugHooks.freeze = dev.freeze
+        DebugHooks.flatten = dev.flatten
+        DebugHooks.pinMode = dev.perfMode?.let { n -> PerfMode.entries.firstOrNull { it.name.equals(n, ignoreCase = true) } }
+        DebugHooks.pinMode?.let { Perf.publish(Perf.summary.value, it) }
         meter = FrameMeter(window, log = DebugHooks.perf)
         applyDevSettings(dev)
         // `adb shell am start -n dev.kuntal.cockpit/.MainActivity --es screen drive` opens a given screen (used by tools/shot.sh and tests)

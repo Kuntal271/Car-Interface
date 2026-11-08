@@ -10,9 +10,16 @@ import androidx.compose.ui.graphics.asImageBitmap
 import dev.kuntal.cockpit.data.AppEntry
 import dev.kuntal.cockpit.data.AppIndex
 import dev.kuntal.cockpit.data.RecentApps
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 /** Reads the launchable apps from the package manager. The list logic itself (ordering, search) lives in [AppIndex]. */
 object InstalledApps {
+    /** The last list read from the package manager: shown at once on the next visit to Apps while a fresh query runs behind it. */
+    @Volatile var lastQuery: List<AppEntry> = emptyList()
+        private set
+
     fun query(ctx: Context): List<AppEntry> {
         val pm = ctx.packageManager
         val intent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
@@ -23,7 +30,7 @@ object InstalledApps {
                 catch (_: Exception) { null }
             }
         } catch (_: Exception) { emptyList() }
-        return AppIndex.visible(all, own = ctx.packageName)
+        return AppIndex.visible(all, own = ctx.packageName).also { lastQuery = it }
     }
 
     fun launch(ctx: Context, app: AppEntry): Boolean {
@@ -32,6 +39,13 @@ object InstalledApps {
     }
 
     private val icons = object : LruCache<String, ImageBitmap>(96) {}      // 96 icons at 112 px is about 5 MB
+
+    /** A cached icon, or null. Cheap enough for the main thread: a tile that scrolls back into view shows its icon in its first frame. */
+    fun cachedIcon(pkg: String): ImageBitmap? = icons.get(pkg)
+
+    /** Icon decoding is bounded to two threads (the IO pool would otherwise start up to 64 on a fast fling through 300 apps). */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val iconDispatcher: CoroutineDispatcher = Dispatchers.IO.limitedParallelism(2)
 
     /** App icon as a 112 px bitmap (shown at 56 dp). Call off the main thread. */
     fun icon(ctx: Context, pkg: String): ImageBitmap? {

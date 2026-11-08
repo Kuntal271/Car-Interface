@@ -9,9 +9,13 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import java.io.IOException
 
+/** Shortest time between two polling cycles (25 Hz): above the UI's 20 Hz, so it never makes the display older. */
+const val MIN_CYCLE_MS = 40L
+
 class ElmClient(
     private val transport: Transport,
     private val now: () -> Long = MonotonicClock,
+    private val minCycleMs: Long = MIN_CYCLE_MS,
 ) : VehicleSource {
     var supported: Set<Pid> = emptySet()
         private set
@@ -63,7 +67,7 @@ class ElmClient(
                 emit(s.copy(tsMs = now()))
                 cycle++
                 val spent = now() - cycleStart
-                if (spent < MIN_CYCLE_MS) delay(MIN_CYCLE_MS - spent)          // an adapter that answers at once must not pin a core (or the bus) at thousands of cycles a second
+                if (spent < minCycleMs) delay(minCycleMs - spent)          // an adapter that answers at once must not pin a core (or the bus) at thousands of cycles a second
             }
         } finally {
             withContext(NonCancellable) { transport.close() }          // a cancelled coroutine cannot suspend: without this the socket was never closed
@@ -71,7 +75,6 @@ class ElmClient(
     }
 
     private companion object {
-        const val MIN_CYCLE_MS = 40L           // 25 cycles a second is more than the UI shows (20 Hz) and about what real adapters manage
         const val MISSES_BEFORE_DROP = 3
         const val SILENT_CYCLES_BEFORE_LOST = 5
     }

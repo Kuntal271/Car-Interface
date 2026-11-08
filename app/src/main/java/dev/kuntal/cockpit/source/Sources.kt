@@ -1,5 +1,6 @@
 package dev.kuntal.cockpit.source
 
+import dev.kuntal.cockpit.DebugHooks
 import dev.kuntal.cockpit.data.Link
 import dev.kuntal.cockpit.data.Settings
 import dev.kuntal.cockpit.data.VehicleRepository
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.flowOf
  */
 object Sources {
     fun states(s: Settings): Flow<VehicleUiState> = when {
+        s.sourceKey == "sim" && DebugHooks.freeze -> VehicleRepository(FrozenSource(DebugHooks.driveState.sample!!), simulated = true).states()
         s.sourceKey == "sim" -> VehicleRepository(SimSource(), simulated = true).states()
         s.sourceKey.startsWith("tcp:") -> VehicleRepository(ElmClient(TcpTransport(s.tcpHost.trim(), s.tcpPort, timeoutMs = 4000)), simulated = false).states()
         s.sourceKey.startsWith("bt:") -> VehicleRepository(ElmClient(BluetoothTransport(s.btAddress)), simulated = false).states()

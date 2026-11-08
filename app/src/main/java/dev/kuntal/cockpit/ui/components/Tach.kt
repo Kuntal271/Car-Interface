@@ -35,79 +35,92 @@ import kotlin.math.sin
  */
 @Composable
 fun Tach(rpm: State<Float>, modifier: Modifier = Modifier.size(600.dp), maxRpm: Float = 7000f, redRpm: Float = 6000f) {
+    Box(modifier) {
+        TachFace(Modifier.fillMaxSize(), maxRpm, redRpm)
+        TachArc(rpm, Modifier.fillMaxSize(), maxRpm, redRpm)
+    }
+}
+
+/** The tach's fixed furniture (track, redline hatch, ticks, numerals, caption). Put it in a static layer: it never changes. */
+@Composable
+fun TachFace(modifier: Modifier = Modifier.size(600.dp), maxRpm: Float = 7000f, redRpm: Float = 6000f) {
     val p = LocalPalette.current
     val measurer = rememberTextMeasurer()
-    Box(modifier) {
-        Box(
-            Modifier.fillMaxSize().drawWithCache {
-                val s = size.width / 700f
-                val c = Offset(350f * s, 350f * s)
-                val r1 = 262f * s; val rm = 292f * s; val sw = 60f * s
-                val tl = Offset(c.x - rm, c.y - rm); val sz = Size(2 * rm, 2 * rm)
-                val redDeg = redRpm / maxRpm * 270f
-                val nStr = max(1, ((270f - redDeg) / 3.2f).roundToInt()); val pitch = (270f - redDeg) / nStr
-                fun pol(r: Float, aDeg: Float): Offset {
-                    val a = Math.toRadians(aDeg.toDouble())
-                    return Offset(c.x + r * sin(a).toFloat(), c.y - r * cos(a).toFloat())
-                }
-                val numStyle = TextStyle(fontFamily = CockpitFonts.Condensed, fontWeight = FontWeight.SemiBold, fontSize = (40f * s).toSp(), platformStyle = PlatformTextStyle(includeFontPadding = false))
-                val steps = (maxRpm / 500f).roundToInt()
-                val numerals = (0..steps step 2).map { k ->
+    Box(
+        modifier.drawWithCache {
+            val s = size.width / 700f
+            val c = Offset(350f * s, 350f * s)
+            val r1 = 262f * s; val rm = 292f * s; val sw = 60f * s
+            val tl = Offset(c.x - rm, c.y - rm); val sz = Size(2 * rm, 2 * rm)
+            val redDeg = redRpm / maxRpm * 270f
+            val nStr = max(1, ((270f - redDeg) / 3.2f).roundToInt()); val pitch = (270f - redDeg) / nStr
+            fun pol(r: Float, aDeg: Float): Offset {
+                val a = Math.toRadians(aDeg.toDouble())
+                return Offset(c.x + r * sin(a).toFloat(), c.y - r * cos(a).toFloat())
+            }
+            val numStyle = TextStyle(fontFamily = CockpitFonts.Condensed, fontWeight = FontWeight.SemiBold, fontSize = (40f * s).toSp(), platformStyle = PlatformTextStyle(includeFontPadding = false))
+            val steps = (maxRpm / 500f).roundToInt()
+            val numerals = (0..steps step 2).map { k ->
+                val a = -135f + k * 500f / maxRpm * 270f
+                val layout = measurer.measure(
+                    (k / 2).toString(),
+                    numStyle.copy(color = if (k * 500f >= redRpm) p.warn else p.text),
+                )
+                val t = pol(r1 - 62f * s, a)
+                Triple(layout, t.x - layout.size.width / 2f, t.y + 13f * s - layout.firstBaseline)
+            }
+            val caption = measurer.measure(
+                "rpm x 1000",
+                TextStyle(fontFamily = CockpitFonts.Barlow, fontWeight = FontWeight.Medium, fontSize = (24f * s).toSp(), color = p.dim, platformStyle = PlatformTextStyle(includeFontPadding = false)),
+            )
+            onDrawBehind {
+                drawArc(p.dim.copy(alpha = .13f), 135f, redDeg, false, tl, sz, style = Stroke(sw))
+                for (k in 0 until nStr) drawArc(p.warn.copy(alpha = .85f), 135f + redDeg + k * pitch, 1.3f, false, tl, sz, style = Stroke(sw))
+                for (k in 0..steps) {
                     val a = -135f + k * 500f / maxRpm * 270f
-                    val layout = measurer.measure(
-                        (k / 2).toString(),
-                        numStyle.copy(color = if (k * 500f >= redRpm) p.warn else p.text),
+                    val major = k % 2 == 0
+                    val red = k * 500f >= redRpm
+                    drawLine(
+                        if (red) p.warn else p.dim,
+                        pol(r1 - 14f * s, a), pol(r1 - (if (major) 34f else 24f) * s, a),
+                        strokeWidth = (if (major) 3f else 1.5f) * s, cap = StrokeCap.Round,
                     )
-                    val t = pol(r1 - 62f * s, a)
-                    Triple(layout, t.x - layout.size.width / 2f, t.y + 13f * s - layout.firstBaseline)
                 }
-                val caption = measurer.measure(
-                    "rpm x 1000",
-                    TextStyle(fontFamily = CockpitFonts.Barlow, fontWeight = FontWeight.Medium, fontSize = (24f * s).toSp(), color = p.dim, platformStyle = PlatformTextStyle(includeFontPadding = false)),
-                )
-                onDrawBehind {
-                    drawArc(p.dim.copy(alpha = .13f), 135f, redDeg, false, tl, sz, style = Stroke(sw))
-                    for (k in 0 until nStr) drawArc(p.warn.copy(alpha = .85f), 135f + redDeg + k * pitch, 1.3f, false, tl, sz, style = Stroke(sw))
-                    for (k in 0..steps) {
-                        val a = -135f + k * 500f / maxRpm * 270f
-                        val major = k % 2 == 0
-                        val red = k * 500f >= redRpm
-                        drawLine(
-                            if (red) p.warn else p.dim,
-                            pol(r1 - 14f * s, a), pol(r1 - (if (major) 34f else 24f) * s, a),
-                            strokeWidth = (if (major) 3f else 1.5f) * s, cap = StrokeCap.Round,
-                        )
-                    }
-                    for ((layout, x, y) in numerals) drawText(layout, topLeft = Offset(x, y))
-                    drawText(caption, topLeft = Offset(c.x - caption.size.width / 2f, 642f * s - caption.firstBaseline))
+                for ((layout, x, y) in numerals) drawText(layout, topLeft = Offset(x, y))
+                drawText(caption, topLeft = Offset(c.x - caption.size.width / 2f, 642f * s - caption.firstBaseline))
+            }
+        },
+    )
+}
+
+/** The lit sweep and the tip; [rpm] is read in the draw phase, so a new value redraws only the layer this sits in. */
+@Composable
+fun TachArc(rpm: State<Float>, modifier: Modifier = Modifier.size(600.dp), maxRpm: Float = 7000f, redRpm: Float = 6000f) {
+    val p = LocalPalette.current
+    Box(
+        modifier.drawWithCache {
+            val s = size.width / 700f
+            val c = Offset(350f * s, 350f * s)
+            val rm = 292f * s; val sw = 60f * s
+            val tl = Offset(c.x - rm, c.y - rm); val sz = Size(2 * rm, 2 * rm)
+            val redFrac = redRpm / maxRpm * 270f / 360f
+            val lo = lerp(Color.Black, p.blue, .62f)
+            val sweep = Brush.sweepGradient(
+                0f to lo, redFrac * .72f to p.cyan, redFrac to p.cyan, redFrac to p.warn, 270f / 360f to p.warn, 1f to p.warn,
+                center = c,
+            )
+            val glow = Brush.radialGradient(
+                0f to Color.White.copy(alpha = .9f), .3f to p.cyan.copy(alpha = .45f), 1f to p.cyan.copy(alpha = 0f),
+                center = Offset(c.x, c.y - rm), radius = 46f * s,
+            )
+            onDrawBehind {
+                val v = (rpm.value / maxRpm).coerceIn(0f, 1f)
+                if (v > 0f) rotate(135f, c) { drawArc(sweep, 0f, v * 270f, false, tl, sz, style = Stroke(sw)) }
+                rotate(-135f + v * 270f, c) {
+                    drawCircle(glow, 46f * s, Offset(c.x, c.y - rm))
+                    drawCircle(Color.White, 12f * s, Offset(c.x, c.y - rm))
                 }
-            },
-        )
-        Box(
-            Modifier.fillMaxSize().drawWithCache {
-                val s = size.width / 700f
-                val c = Offset(350f * s, 350f * s)
-                val rm = 292f * s; val sw = 60f * s
-                val tl = Offset(c.x - rm, c.y - rm); val sz = Size(2 * rm, 2 * rm)
-                val redFrac = redRpm / maxRpm * 270f / 360f
-                val lo = lerp(Color.Black, p.blue, .62f)
-                val sweep = Brush.sweepGradient(
-                    0f to lo, redFrac * .72f to p.cyan, redFrac to p.cyan, redFrac to p.warn, 270f / 360f to p.warn, 1f to p.warn,
-                    center = c,
-                )
-                val glow = Brush.radialGradient(
-                    0f to Color.White.copy(alpha = .9f), .3f to p.cyan.copy(alpha = .45f), 1f to p.cyan.copy(alpha = 0f),
-                    center = Offset(c.x, c.y - rm), radius = 46f * s,
-                )
-                onDrawBehind {
-                    val v = (rpm.value / maxRpm).coerceIn(0f, 1f)
-                    if (v > 0f) rotate(135f, c) { drawArc(sweep, 0f, v * 270f, false, tl, sz, style = Stroke(sw)) }
-                    rotate(-135f + v * 270f, c) {
-                        drawCircle(glow, 46f * s, Offset(c.x, c.y - rm))
-                        drawCircle(Color.White, 12f * s, Offset(c.x, c.y - rm))
-                    }
-                }
-            },
-        )
-    }
+            }
+        },
+    )
 }

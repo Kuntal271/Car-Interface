@@ -57,10 +57,21 @@ enum class Ic(val d: String, val dots: List<Triple<Float, Float, Float>> = empty
     Fuel("M5 20V5a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v15M4 20h11M14 9h2.5a1.5 1.5 0 0 1 1.5 1.5V16a1.5 1.5 0 0 0 3 0V9l-2.5-2.5M7 8h5"),
 }
 
+/** Parsed once per process: every Icon used to parse its SVG path string again on each composition (each visit to a screen, 20-40 icons). */
+private class IconPaths(val stroke: Path?, val fill: Path?)
+private val parsed = java.util.concurrent.ConcurrentHashMap<Ic, IconPaths>()
+private fun pathsOf(ic: Ic): IconPaths = parsed.getOrPut(ic) {
+    IconPaths(
+        if (ic.d.isEmpty()) null else PathParser().parsePathString(ic.d).toPath(),
+        if (ic.fill.isEmpty()) null else PathParser().parsePathString(ic.fill).toPath(),
+    )
+}
+
 @Composable
 fun Icon(ic: Ic, size: Int, color: Color, modifier: Modifier = Modifier) {
-    val path = remember(ic) { if (ic.d.isEmpty()) null else PathParser().parsePathString(ic.d).toPath() }
-    val filled = remember(ic) { if (ic.fill.isEmpty()) null else PathParser().parsePathString(ic.fill).toPath() }
+    val paths = remember(ic) { pathsOf(ic) }
+    val path = paths.stroke
+    val filled = paths.fill
     Canvas(modifier.size(size.dp)) {
         val s = this.size.width / 24f
         scale(s, s, pivot = Offset.Zero) {
