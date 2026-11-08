@@ -47,6 +47,7 @@ import dev.kuntal.cockpit.data.MotionMode
 import dev.kuntal.cockpit.data.Standby
 import dev.kuntal.cockpit.data.Units
 import dev.kuntal.cockpit.data.VehicleUiState
+import dev.kuntal.cockpit.ui.components.DemoMark
 import dev.kuntal.cockpit.ui.components.FordMark
 import dev.kuntal.cockpit.ui.components.FordPaths
 import dev.kuntal.cockpit.ui.components.Txt
@@ -93,6 +94,7 @@ fun StandbyScreen(state: State<VehicleUiState>, canbox: State<CanboxState?>, las
             }
         }
         TxtR("Tap to wake", 19, 21, p.text.copy(alpha = .7f), 1190, 70, 300)
+        if (canbox.value != null) DemoMark(90, 556)          // outside temperature and doors come from the mock Canbox
 
         // the strip of four facts
         Box(Modifier.at(90, 600).size(1100.dp, 1.dp).background(p.hair))

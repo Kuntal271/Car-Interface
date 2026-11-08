@@ -106,7 +106,7 @@ fun MediaScreen(
             BasicText(
                 title, Modifier.width(292.dp),
                 style = TextStyle(color = p.text, fontSize = 64.sp, fontFamily = cond, fontWeight = FontWeight.SemiBold, lineHeight = 61.sp, letterSpacing = 0.012.em, platformStyle = PlatformTextStyle(includeFontPadding = false), lineHeightStyle = LineHeightStyle(LineHeightStyle.Alignment.Center, LineHeightStyle.Trim.None)),
-                softWrap = true, maxLines = 2,
+                softWrap = true, maxLines = 2, overflow = androidx.compose.ui.text.style.TextOverflow.Visible,      // the descender of "y" in "City" passes the 61 sp line box
             )
         }
         LiveTxt({ st.value?.track?.artist ?: "" }, 26, 29, p.dim, Modifier.at(360, 340).width(292.dp), cond, FontWeight.SemiBold)

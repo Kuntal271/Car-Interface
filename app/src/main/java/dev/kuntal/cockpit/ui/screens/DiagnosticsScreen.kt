@@ -244,7 +244,7 @@ private fun FaultList(diag: DiagSource, onClose: () -> Unit) {
     val cur: Dtc? = codes.getOrNull(sel)
     Txt("Fault codes", 26, 29, p.text, Modifier.at(424, 232), cond, FontWeight.SemiBold)
     DemoMark(560, 230)
-    PillBtn(1000, 224, 120, "Close", onClose, h = 48)
+    PillBtn(1000, 220, 120, "Close", onClose, h = 56)
     Para(DiagNote.EXPLAIN + " The app only ever sends setup commands and Mode 01 reads.", 19, 25, p.dim, 700, Modifier.at(424, 284))
     codes.forEachIndexed { i, c ->
         val on = i == sel

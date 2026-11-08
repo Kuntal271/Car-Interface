@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -45,6 +44,7 @@ import dev.kuntal.cockpit.ui.theme.CockpitFonts
 import dev.kuntal.cockpit.ui.theme.LocalPalette
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -67,20 +67,20 @@ fun rememberOverlay(
     val queue = remember { OverlayQueue() }
     val coolantDismissed = remember { booleanArrayOf(false) }
     val current = remember { mutableStateOf(forced) }
-    var version by remember { mutableIntStateOf(0) }
+    val kick = remember { MutableSharedFlow<Unit>(replay = 1, extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST) }   // not Compose state: bumping it must not recompose the app
     val screenNow by rememberUpdatedStateOf(screen)
     val quickNow by rememberUpdatedStateOf(quickOpen)
     fun now() = SystemClock.elapsedRealtime()
     fun refresh() { current.value = forced ?: queue.visible(now()) }
-    fun show(o: Overlay) { queue.show(o, now()); version++; refresh() }
-    fun clear(kind: String) { queue.clear(kind); version++; refresh() }
+    fun show(o: Overlay) { queue.show(o, now()); kick.tryEmit(Unit); refresh() }
+    fun clear(kind: String) { queue.clear(kind); kick.tryEmit(Unit); refresh() }
 
     fun dismiss() {
         if (current.value is Overlay.CoolantHigh) coolantDismissed[0] = true
-        queue.dismiss(now()); version++; refresh()
+        queue.dismiss(now()); kick.tryEmit(Unit); refresh()
     }
     LaunchedEffect(Unit) { OverlayBus.events.collect { show(it) } }
-    LaunchedEffect(version) { queue.nextExpiry()?.let { kotlinx.coroutines.delay((it - now()).coerceAtLeast(0) + 20); refresh() } }
+    LaunchedEffect(Unit) { kick.collectLatest { queue.nextExpiry()?.let { kotlinx.coroutines.delay((it - now()).coerceAtLeast(0) + 20); refresh() } } }
 
     LaunchedEffect(Unit) {
         snapshotFlow { volume.level.value }.drop(1).collect { v ->

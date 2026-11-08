@@ -94,7 +94,7 @@ fun CockpitApp(startOn: Dest = Dest.Home, startPage: SettingsPage = SettingsPage
     val ctx = LocalContext.current
     var screen by rememberSaveable {
         mutableStateOf(when {
-            DebugHooks.snapshot && (DebugHooks.screen.startsWith("overlay") || DebugHooks.screen.startsWith("drive-")) -> Dest.Drive
+            (DebugHooks.snapshot && DebugHooks.screen.startsWith("overlay")) || DebugHooks.screen.startsWith("drive-") -> Dest.Drive
             DebugHooks.screen == "phone" || DebugHooks.screen == "phone-call" -> Dest.PhoneDemo
             DebugHooks.screen == "radio" -> Dest.RadioDemo
             DebugHooks.screen == "projection" -> Dest.Projection        // overlays are shot over the Drive screen
@@ -108,7 +108,7 @@ fun CockpitApp(startOn: Dest = Dest.Home, startPage: SettingsPage = SettingsPage
     }
     val driveExtras = remember { if (DebugHooks.snapshot) SnapshotFixtures.driveExtras() else DriveExtras() }
     var demoCall by remember { mutableStateOf(if (DebugHooks.screen == "phone-call") DemoCall(PhoneDemo.RECENTS[1].contact) else null) }
-    var quick by remember { mutableStateOf(DebugHooks.snapshot && DebugHooks.screen == "quick") }
+    var quick by remember { mutableStateOf(DebugHooks.screen == "quick") }
     var night by remember { mutableStateOf(false) }
     val touch = remember { longArrayOf(SystemClock.elapsedRealtime()) }
     val brightness = rememberBrightness()

@@ -252,8 +252,10 @@ fun DriveBoostScreen(state: State<VehicleUiState>, x: DriveExtras, onView: (Driv
 
         // 0-100 card
         val armed = x.zero.phase != ZeroTo100.Phase.Waiting
-        Row(Modifier.at(1038, 388).height(32.dp).pill(border = p.cyan.copy(alpha = if (armed) .5f else 0f)).padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-            LiveTxt({ when (x.zero.phase) { ZeroTo100.Phase.Armed -> "Armed"; ZeroTo100.Phase.Running -> "Running"; ZeroTo100.Phase.Waiting -> "Stop to arm" } }, 18, 22, if (armed) p.cyan else p.dim, weight = FontWeight.SemiBold)
+        Box(Modifier.at(820, 388).width(300.dp).height(32.dp), contentAlignment = Alignment.CenterEnd) {      // right edge at the card padding whatever the label
+            Row(Modifier.height(32.dp).pill(border = p.cyan.copy(alpha = if (armed) .5f else 0f)).padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                LiveTxt({ when (x.zero.phase) { ZeroTo100.Phase.Armed -> "Armed"; ZeroTo100.Phase.Running -> "Running"; ZeroTo100.Phase.Waiting -> "Stop to arm" } }, 18, 22, if (armed) p.cyan else p.dim, weight = FontWeight.SemiBold)
+            }
         }
         ValueUnit(732, 489, value = { LiveTxt({ Fmt.dec(x.zeroTimer ?: 0.0, 1) }, 64, 58, p.text, family = cond, weight = FontWeight.SemiBold, letterSpacing = 0.sp, tnum = true) }, unit = { Txt("s", 23, 28, p.dim, family = cond) })
         BaselineRow(1120, 489, gap = 4, alignEnd = true) {

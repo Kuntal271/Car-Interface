@@ -78,7 +78,7 @@ fun PhoneDemoScreen(call: DemoCall?, onCall: (DemoContact) -> Unit, onEnd: () ->
         PillBtn(40, 664, 438, "Call", { if (dialed.any { it.isDigit() }) onCall(PhoneDemo.contactFor(dialed)) else onNotice("Enter a number first") }, h = 96, ic = Ic.Phone, primary = true)
 
         TabPills(518, 80, PhoneTab.entries, tab, { it.label }) { tab = it }
-        PillBtn(1004, 80, 140, "Search", { onNotice("Search is not part of the demo") }, h = 48, ic = Ic.Search)
+        PillBtn(1004, 76, 140, "Search", { onNotice("Search is not part of the demo") }, h = 56, ic = Ic.Search)
         val rows: List<DemoCallEntry> = when (tab) {
             PhoneTab.Recents -> PhoneDemo.RECENTS
             PhoneTab.Contacts -> PhoneDemo.CONTACTS.map { DemoCallEntry(it, "Mobile", "") }
