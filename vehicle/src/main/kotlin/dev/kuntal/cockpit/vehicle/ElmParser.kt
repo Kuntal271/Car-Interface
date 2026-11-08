@@ -3,7 +3,7 @@ package dev.kuntal.cockpit.vehicle
 /**
  * Turns adapter text into numbers. The adapter is untrusted input: only well-formed upper/lower-case ASCII hex counts
  * (`String.toInt(16)` would also accept "-1", "+F" and non-ASCII digits), and a value that no real vehicle can report is
- * dropped instead of shown (see [PidDecoder.isPlausible]).
+ * dropped instead of shown (see [PidDecoder.plausible]).
  */
 object ElmParser {
     private fun hexVal(c: Char): Int = when (c) {
@@ -27,8 +27,11 @@ object ElmParser {
         return null
     }
 
+    private fun Char.isAscii() = code < 128
+
+    /** The decoded reading, or null for no data, a damaged reply, or a value this car cannot produce (see [PidDecoder.plausible]). */
     fun parse(pid: Pid, raw: String): Double? =
-        bytesAfter("41%02X".format(pid.code), pid.bytes, raw)?.let { PidDecoder.decode(pid, it) }?.takeIf { PidDecoder.isPlausible(pid, it) }
+        bytesAfter("41%02X".format(pid.code), pid.bytes, raw)?.let { PidDecoder.decode(pid, it) }?.takeIf { PidDecoder.plausible(pid, it) }
 
     fun parseBitmap(base: Int, raw: String): IntArray? = bytesAfter("41%02X".format(base), 4, raw)
 }

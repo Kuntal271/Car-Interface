@@ -48,9 +48,25 @@ class FrameMeter(private val window: Window, private val log: Boolean) {
         }
     }
 
-    fun start() { stats.clear(); uiStats.clear(); lastReport = System.nanoTime(); warmUpUntil = lastReport + WARMUP_NS; window.addOnFrameMetricsAvailableListener(listener, handler) }
-    fun stop() { window.removeOnFrameMetricsAvailableListener(listener) }
+    private val registration = ListenerHandle(
+        add = { window.addOnFrameMetricsAvailableListener(listener, handler) },
+        remove = { window.removeOnFrameMetricsAvailableListener(listener) },
+    )
+
+    fun start() { stats.clear(); uiStats.clear(); lastReport = System.nanoTime(); warmUpUntil = lastReport + WARMUP_NS; registration.attach() }
+    fun stop() = registration.detach()
     fun release() { stop(); thread.quitSafely() }
 
     private companion object { const val TAG = "CockpitPerf"; const val REPORT_NS = 5_000_000_000L; const val WARMUP_NS = 2_500_000_000L }
+}
+
+/**
+ * Registers a platform listener at most once and removes it only if it is registered. Window.removeOnFrameMetricsAvailableListener
+ * throws IllegalArgumentException for a listener that is not there, and onStop() followed by onDestroy() removed it twice: the app
+ * crashed every time the activity was finished (BACK on the launcher).
+ */
+class ListenerHandle(private val add: () -> Unit, private val remove: () -> Unit) {
+    private var attached = false
+    fun attach() { if (!attached) { attached = true; add() } }
+    fun detach() { if (attached) { attached = false; remove() } }
 }

@@ -39,7 +39,7 @@ class VehicleRepository(
                     state = state.copy(sample = s, link = if (simulated) Link.Simulated else Link.Connected, trip = trip.snapshot(), gear = GearEstimator.estimate(s.speedKmh, s.rpm))
                     emit(state)
                 }
-            state = state.copy(link = Link.Lost); emit(state)
+            state = state.copy(sample = null, gear = null, link = Link.Lost); emit(state)          // the trip is history and stays; the last speed and rpm are not live any more
             val waitMs = minOf(10_000L, 1_000L shl minOf(attempt, 4))
             attempt++
             delay(waitMs)

@@ -16,7 +16,13 @@ object InstalledApps {
     fun query(ctx: Context): List<AppEntry> {
         val pm = ctx.packageManager
         val intent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
-        val all = pm.queryIntentActivities(intent, 0).map { AppEntry(it.loadLabel(pm).toString(), it.activityInfo.packageName, it.activityInfo.name) }
+        // A package manager that throws (TransactionTooLargeException with thousands of apps) or an app with a hostile label must not take the launcher down.
+        val all = try {
+            pm.queryIntentActivities(intent, 0).mapNotNull { ri ->
+                try { AppEntry(AppIndex.cleanLabel(ri.loadLabel(pm).toString(), fallback = ri.activityInfo.packageName), ri.activityInfo.packageName, ri.activityInfo.name) }
+                catch (_: Exception) { null }
+            }
+        } catch (_: Exception) { emptyList() }
         return AppIndex.visible(all, own = ctx.packageName)
     }
 
@@ -30,15 +36,20 @@ object InstalledApps {
     /** App icon as a 112 px bitmap (shown at 56 dp). Call off the main thread. */
     fun icon(ctx: Context, pkg: String): ImageBitmap? {
         icons.get(pkg)?.let { return it }
-        val d = try { ctx.packageManager.getApplicationIcon(pkg) } catch (_: Exception) { return null }
-        val bmp = Bitmap.createBitmap(112, 112, Bitmap.Config.ARGB_8888)
-        d.setBounds(0, 0, 112, 112); d.draw(Canvas(bmp))
-        return bmp.asImageBitmap().also { icons.put(pkg, it) }
+        // An icon that cannot be loaded or drawn (broken vector, missing resource, out of memory) is an app without an icon, not a crash.
+        return try {
+            val d = ctx.packageManager.getApplicationIcon(pkg)
+            val bmp = Bitmap.createBitmap(112, 112, Bitmap.Config.ARGB_8888)
+            d.setBounds(0, 0, 112, 112); d.draw(Canvas(bmp))
+            bmp.asImageBitmap().also { icons.put(pkg, it) }
+        } catch (_: Exception) { null } catch (_: OutOfMemoryError) { null }
     }
 
     private const val PREFS = "cockpit"
     private const val KEY_RECENT = "recent_apps"
-    fun recents(ctx: Context): List<String> = RecentApps.parse(ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_RECENT, "") ?: "")
+    fun recents(ctx: Context): List<String> = RecentApps.parse(
+        try { ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_RECENT, "") ?: "" } catch (_: ClassCastException) { "" },       // a damaged file can hold another type under this key
+    )
     fun remember(ctx: Context, pkg: String) {
         val sp = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         sp.edit().putString(KEY_RECENT, RecentApps.serialise(RecentApps.touch(recents(ctx), pkg))).apply()

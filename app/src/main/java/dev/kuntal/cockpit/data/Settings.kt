@@ -60,6 +60,9 @@ data class Settings(
     companion object {
         const val DEFAULT_HOST = "192.168.0.10"      // what most Wi-Fi ELM327 adapters answer on
         const val DEFAULT_PORT = 35000
+        const val MAX_HOST = 253              // longest valid DNS name; a pasted megabyte used to be stored, drawn on every redraw and resolved on every keystroke
+        const val MAX_BT_NAME = 64
+        const val MAX_BT_ADDRESS = 17         // AA:BB:CC:DD:EE:FF
 
         // Settings come from SharedPreferences and (debug builds) launch extras, names from other devices: nothing in them is trusted.
         private val MAC = Regex("^([0-9A-F]{2}:){5}[0-9A-F]{2}$")

@@ -27,6 +27,7 @@ class TripTracker {
 
     private companion object {
         const val MAX_KMH_PER_SEC = 60.0      // about 1.7 g: harder than any braking or launch, so a bigger step is a bad reading
+        const val MAX_PLAUSIBLE_KMH = 400.0   // no road car; the OBD parser already stops at 250, this keeps the counters safe whatever feeds them
         const val MAX_GAP_MS = 5_000L         // longer than this the adapter was gone (or the app was paused)
         const val MIN_ZERO_TO_100_S = 3.0     // no road car does it faster
     }
@@ -34,13 +35,14 @@ class TripTracker {
     fun accept(s: VehicleSample) {
         s.boostKpa?.let { b -> if (peakBoost.let { p -> p == null || b > p }) peakBoost = b }
         val v = s.speedKmh ?: return
+        if (!v.isFinite() || v < 0.0 || v > MAX_PLAUSIBLE_KMH) return             // a damaged reading is not a speed (the first sample after a gap has no rate check to catch it)
         val t = s.tsMs
         if (firstT == null) firstT = t
         var prev = lastT
         if (prev != null) {
             val dt = t - prev
-            if (dt <= 0) return                                                   // out-of-order or duplicate sample
-            if (dt > MAX_GAP_MS) { prev = null; runStartMs = null }                // data was gone: nothing to integrate, a run in flight is void
+            if (dt == 0L) return                                                  // duplicate sample
+            if (dt < 0 || dt > MAX_GAP_MS) { prev = null; runStartMs = null }     // data was gone or the clock stepped back: nothing to integrate, a run in flight is void
             else if (Math.abs(v - lastKmh) / (dt / 1000.0) > MAX_KMH_PER_SEC) return   // no car does that: a glitched reading, drop it
         }
         if (prev != null) {

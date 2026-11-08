@@ -70,7 +70,7 @@ fun AppsScreen(apps: List<AppEntry>, recents: List<String>, onLaunch: (AppEntry)
             Box(Modifier.weightFill()) {
                 if (query.isEmpty()) Txt("Search apps", 22, 28, p.dim)
                 BasicTextField(
-                    value = query, onValueChange = { query = it }, singleLine = true,
+                    value = query, onValueChange = { query = AppIndex.clampQuery(it) }, singleLine = true,
                     textStyle = TextStyle(color = p.text, fontSize = 22.sp, fontFamily = CockpitFonts.Barlow, fontWeight = FontWeight.Medium),
                     cursorBrush = SolidColor(p.cyan), modifier = Modifier.fillMaxWidth(),
                 )

@@ -1,0 +1,15 @@
+diff --git a/app/src/main/java/dev/kuntal/cockpit/MainActivity.kt b/app/src/main/java/dev/kuntal/cockpit/MainActivity.kt
+index 57dcbba..f276764 100644
+--- a/app/src/main/java/dev/kuntal/cockpit/MainActivity.kt
++++ b/app/src/main/java/dev/kuntal/cockpit/MainActivity.kt
+@@ -18,6 +18,10 @@ class MainActivity : ComponentActivity() {
+     private val homePresses = mutableIntStateOf(0)         // bumped when HOME is pressed while we are already running (singleTask delivers it here)
+ 
+     override fun onCreate(savedInstanceState: Bundle?) {
++        if (applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE != 0) {       // chaos/strictmode.patch: local, debug builds only
++            android.os.StrictMode.setThreadPolicy(android.os.StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build())
++            android.os.StrictMode.setVmPolicy(android.os.StrictMode.VmPolicy.Builder().detectAll().detectUntaggedSockets().penaltyLog().build())
++        }
+         super.onCreate(savedInstanceState)
+         WindowCompat.setDecorFitsSystemWindows(window, false)
+         DebugHooks.snapshot = intent.getBooleanExtra("snapshot", false)
