@@ -28,7 +28,7 @@ if not os.path.exists(KS):
 def esc(s): return s.replace("&", "&amp;").replace("<", "&lt;").replace('"', "&quot;")
 
 
-def build(pkg, label=None, launcher=True, activity="Main", exported=True, icon=None, res=None, min_sdk=28, extra_app=""):
+def build(pkg, label=None, launcher=True, activity="Main", exported=True, icon=None, res=None, min_sdk=28, extra_app=' android:hasCode="false"'):      # no dex: without hasCode=false the installer says "code is missing"
     d = os.path.join(WORK, pkg); os.makedirs(os.path.join(d, "res"), exist_ok=True)
     lab = "" if label is None else f' android:label="{esc(label)}"'
     ic = f' android:icon="@drawable/{icon}"' if icon else ""

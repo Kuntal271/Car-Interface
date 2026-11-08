@@ -28,7 +28,7 @@ def fatal(log): return fatal_in_app(log) or "OutOfMemoryError" in log and PKG in
 
 def search_count(q):
     """How many apps the Apps screen says match q ('N of M'), via the search box (the grid is lazy: only visible tiles are in a UI dump)."""
-    if any(re.fullmatch(r"\d+ of \d+", s_) for s_, _ in apps_texts()): tap_design(24 + 520 - 28, 108)      # clear button
+    tap_design(24 + 520 - 28, 108); time.sleep(.3)                                    # the clear button (only there while the box holds text)
     tap_design(24 + 300, 108); time.sleep(.3)
     sh("input text '%s'" % q); time.sleep(.8)
     for s_, _ in apps_texts():
@@ -57,6 +57,8 @@ logcat_clear()
 
 # 1. hostile apps present at start
 for p in base: install(p)
+n_inst = len(sh("pm list packages chaos.").split())
+Result.add("apps/hostile_packages_installed", n_inst >= len(base) - 1, f"{n_inst} of {len(base)} chaos packages installed")
 cold("apps", reset=True); time.sleep(4)
 t = apps_texts()
 labels = [s for s, _ in t]
