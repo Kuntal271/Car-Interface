@@ -1,13 +1,18 @@
 package dev.kuntal.cockpit.vehicle
 
 import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
+/** Shortest time between two polling cycles (25 Hz): above the UI's 20 Hz, so it never makes the display older. */
+const val MIN_CYCLE_MS = 40L
+
 class ElmClient(
     private val transport: Transport,
     private val now: () -> Long = System::currentTimeMillis,
+    private val minCycleMs: Long = MIN_CYCLE_MS,
 ) : VehicleSource {
     var supported: Set<Pid> = emptySet()
         private set
@@ -41,11 +46,16 @@ class ElmClient(
             var cycle = 0
             while (true) {
                 currentCoroutineContext().ensureActive()
+                val started = System.nanoTime()
                 for (pid in schedule.pidsForCycle(cycle)) {
                     ElmParser.parse(pid, ask(pid.request))?.let { s = s.with(pid, it) }
                 }
                 emit(s.copy(tsMs = now()))
                 cycle++
+                // A slow adapter paces itself (30-100 ms per command); a fast or simulated one would otherwise be polled in a tight loop,
+                // burning CPU and bus time for samples the screen (20 Hz at most) never shows.
+                val spent = (System.nanoTime() - started) / 1_000_000
+                if (spent < minCycleMs) delay(minCycleMs - spent)
             }
         } finally {
             transport.close()
