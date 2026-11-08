@@ -47,7 +47,7 @@ subprojects {
             md.required.set(false)
         }
     }
-    dependencies.add("detektPlugins", "io.nlopez.compose.rules:detekt:0.4.22")     // Compose-specific rules (modifiers, stability, remember)
+    dependencies.add("detektPlugins", "io.nlopez.compose.rules:detekt:0.6.8")     // Compose-specific rules (modifiers, stability, remember)
 
     // ---- Android application module: lint + unit-test coverage + Compose compiler reports ----
     plugins.withId("com.android.application") {
