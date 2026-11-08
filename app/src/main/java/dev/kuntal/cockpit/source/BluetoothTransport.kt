@@ -4,8 +4,11 @@ import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothSocket
 import dev.kuntal.cockpit.vehicle.Transport
+import dev.kuntal.cockpit.vehicle.cancellableBlocking
 import dev.kuntal.cockpit.vehicle.exchangeOverStreams
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -24,29 +27,33 @@ class BluetoothTransport(private val address: String, private val timeoutMs: Lon
     private var input: InputStream? = null
     private var output: OutputStream? = null
 
-    override suspend fun open() = withContext(Dispatchers.IO) {
+    override suspend fun open() {
         val adapter = BluetoothAdapter.getDefaultAdapter() ?: throw IOException("This device has no Bluetooth")
         if (!adapter.isEnabled) throw IOException("Bluetooth is off")
         val device = try { adapter.getRemoteDevice(address) } catch (e: IllegalArgumentException) { throw IOException("Bad adapter address", e) }
-        adapter.cancelDiscovery()                                  // discovery makes connect() slow and flaky
         val s = device.createRfcommSocketToServiceRecord(SPP)
-        try { s.connect() } catch (e: IOException) { runCatching { s.close() }; throw e }
-        socket = s; input = s.inputStream; output = s.outputStream
-        Unit
+        socket = s                                                 // before connecting, so close() (or a cancel) can abort a connect that is pending
+        try {
+            cancellableBlocking(s) { adapter.cancelDiscovery(); s.connect() }          // discovery makes connect() slow and flaky
+        } catch (e: IOException) { runCatching { s.close() }; throw e }
+        input = s.inputStream; output = s.outputStream
     }
 
-    override suspend fun close() = withContext(Dispatchers.IO) {
+    override suspend fun close() = withContext(Dispatchers.IO + NonCancellable) {
         runCatching { socket?.close() }
         socket = null; input = null; output = null
         Unit
     }
 
-    override suspend fun exchange(cmd: String): String = withContext(Dispatchers.IO) {
+    override suspend fun exchange(cmd: String): String {
         val s = socket; val i = input; val o = output
         if (s == null || i == null || o == null) throw IOException("not open")
-        // A blocking read on a Bluetooth socket has no timeout; closing the socket from a watchdog is what unblocks it.
-        val watchdog = launch { delay(timeoutMs); runCatching { s.close() } }
-        try { exchangeOverStreams(i, o, cmd) } finally { watchdog.cancel() }
+        // A blocking read on a Bluetooth socket has no timeout: the socket is closed from a watchdog when the time is up, and by
+        // cancellableBlocking when the caller is cancelled (switching source used to wait for a hung adapter for ever).
+        return coroutineScope {
+            val watchdog = launch(Dispatchers.IO) { delay(timeoutMs); runCatching { s.close() } }
+            try { cancellableBlocking(s) { exchangeOverStreams(i, o, cmd) } } finally { watchdog.cancel() }
+        }
     }
 
     private companion object { val SPP: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB") }
