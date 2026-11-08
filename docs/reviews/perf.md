@@ -48,46 +48,46 @@ RenderThread cpu; on a real unit those wake-ups hit a down-clocked CPU and count
 Fix: state truncated to the minute, timer aimed at the minute boundary, `ACTION_TIME_CHANGED/TIMEZONE_CHANGED` re-aim it, date formatter hoisted.
 After: frames/s 0.0-0.1, RenderThread 0.6-1.5 ms/s, process cpu 42 -> 20 / 15 / 10 ms/s (Home/Drive/Apps).
 
-### PERF-02 MEDIUM, FIXED (6b5304f): `Flow.sample` runs a ticker for as long as it is collected
+### PERF-02 MEDIUM, FIXED (f1555ff): `Flow.sample` runs a ticker for as long as it is collected
 Evidence: idle main-thread wake-ups 17.5/s, all threads 19.6/s with no data source (voluntary context switches from `/proc/<pid>/task/*/status`). Root cause: kotlinx
 `sample()` starts a `fixedPeriodTicker` that fires every 50 ms regardless of upstream activity; the view-model collects it for the life of the process.
 Fix: `throttleLatest` (conflate + emit + delay): a timer exists only for the period after an emission. Four virtual-time tests.
 After: main 2.9/s (x0.17), all threads 5.2/s (x0.26). With flowing data nothing changes (Z vs R in `frozen.jsonl`).
 
-### PERF-03 MEDIUM, FIXED (2900975): steady data repainted every bar at the sample rate
+### PERF-03 MEDIUM, FIXED (de39916): steady data repainted every bar at the sample rate
 Evidence: new frozen-data scenario (same values, fresh timestamp each 50 ms: parked car or steady cruise): 16.9 fps, 95 ms/s process cpu, 183 wake-ups/s on Home and Drive.
 Root cause: `SegBar`'s draw lambda read the vehicle state directly, so every sample invalidated every bar (and, on Home, the live layer) even when no segment changed.
 Fix: the four reader lambdas fold into one packed Int behind `derivedStateOf`. After: 0.2-0.4 fps (the trip distance really changes), 18 ms/s, 46 wake-ups/s
 (paired ratios fps x0.01-0.02, cpu x0.19, wake-ups x0.25). With moving data: no measurable cost.
 
-### PERF-04 MEDIUM, FIXED (e8b1804): Light mode did not lighten Drive
+### PERF-04 MEDIUM, FIXED (1d9f42e): Light mode did not lighten Drive
 Evidence (old build, pinned Full vs Light, 3 runs): Home fps 17.5 -> 10.1, cpu -39 %; **Drive fps 29.9 -> 34.9, cpu 387 -> 501 ms/s** (no saving). Root cause: Light only slowed the data;
 `smoothed()` steps on every display frame while a value moves, so Drive stayed at one frame per vsync. Fix: in Light the glide applies on every second frame (the skipped frame writes nothing, so
 it draws nothing; the step uses real elapsed time, motion speed unchanged).
 After (2 interleaved runs, paired Light/Full): Drive frames x0.64 (27.8 -> 17.7), cpu x0.64 [0.57..0.72] (180 -> 115 ms/s), wake-ups x0.77, allocation x0.63;
 Home frames x0.55. 10 Hz data with a 30 fps glide is a visibly coarser needle but numerals only ever changed at 20 Hz; not judged on a real panel.
 
-### PERF-05 MEDIUM, FIXED (305bf3b): overdraw 4.6-4.8 draws per pixel
+### PERF-05 MEDIUM, FIXED (19917c9): overdraw 4.6-4.8 draws per pixel
 Evidence: `tools/perf/overdraw.py` (platform overlay + per-pixel classification, snapshot mode). Original: Home 4.75 (80.4 % of pixels at 5+ draws), Drive 4.60 (70.2 %), Apps 4.56 (65.6 %),
 Settings 4.84 (86.7 %); no pixel was drawn fewer than 3 times. Root cause: window background + `DesignCanvas .background` + frame gradient + three radial glows whose circles are 700-1000 px in radius
 though their gradients are already transparent at 70-72 %. Fix: letterbox bars only (nothing on 16:10), window background dropped two frames after start, glows re-expressed over their visible radius.
 After: Home 3.25 (18.1 % at 5+), Drive 2.60 (1.2 %), Apps 2.75 (7.2 %), Settings 3.37 (15.1 %). Pixel parity: home/settings/apps 0 pixels differ, drive 5 (<= 15/255); letterboxed 1024x600: 0.
 What is left is the design itself (cards with fill + sheen + hairline + highlight, translucent dock/status bar). GPU time itself could not be measured (see section 2).
 
-### PERF-06 LOW (modest gain), FIXED (6efaa02): Drive re-recorded the whole screen on every gauge frame
+### PERF-06 LOW (modest gain), FIXED (7876fd0): Drive re-recorded the whole screen on every gauge frame
 Root cause: Drive had no render nodes (Home has); the tach arc and the rpm/boost glides invalidated the root node ~60 times a second. Fix: one static node, one for tach arc + shift bar, one for the boost bar,
 one for the sample-rate values (same order, same pixels; `Tach` split into `TachFace`/`TachArc`).
 Evidence: JIT-only run (`--compile none`, 4 pairs, load ~5): app-cpu p50 0.75 -> 0.60 ms (paired x0.68 [0.57..0.87]), p99 unchanged (3.1 ms), process cpu x0.94 [0.80..1.44] (no change). AOT, low load:
 0.8 -> 0.7 ms, process cpu unchanged. So: a small saving in the UI thread's record phase on a fast host; it grows with a slower CPU. The "6x cheaper" first measurement was load noise (section 2).
 `StaticLayer` additionally has `--ez flatten true` (static node rendered into a texture): no effect measurable on the emulator, 0.3 % of Drive's pixels differ by <= 15/255; OFF by default (PERF-12).
 
-### PERF-07 MEDIUM, FIXED (b607559): Apps search sorted and normalised the whole list per keystroke
+### PERF-07 MEDIUM, FIXED (2c794c4): Apps search sorted and normalised the whole list per keystroke
 Evidence (JVM, 300 synthetic apps, `AppIndexScaleTest` prints it): old `AppIndex.filter` median 6.48 ms, max 124.5 ms per keystroke; prepared search 0.054 ms (max 1.8 ms); one-off build 5.6 ms. On a weak ARM core
 multiply by 5-10. Root cause: a Collator sort and a freshly compiled `Regex` per label, twice per label, on the main thread, per keystroke. Fix: `AppIndex.Search` (sort + keys once per list), parity with the old
 implementation asserted on 320 queries. Also: synchronous icon-cache lookup (no blank first frame when a tile scrolls back), icon decoding on 2 threads (`Dispatchers.IO` could start 64 on a fling), last app list shown
 at once on the next visit. Thread count on the Apps screen with the emulator's 17 apps: 43-45 before, 26-27 after (3 runs each); idle Apps cpu 14 -> 3 ms/s together with PERF-01. The effect on a 300-app list could not be measured here (the emulator has 17 launchable apps); the cap is what bounds it.
 
-### PERF-08 MEDIUM, FIXED (a14c0c6): the governor judged overlapping windows twice
+### PERF-08 MEDIUM, FIXED (5364e4b): the governor judged overlapping windows twice
 `FrameMeter` fed `PerfGovernor` the 600-frame rolling ring every 5 s, so "two consecutive windows" shared half their frames: one burst of 18 slow frames (a screen change, a GC) dropped the app to Light; on a
 static screen the stale ring was re-judged for ever. `FramePipeline` keeps the ring for display and a per-report window for the governor. `FramePipelineTest`: the old behaviour reaches Light (asserted), the new one
 stays Full; sustained 10 % slow frames still reach Light and recover after three clean windows. The hysteresis constants (2 bad windows in, 3 clean out) are sound; Light cannot flap because recovery needs <0.5 % over 12 ms.
@@ -98,12 +98,12 @@ The original build gives the same numbers (364 -> 281), so this is the install s
 wildcard profile for `dev.kuntal.cockpit.**` was processed by AGP but made no measurable difference (speed-profile 234 [227..278] without vs 221 [202..255] with) and is not shipped (the experiment file is in `artifacts/`).
 Recommendation implemented: INSTALL.md step `adb shell cmd package compile -m speed -f dev.kuntal.cockpit`. The system only compiles during idle maintenance while charging, which a head unit may rarely reach.
 
-### PERF-10 LOW, FIXED (a246d79): `ElmClient` polled an instant adapter in a tight loop
+### PERF-10 LOW, FIXED (71fdf41): `ElmClient` polled an instant adapter in a tight loop
 Evidence: `bench.py --scenario obd` against the fake ELM327 (answers at once): process cpu 701 ms/s, 3433 wake-ups/s (main 814), 3.5 MB/s allocation, 0.8 GC/s, DefaultDispatcher threads 292 ms/s.
 Root cause: no pacing between cycles; real adapters pace themselves (30-100 ms per command) but a fast Wi-Fi adapter would not. Fix: at least 40 ms per cycle (25 Hz, above the UI's 20 Hz). The test fails
 without the fix (it never returns) and passes with it. The command set is unchanged (`CommandGuard` untouched). After (3 interleaved pairs): process cpu x0.38 (663 -> 251 ms/s), wake-ups x0.15 (4471 -> 660/s), GC x0.06 (1.07 -> 0.07/s), allocation x0.23, DefaultDispatcher threads 323 -> 39 ms/s; frames 55.6 -> 43.2/s (the gauges glide on the 25 Hz data instead of a 1000 Hz one). `ELM_TCP=127.0.0.1:35010 :vehicle:test` (TcpIntegrationTest) passes.
 
-### PERF-11 LOW, FIXED, unmeasured (dbba64a): icon and Ford-mark paths were re-parsed on every composition
+### PERF-11 LOW, FIXED, unmeasured (bec9a7f): icon and Ford-mark paths were re-parsed on every composition
 25-40 icons and a 7 kB script path per visit to a screen. Cached per process. Cold start is unchanged within noise (363 vs 364 ms), so no benefit is claimed; it removes work that scales with CPU slowness.
 
 ### PERF-12 INFO, opt-in: `--ez flatten true` (static layers as textures)
