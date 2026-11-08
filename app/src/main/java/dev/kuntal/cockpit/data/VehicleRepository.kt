@@ -35,6 +35,7 @@ class VehicleRepository(
                 .catch { }                               // upstream failures only: a failing collector is never swallowed
                 .collect { s ->
                     attempt = 0
+                    if (TripResets.a.getAndSet(false)) trip.reset()
                     trip.accept(s)
                     state = state.copy(sample = s, link = if (simulated) Link.Simulated else Link.Connected, trip = trip.snapshot(), gear = GearEstimator.estimate(s.speedKmh, s.rpm))
                     emit(state)

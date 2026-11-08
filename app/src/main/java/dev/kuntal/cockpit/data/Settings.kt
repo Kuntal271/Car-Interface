@@ -26,6 +26,9 @@ data class Settings(
     val shiftRpm: Int = 5200,
     val speedScaleKmh: Int = 200,
     val perfOverlay: Boolean = false,
+    val demoData: Boolean = true,              // Canbox and media come from labelled mocks until the real sources exist
+    val bootSplash: Boolean = true,            // the short splash on a cold start (any touch skips it)
+    val standbyMin: Int = 0,                   // idle minutes before the clock screen; 0 = never
 ) {
     /** Changes only when the connection itself would have to change: theme and units never reconnect. */
     val sourceKey: String
@@ -42,6 +45,7 @@ data class Settings(
         return copy(
             tachMaxRpm = tach, redlineRpm = red, shiftRpm = shift,
             speedScaleKmh = speedScaleKmh.coerceIn(120, 300),
+            standbyMin = if (standbyMin in Standby.CHOICES) standbyMin else 0,
             tcpHost = cleanHost(tcpHost),
             tcpPort = if (tcpPort in 1..65535) tcpPort else DEFAULT_PORT,
             btAddress = cleanMac(btAddress),
@@ -55,6 +59,7 @@ data class Settings(
         "source" to source.name, "tcpHost" to tcpHost, "tcpPort" to tcpPort.toString(), "bt" to btAddress, "btName" to btName,
         "redline" to redlineRpm.toString(), "tach" to tachMaxRpm.toString(), "shift" to shiftRpm.toString(), "speedScale" to speedScaleKmh.toString(),
         "perfOverlay" to perfOverlay.toString(),
+        "demoData" to demoData.toString(), "bootSplash" to bootSplash.toString(), "standbyMin" to standbyMin.toString(),
     )
 
     companion object {
@@ -93,6 +98,9 @@ data class Settings(
                 redlineRpm = m["redline"]?.toIntOrNull() ?: d.redlineRpm, tachMaxRpm = m["tach"]?.toIntOrNull() ?: d.tachMaxRpm,
                 shiftRpm = m["shift"]?.toIntOrNull() ?: d.shiftRpm, speedScaleKmh = m["speedScale"]?.toIntOrNull() ?: d.speedScaleKmh,
                 perfOverlay = m["perfOverlay"]?.toBooleanStrictOrNull() ?: d.perfOverlay,
+                demoData = m["demoData"]?.toBooleanStrictOrNull() ?: d.demoData,
+                bootSplash = m["bootSplash"]?.toBooleanStrictOrNull() ?: d.bootSplash,
+                standbyMin = m["standbyMin"]?.toIntOrNull() ?: d.standbyMin,
             ).sanitized()
         }
     }

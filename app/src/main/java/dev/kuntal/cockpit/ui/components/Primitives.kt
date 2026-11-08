@@ -105,11 +105,11 @@ fun LiveTxt(
 
 /** Glass card: Ford-surface fill, soft top sheen, 1 px hairline and a 1 px top highlight. Radius 24. */
 @Composable
-fun Modifier.card(fillAlpha: Float = 1f, radius: Dp = 24.dp, flat: Boolean = false): Modifier {
+fun Modifier.card(fillAlpha: Float = 1f, radius: Dp = 24.dp, flat: Boolean = false, s2: Boolean = false): Modifier {
     val p = LocalPalette.current
     return drawBehind {
         val r = CornerRadius(radius.toPx())
-        drawRoundRect(p.s1.copy(alpha = fillAlpha), cornerRadius = r)
+        drawRoundRect((if (s2) p.s2 else p.s1).copy(alpha = fillAlpha), cornerRadius = r)
         if (!flat) drawRoundRect(
             Brush.verticalGradient(0f to Color.White.copy(alpha = .06f), .45f to Color.White.copy(alpha = .016f)),
             cornerRadius = r,

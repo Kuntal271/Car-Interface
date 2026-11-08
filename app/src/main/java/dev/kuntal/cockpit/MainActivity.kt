@@ -34,12 +34,15 @@ class MainActivity : ComponentActivity() {
         DebugHooks.flatten = dev.flatten
         DebugHooks.pinMode = dev.perfMode?.let { n -> PerfMode.entries.firstOrNull { it.name.equals(n, ignoreCase = true) } }
         DebugHooks.pinMode?.let { Perf.publish(Perf.summary.value, it) }
+        DebugHooks.screen = intent.getStringExtra("screen") ?: ""          // navigation hint only (validated against Dest when used)
         meter = FrameMeter(window, log = DebugHooks.perf)
         applyDevSettings(dev)
         // `adb shell am start -n dev.kuntal.cockpit/.MainActivity --es screen drive` opens a given screen (used by tools/shot.sh and tests)
         val start = intent.getStringExtra("screen")?.let { n -> Dest.entries.firstOrNull { it.name.equals(n, ignoreCase = true) } } ?: Dest.Home
         val page = intent.getStringExtra("page")?.let { n -> SettingsPage.entries.firstOrNull { it.name.equals(n, ignoreCase = true) } } ?: SettingsPage.Display
-        setContent { CockpitApp(startOn = start, startPage = page, homePresses = homePresses.intValue) }
+        // the boot splash plays on a plain launch; an explicit --es screen (tests, tools) or --ez noboot true skips it
+        val boot = !intent.hasExtra("screen") && !intent.getBooleanExtra("noboot", false)
+        setContent { CockpitApp(startOn = start, startPage = page, boot = boot, homePresses = homePresses.intValue) }
     }
 
     /**

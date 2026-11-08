@@ -51,6 +51,7 @@ data class DevLaunch(
  */
 object DebugHooks {
     @Volatile var snapshot = false
+    @Volatile var screen = ""           // the --es screen value, so fixtures can match the screen under test
     @Volatile var perf = false          // --ez perf true: log frame statistics to logcat (tag CockpitPerf) and show the overlay
     @Volatile var freeze = false        // --ez freeze true: the simulator repeats the design values with a fresh timestamp (parked car, adapter connected, nothing changes)
     @Volatile var flatten = false       // --ez flatten true: static layers become hardware textures (A/B switch for the GPU-fill experiment)
@@ -68,7 +69,7 @@ object DebugHooks {
             throttlePct = 78.0, loadPct = 88.0, fuelPct = 61.7, batteryV = 14.2,
         ),
         link = Link.Connected,
-        trip = TripState(distanceKm = 42.8, avgKmh = 38.0, topKmh = 131.0, zeroTo100Best = 12.3, peakBoostKpa = 104.0),
+        trip = TripState(distanceKm = 42.8, avgKmh = 38.0, topKmh = 131.0, zeroTo100Best = 12.3, peakBoostKpa = 104.0, elapsedSec = 4_080),
         gear = 3,
     )
 }

@@ -105,10 +105,10 @@ fun HomeScreen(s: State<VehicleUiState>, content: HomeContent, onAction: (HomeAc
             ShortcutTile(485, Ic.Snow, "Climate", content.climate) { onAction(HomeAction.Go(Dest.Car)) }
 
             Txt("Recent", 19, 20, p.dim, Modifier.at(24, 635))
-            Recent(24, Ic.Route, "Trips") { onAction(HomeAction.Go(Dest.Drive)) }
-            Recent(162, Ic.Park, "Parking") { onAction(HomeAction.Go(Dest.Car)) }
-            Recent(301, Ic.Pulse, "Diagnose") { onAction(HomeAction.Go(Dest.Car)) }
-            Recent(439, Ic.Eq, "Sound") { onAction(HomeAction.Go(Dest.Settings)) }
+            Recent(24, Ic.Route, "Trips") { onAction(HomeAction.Go(Dest.Trips)) }
+            Recent(162, Ic.Park, "Parking") { onAction(HomeAction.Go(Dest.Parking)) }
+            Recent(301, Ic.Pulse, "Diagnose") { onAction(HomeAction.Go(Dest.Diagnostics)) }
+            Recent(439, Ic.Eq, "Sound") { onAction(HomeAction.Go(Dest.Sound)) }
             Recent(578, Ic.Camera, "Dash cam") { onAction(HomeAction.Launch("camera")) }
 
             Box(Modifier.at(728, 80).size(416.dp, 250.dp).card().tap { onAction(HomeAction.Go(Dest.Drive)) })

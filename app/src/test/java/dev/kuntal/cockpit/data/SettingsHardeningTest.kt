@@ -41,7 +41,7 @@ class SettingsHardeningTest {
     }
 
     @Test fun garbageInTheStoredMapNeverThrows() {
-        val keys = listOf("theme", "clock", "motion", "speed", "pressure", "temp", "source", "tcpHost", "tcpPort", "bt", "btName", "redline", "tach", "shift", "speedScale", "perfOverlay")
+        val keys = Settings().toMap().keys.toList()           // every stored setting, including ones added later
         val junk = listOf("", " ", "\u0000", "-1", "2147483648", "-2147483649", "NaN", "9".repeat(1000), "\uD800", "null", "{}", "😀", "true\r\nfalse")
         for (k in keys) for (j in junk) Settings.fromMap(mapOf(k to j)).also { assertEquals(it, it.sanitized()) }
         val all = keys.associateWith { "9".repeat(50) }
