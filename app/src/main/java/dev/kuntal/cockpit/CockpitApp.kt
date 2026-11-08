@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -30,6 +31,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.kuntal.cockpit.data.AppEntry
 import dev.kuntal.cockpit.data.HomeContent
+import dev.kuntal.cockpit.data.VehicleUiState
+import dev.kuntal.cockpit.data.TempUnit
+import dev.kuntal.cockpit.data.MediaState
+import dev.kuntal.cockpit.data.MediaSource
+import dev.kuntal.cockpit.data.CanboxState
 import dev.kuntal.cockpit.perf.Perf
 import dev.kuntal.cockpit.ui.components.Txt
 import dev.kuntal.cockpit.ui.components.at
@@ -81,6 +87,7 @@ import dev.kuntal.cockpit.ui.theme.LocalPalette
 import dev.kuntal.cockpit.ui.theme.LocalSettings
 import dev.kuntal.cockpit.ui.theme.paletteFor
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
@@ -152,7 +159,7 @@ fun CockpitApp(startOn: Dest = Dest.Home, startPage: SettingsPage = SettingsPage
                 awaitPointerEventScope { while (true) { awaitPointerEvent(PointerEventPass.Initial); touch[0] = SystemClock.elapsedRealtime() } }
             }) {
                 when (screen) {
-                    Dest.Home -> HomeScreen(state, content) { a ->
+                    Dest.Home -> HomeRoute(state, content, data.media, canbox, settings.tempUnit) { a ->
                         when (a) {
                             is HomeAction.Go -> go(a.dest)
                             is HomeAction.Launch -> launch(a.what, a.what)
@@ -242,4 +249,18 @@ private fun PerfOverlay() {
             18, 22, if (idle) p.dim else if (ok) p.cyan else p.warn, weight = FontWeight.SemiBold,
         )
     }
+}
+
+/**
+ * Home with its tiles fed by the media and Canbox sources. A route of its own, so that a media position tick (once a second while
+ * something plays) recomposes Home only, never the whole app. Snapshot mode keeps the design's fixed values.
+ */
+@Composable
+private fun HomeRoute(
+    state: State<VehicleUiState>, base: HomeContent, media: MediaSource?, canbox: State<CanboxState?>, tempUnit: TempUnit,
+    onAction: (HomeAction) -> Unit,
+) {
+    val playing by remember(media) { media?.state ?: MutableStateFlow<MediaState?>(null) }.collectAsStateWithLifecycle()
+    val content = if (DebugHooks.snapshot) base else HomeContent.live(base, playing?.nowPlaying, canbox.value, tempUnit)
+    HomeScreen(state, content, onAction)
 }

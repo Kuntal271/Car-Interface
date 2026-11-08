@@ -94,7 +94,7 @@ fun SoundScreen(audio: AudioSettings?, volume: SystemVolume, onOpenEq: () -> Uni
             Txt("Speed-sensitive volume", 22, 26, p.text, Modifier.at(762, 677), weight = FontWeight.SemiBold)
             Txt("Raises level with road noise", 18, 22, p.dim, Modifier.at(762, 703), weight = FontWeight.Normal)
         }
-        DemoMark(745 - 60, 86)
+        DemoMark(150, 88)
         TabPills(296, 78, AudioPresets.NAMES, preset, { it }) { audio.applyPreset(it) }
 
         // preset badge

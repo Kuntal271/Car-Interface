@@ -115,7 +115,7 @@ fun ParkingScreen(radar: State<Radar?>, reverse: State<Boolean>, onExit: () -> U
             Canvas(Modifier.size(10.dp)) { drawCircle(p.cyan) }
             Txt(if (DebugHooks.snapshot) "Rear camera \u00B7 live" else "Camera view \u00B7 demo", 18, 22, p.cyan, weight = FontWeight.SemiBold)
         }
-        DemoMark(1000 - 130 - 60, 98 - 12)
+        DemoMark(280, 98)
 
         // obstacle marker
         val obj by remember { derivedStateOf { radar.value?.let { r -> r.rearIndex?.let { i -> i to r.nearestRearM } } } }

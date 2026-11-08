@@ -31,6 +31,21 @@ data class HomeContent(
             climate = Shortcut(Fmt.DASH, null, "Climate", "Waiting for Canbox"),
         )
 
+        /**
+         * Home as the sources say it: the media card from whatever plays ([media]), the Climate tile from the Canbox ([canbox]).
+         * Anything without a source keeps [base]'s honest placeholder, so a missing Canbox still reads "Waiting for Canbox".
+         */
+        fun live(base: HomeContent, media: NowPlaying?, canbox: CanboxState?, tempUnit: TempUnit = TempUnit.C): HomeContent {
+            val c = canbox?.climate ?: return base.copy(media = media ?: base.media)
+            val climate = Shortcut(
+                value = c.setC?.let { Fmt.dec(Units.temp(it, tempUnit), 1) } ?: Fmt.DASH,
+                unit = c.setC?.let { Units.label(tempUnit) },
+                title = if (c.acOn) "A/C on" else "A/C off",
+                subtitle = "Fan ${c.fan}" + if (c.recirc) " \u00B7 recirculate" else "",
+            )
+            return base.copy(media = media ?: base.media, climate = climate)
+        }
+
         /** The design mock-up's values, used only by snapshot mode for pixel comparison. */
         val DEMO = HomeContent(
             media = NowPlaying("Midnight City", "M83", "Hurry Up, We're Dreaming", "Bluetooth audio", 92, 243, playing = true),

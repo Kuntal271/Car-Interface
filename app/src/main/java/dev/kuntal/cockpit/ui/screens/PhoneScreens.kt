@@ -64,7 +64,7 @@ fun PhoneDemoScreen(call: DemoCall?, onCall: (DemoContact) -> Unit, onEnd: () ->
             Icon(Ic.Signal, 24, p.dim, Modifier.at(448, 98)); Icon(Ic.Batt, 24, p.dim, Modifier.at(404, 124))
             Txt("82%", 20, 24, p.text, Modifier.at(435, 126))
         }
-        DemoMark(334, 100)
+        DemoMark(200, 90)
         Txt(dialed, 54, 49, p.text, Modifier.at(46, 197), cond, FontWeight.SemiBold, letterSpacing = 1.sp, tnum = true)
         Box(Modifier.at(414, 196).size(62.dp, 56.dp).background(p.sky.copy(alpha = .12f), RoundedCornerShape(16.dp)).tap { dialed = PhoneDemo.key(dialed, '<') }, contentAlignment = Alignment.Center) { Icon(Ic.Close, 26, p.text) }
         val keys = listOf("1" to "", "2" to "ABC", "3" to "DEF", "4" to "GHI", "5" to "JKL", "6" to "MNO", "7" to "PQRS", "8" to "TUV", "9" to "WXYZ", "*" to "", "0" to "+", "#" to "")
@@ -121,11 +121,11 @@ private fun PhoneCallScreen(call: DemoCall, onEnd: () -> Unit) {
             Txt(call.contact.initials.ifEmpty { "?" }, 128, 128, p.text, Modifier.at(48, 262).size(250.dp, 250.dp), cond, FontWeight.ExtraBold, TextAlign.Center)
             Txt("Mobile", 19, 21, p.dim, Modifier.at(322, 275))
             Txt("Audio \u00B7 car speakers", 20, 29, p.dim, Modifier.at(48, 727))
-            Txt("Mic level", 20, 24, p.dim, Modifier.at(433, 731)); Txt("\u221218 dB", 24, 29, p.text, Modifier.at(504, 727), cond, FontWeight.SemiBold)
+            Txt("Mic level", 20, 24, p.dim, Modifier.at(433, 731)); Txt("\u221218 dB", 24, 29, p.text, Modifier.at(514, 727), cond, FontWeight.SemiBold)
             Box(Modifier.at(608, 572).size(536.dp, 96.dp).card())
             Icon(Ic.Vol, 30, p.cyan, Modifier.at(632, 605))
         }
-        DemoMark(380, 98)
+        DemoMark(48, 150)
         val parts = name.split(' ').let { if (it.size == 2) it else listOf(name) }
         Txt(parts.getOrElse(0) { "" }, 76, 76, p.text, Modifier.at(322, 304), cond, FontWeight.SemiBold)
         if (parts.size > 1) Txt(parts[1], 76, 76, p.text, Modifier.at(322, 380), cond, FontWeight.SemiBold)
