@@ -176,8 +176,14 @@ def sc_time():
     sh("settings put system time_12_24 12"); time.sleep(1.2)
     t12 = [s_ for s_, _ in (ui_texts() or []) if re.fullmatch(r"\d{1,2}:\d\d", s_)]
     sh("settings put system time_12_24 24"); time.sleep(1.2)
+    import datetime
+    from zoneinfo import ZoneInfo
     for tz in ["Pacific/Kiritimati", "Pacific/Pago_Pago", "Asia/Kolkata", "Asia/Kathmandu", "America/St_Johns", "UTC"]:
-        sh(f"service call alarm 3 s16 {tz}"); time.sleep(.7)
+        sh(f"service call alarm 3 s16 {tz}"); time.sleep(2.5)
+        want = datetime.datetime.now(ZoneInfo(tz))
+        shown = [s_ for s_, b in (ui_texts() or []) if re.fullmatch(r"\d{1,2}:\d\d", s_) and b[0] < 120 and b[1] < 60]
+        ok = bool(shown) and abs((int(shown[0].split(":")[0]) * 60 + int(shown[0].split(":")[1])) - (want.hour * 60 + want.minute)) % 1440 <= 3
+        Result.add(f"ui/clock-follows-timezone-{tz}", ok, f"status bar {shown} expected {want:%H:%M}")
     for stamp in ["010100002099.00", "123123592037.30", "030300001999.00", "022812002000.00", "010100002000.00"]:
         sh(f"date -u {stamp}"); time.sleep(1.5)
         Result.add(f"ui/clock-{stamp}", alive() and ui_texts() is not None)
@@ -213,6 +219,9 @@ def sc_trim():
     for lvl in ["RUNNING_MODERATE", "RUNNING_LOW", "RUNNING_CRITICAL", "UI_HIDDEN", "BACKGROUND", "MODERATE", "COMPLETE"] * 3:
         sh(f"am send-trim-memory {PKG} {lvl}"); time.sleep(.3)
         if R.random() < .3: dock(R.choice(["Home", "Apps", "Drive"]))
+    sh("am memory-factor set CRITICAL 2>&1"); time.sleep(4)                      # the system believes memory is critical: it trims and kills background processes
+    dock("Home"); dock("Drive"); time.sleep(1)
+    sh("am memory-factor reset 2>&1")
     check("trim")
 
 

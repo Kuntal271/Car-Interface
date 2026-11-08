@@ -61,20 +61,21 @@ mon.terminate()
 stop_proc(srv)
 
 
-def slope(xs, ys):
-    n = len(xs); mx = sum(xs) / n; my = sum(ys) / n
-    den = sum((x - mx) ** 2 for x in xs)
-    return sum((x - mx) * (y - my) for x, y in zip(xs, ys)) / den if den else 0.0
+def median(v):
+    v = sorted(v); n = len(v)
+    return (v[n // 2] + v[(n - 1) // 2]) / 2
 
 
 live = [r for r in rows if r.get("alive")]
-tail = live[len(live) // 3:]
-verdict = []
+# A least-squares fit chases the transient spikes (the Settings page can start a connection attempt: fds +20 for a minute), so compare
+# the median of the last third with the median of the first third, and report the least-squares slope for information.
+third = max(1, len(live) // 3)
 for key, limit in [("java_kb", 20 * 1024), ("native_kb", 20 * 1024), ("threads", 10), ("fds", 10)]:
-    if len(tail) >= 4:
-        s = slope([r["min"] for r in tail], [r[key] for r in tail]); total = s * (tail[-1]["min"] - tail[0]["min"])
-        verdict.append((key, round(s, 1), round(total)))
-        Result.add(f"soak/{key}_growth", total < limit, f"slope {s:.1f}/min, projected over window {total:.0f} (limit {limit}), first={tail[0][key]} last={tail[-1][key]}")
+    if len(live) >= 6:
+        first, last = median([r[key] for r in live[:third]]), median([r[key] for r in live[-third:]])
+        xs = [r["min"] for r in live]; ys = [r[key] for r in live]; mx = sum(xs) / len(xs); my = sum(ys) / len(ys)
+        slope = sum((x - mx) * (y - my) for x, y in zip(xs, ys)) / (sum((x - mx) ** 2 for x in xs) or 1)
+        Result.add(f"soak/{key}_growth", last - first < limit, f"median first third {first:.0f} -> last third {last:.0f} (limit +{limit}); least-squares slope {slope:.1f}/min over {live[-1]['min']:.0f} min")
 Result.add("soak/app_survived", all(r.get("alive") for r in rows) and len(rows) >= 3, f"{len(rows)} samples, {sum(1 for r in rows if not r.get('alive'))} dead")
 bad = [r for r in Result.rows if not r[1]]
 sys.exit(1 if bad else 0)
