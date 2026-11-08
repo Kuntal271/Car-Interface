@@ -30,7 +30,7 @@ Every fix is one commit with before/after numbers in its message.
 
 Measurement discipline. Five agents shared the Mac (load average 5-40 during the work). Wall-clock frame totals were useless; the primary metric is `app-cpu`
 (FrameMetrics animation + layout + draw + sync, logged by the app), plus counts (frames/s, wake-ups/s, draws per pixel), process cpu per thread, and paired
-ratios (each repetition's variants ran back to back). Runs at load > 15 inflated cpu by up to 3x and were not used for claims. The first Drive comparison
+ratios (each repetition's variants ran back to back). Runs at load > 15 inflated cpu by up to 3x, so cpu claims come from low-load runs; the exceptions are stated where they occur (PERF-01's cpu figures and PERF-04's "before" were taken at load 20-40; frame and wake-up counts, which carry the claims there, do not depend on load). The first Drive comparison
 (`artifacts/bench/C-sim-drive.jsonl`) is the example: a 60 % "gain" that vanished when the base variant happened to run at low load; the Drive render-node
 result (PERF-06) is therefore reported as modest.
 
@@ -61,7 +61,7 @@ Fix: the four reader lambdas fold into one packed Int behind `derivedStateOf`. A
 (paired ratios fps x0.01-0.02, cpu x0.19, wake-ups x0.25). With moving data: no measurable cost.
 
 ### PERF-04 MEDIUM, FIXED (1d9f42e): Light mode did not lighten Drive
-Evidence (old build, pinned Full vs Light, 3 runs): Home fps 17.5 -> 10.1, cpu -39 %; **Drive fps 29.9 -> 34.9, cpu 387 -> 501 ms/s** (no saving). Root cause: Light only slowed the data;
+Evidence (old build, pinned Full vs Light, 3 runs): Home fps 17.5 -> 10.1, cpu -39 %; **Drive fps 29.9 -> 34.9, cpu 387 -> 501 ms/s** (load 20-40, so read it as "no saving", not as "Light costs more"). Root cause: Light only slowed the data;
 `smoothed()` steps on every display frame while a value moves, so Drive stayed at one frame per vsync. Fix: in Light the glide applies on every second frame (the skipped frame writes nothing, so
 it draws nothing; the step uses real elapsed time, motion speed unchanged).
 After (2 interleaved runs, paired Light/Full): Drive frames x0.64 (27.8 -> 17.7), cpu x0.64 [0.57..0.72] (180 -> 115 ms/s), wake-ups x0.77, allocation x0.63;
