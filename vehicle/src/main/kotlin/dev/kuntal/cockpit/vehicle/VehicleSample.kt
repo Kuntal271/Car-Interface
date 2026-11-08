@@ -12,7 +12,8 @@ data class VehicleSample(
     val boostKpa: Double? get() = if (mapKpa != null && baroKpa != null) mapKpa - baroKpa else null
 }
 
-fun VehicleSample.with(pid: Pid, v: Double): VehicleSample = when (pid) {
+/** [v] = null clears the field: a value that has stopped being answered must not stay on screen as if it were live. */
+fun VehicleSample.with(pid: Pid, v: Double?): VehicleSample = when (pid) {
     Pid.RPM -> copy(rpm = v)
     Pid.SPEED -> copy(speedKmh = v)
     Pid.COOLANT_TEMP -> copy(coolantC = v)

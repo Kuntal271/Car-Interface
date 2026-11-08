@@ -17,3 +17,15 @@ tools/.venv/
 tools/elm.log
 docs/shots/*-snap.png
 docs/shots/_*
+
+# security: rotated logs (*.log does not match elm.log.1), signing material, secrets, local review output
+*.log.*
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.pem
+.env
+.env.*
+keystore.properties
+artifacts/

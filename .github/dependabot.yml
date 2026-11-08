@@ -1,0 +1,14 @@
+# Version updates for the Gradle dependencies and the GitHub Actions used by CI (an update to an action also moves its pinned commit).
+# Security alerts / security updates themselves are repository settings: see docs/SECURITY.md, "Owner actions".
+version: 2
+updates:
+  - package-ecosystem: gradle
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5

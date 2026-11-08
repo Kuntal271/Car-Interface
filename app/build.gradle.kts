@@ -16,12 +16,25 @@ android {
         versionName = "0.1.0"
     }
 
+    signingConfigs {
+        // Release key: supplied through the environment, never stored in the repo (tools/release.sh, docs/SECURITY.md).
+        // Without COCKPIT_KEYSTORE the release build falls back to the machine's debug key (a warning is printed by tools/release.sh).
+        val keystore = System.getenv("COCKPIT_KEYSTORE")
+        if (!keystore.isNullOrBlank()) create("cockpitRelease") {
+            storeFile = file(keystore)
+            storePassword = System.getenv("COCKPIT_KEYSTORE_PASSWORD")
+            keyAlias = System.getenv("COCKPIT_KEY_ALIAS")
+            keyPassword = System.getenv("COCKPIT_KEY_PASSWORD") ?: System.getenv("COCKPIT_KEYSTORE_PASSWORD")
+            enableV3Signing = true      // lets the key be rotated later without reinstalling (minSdk 28 = Android 9, which has v3)
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            signingConfig = signingConfigs.getByName("debug")   // personal sideload only
+            signingConfig = signingConfigs.findByName("cockpitRelease") ?: signingConfigs.getByName("debug")   // debug key only when no release key is configured
         }
     }
 

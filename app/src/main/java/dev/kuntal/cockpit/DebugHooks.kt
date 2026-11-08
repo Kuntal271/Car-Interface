@@ -6,6 +6,39 @@ import dev.kuntal.cockpit.data.VehicleUiState
 import dev.kuntal.cockpit.vehicle.VehicleSample
 
 /**
+ * What a launch intent may ask for. MainActivity is exported (it has to be: it is the HOME activity), so any app on the unit can start it
+ * with any extras. The hooks that change persisted settings (`set`, `reset`) or freeze the UI on made-up "Connected" numbers (`snapshot`)
+ * are therefore honoured only in a debuggable build; a release build ignores them. `perf` only turns on the frame-time overlay and log
+ * (no state, no data) and stays available because it is how a release build is measured on the unit. `screen` / `page` are
+ * enum-validated navigation in MainActivity. Single entry point: [parse], called once from MainActivity.onCreate.
+ */
+data class DevLaunch(val snapshot: Boolean, val perf: Boolean, val reset: Boolean, val set: Map<String, String>) {
+    companion object {
+        val NONE = DevLaunch(snapshot = false, perf = false, reset = false, set = emptyMap())
+        private const val MAX_PAIRS = 32
+        private const val MAX_RAW = 4_096
+
+        /** [bool] / [str] read an extra; anything that throws (a malformed Bundle from another app) counts as "no extras". */
+        fun parse(debuggable: Boolean, bool: (String) -> Boolean, str: (String) -> String?): DevLaunch = try {
+            DevLaunch(
+                snapshot = debuggable && bool("snapshot"),
+                perf = bool("perf"),
+                reset = debuggable && bool("reset"),
+                set = if (debuggable) parseSet(str("set")) else emptyMap(),
+            )
+        } catch (_: Exception) { NONE }
+
+        /** "theme=Midnight,source=ObdTcp" -> map; values keep any further '='; bounded in size and count. Keys are validated later by Settings.fromMap. */
+        fun parseSet(raw: String?): Map<String, String> {
+            if (raw == null || raw.length > MAX_RAW) return emptyMap()
+            return raw.split(',').asSequence()
+                .mapNotNull { it.split('=', limit = 2).takeIf { p -> p.size == 2 && p[0].isNotBlank() }?.let { p -> p[0].trim() to p[1].trim() } }
+                .take(MAX_PAIRS).toMap()
+        }
+    }
+}
+
+/**
  * Snapshot mode: `am start -n dev.kuntal.cockpit/.MainActivity --es screen drive --ez snapshot true` freezes the app on the exact
  * values of the design mock-ups (and a fixed clock), so a screenshot can be diffed pixel-for-pixel against the design render.
  * Inert unless that extra is passed.
