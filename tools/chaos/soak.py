@@ -25,14 +25,20 @@ if a.source == "ObdTcp":
     srv = start_hostile("valid"); sets = f"source=ObdTcp,tcpHost=10.0.2.2,tcpPort={ELM_PORT}"
 cold("drive", reset=True, sets=sets, perf=True); time.sleep(4)
 logcat_clear()
-events = int(a.minutes * 60 / 0.25)
-mon = subprocess.Popen([ADB, "-s", SERIAL, "shell", f"monkey -p {PKG} -s {a.seed} --throttle 200 --ignore-crashes --ignore-timeouts --pct-touch 70 --pct-motion 25 "
-                        f"--pct-nav 0 --pct-majornav 0 --pct-syskeys 0 --pct-appswitch 0 --pct-trackball 0 --pct-anyevent 5 {events}"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+def monkey(seed):
+    return subprocess.Popen([ADB, "-s", SERIAL, "shell", f"monkey -p {PKG} -s {seed} --throttle 200 --ignore-crashes --ignore-timeouts --pct-touch 70 --pct-motion 25 "
+                             f"--pct-nav 0 --pct-majornav 0 --pct-syskeys 0 --pct-appswitch 0 --pct-trackball 0 --pct-anyevent 5 2000"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+
+seed = a.seed
+mon = monkey(seed)
 rows = []
 t0 = time.time()
 sh("dumpsys gfxinfo %s reset" % PKG)
-while time.time() - t0 < a.minutes * 60 and mon.poll() is None:
-    time.sleep(max(1, 60 - (time.time() % 60) % 60) if False else 55)
+while time.time() - t0 < a.minutes * 60:
+    if mon.poll() is not None:                                  # one monkey run is 2000 events (about 5 min); keep the input going for the whole soak
+        seed += 1; mon = monkey(seed)
+    time.sleep(55)
     st = proc_stats()
     if st is None:
         rows.append(dict(min=(time.time() - t0) / 60, alive=0)); print("app dead at", rows[-1]["min"], flush=True); cold("drive", sets=sets); continue
@@ -41,7 +47,10 @@ while time.time() - t0 < a.minutes * 60 and mon.poll() is None:
     frames = re.search(r"Total frames rendered: (\d+)", gfx)
     p99 = re.search(r"99th percentile: (\d+)ms", gfx)
     log = adb("logcat", "-d", "-v", "threadtime", timeout=60)
-    gcs = len(re.findall(r"concurrent copying GC|GC freed|Explicit concurrent", log))
+    app_pid = str(pid() or "")
+    gcs = len([l for l in log.splitlines() if re.search(r"concurrent copying GC|GC freed|Explicit concurrent", l) and re.match(r"\S+ \S+\s+%s\s" % app_pid, l)])
+    with open(os.path.join(LOGS, "soak-strictmode.log"), "a") as f:                 # StrictMode violations of OUR process (build with strictmode.patch)
+        f.writelines(l + "\n" for l in log.splitlines() if "StrictMode" in l and app_pid and re.match(r"\S+ \S+\s+%s\s" % app_pid, l))
     logcat_clear()
     row = dict(min=round((time.time() - t0) / 60, 1), alive=1, java_kb=st["java"], native_kb=st["native"], pss_kb=st["pss"], rss_kb=st["rss"], threads=st["threads"], fds=st["fds"],
                gc_lines_last_min=gcs, jank_pct=jank.group(1) if jank else "", frames=frames.group(1) if frames else "", p99_ms=p99.group(1) if p99 else "")

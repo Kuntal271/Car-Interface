@@ -64,6 +64,7 @@ run monkey 600 $PY tools/chaos/monkeys.py --seeds $([ $FULL = 1 ] && echo 20 || 
 # 4. hostile adapter
 run link 600 $PY tools/chaos/chaos_link.py $Q --secs $([ $FULL = 1 ] && echo 25 || echo 14)
 # 5. persistence, input, apps, UI/system chaos
+run realelm 300 $PY tools/chaos/chaos_realelm.py --rounds $([ $FULL = 1 ] && echo 5 || echo 2)
 run session 200 $PY tools/chaos/chaos_session.py
 run persist 300 $PY tools/chaos/chaos_persist.py $Q
 run input 300 $PY tools/chaos/chaos_input.py $Q

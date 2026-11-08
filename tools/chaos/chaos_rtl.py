@@ -19,6 +19,7 @@ def controls_ok(tag):
 try:
     for tag in ("ar-EG", "he-IL"):
         Result.add(f"rtl/locale_switched_{tag}", set_locale(tag))
+        sh("am force-stop com.google.android.apps.nexuslauncher")
         ok, why = controls_ok(tag)
         Result.add(f"rtl/settings_vehicle_controls_stay_right_in_{tag}", ok, why)
 finally:

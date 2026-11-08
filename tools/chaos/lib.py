@@ -97,13 +97,22 @@ def settings_cat(i):
     tap_design(194, 124 + 76 * i)
 
 
+_MARK = {"id": None}
+
+
 def logcat_clear():
+    """`logcat -c` silently does nothing once the clock has been set to 2099 (logd keeps the future-stamped entries), so also drop a unique
+    marker line; logcat_dump() returns only what came after the last marker."""
     adb("logcat", "-c")
     adb("logcat", "-b", "crash", "-c")
+    _MARK["id"] = f"CHAOSMARK-{time.time_ns()}"
+    sh(f"log -t CHAOS {_MARK['id']}")
 
 
 def logcat_dump(path=None):
     out = adb("logcat", "-d", "-v", "threadtime", timeout=120)
+    if _MARK["id"] and _MARK["id"] in out:
+        out = out[out.rindex(_MARK["id"]):]
     if path:
         with open(path, "w") as f: f.write(out)
     return out
@@ -125,7 +134,11 @@ def fatal_in_app(text):
     """True when the log holds a fatal exception / ANR / native crash of OUR process."""
     for m in re.finditer(r"FATAL EXCEPTION[^\n]*\n[^\n]*Process: ([\w.]+)", text):
         if m.group(1) == PKG: return True
-    if re.search(r"ANR in " + re.escape(PKG), text): return True
+    # An ANR whose reason is "does not have a focused window" is the window manager failing to focus any window while the screen is
+    # asleep / the keyguard is up (it hit Chrome and the stock launcher in the same log, and the app's main thread was idle in its
+    # Looper in the trace): an emulator / input-injection artefact, not an app hang.  Every other ANR reason counts.
+    for m in re.finditer(r"ANR in " + re.escape(PKG) + r"[^\n]*\n(?:[^\n]*\n){0,3}?[^\n]*Reason: ([^\n]*)", text):
+        if "does not have a focused window" not in m.group(1): return True
     if re.search(r"Fatal signal .*" + re.escape(PKG), text): return True
     return False
 

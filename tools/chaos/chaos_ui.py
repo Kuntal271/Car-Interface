@@ -116,6 +116,8 @@ def sc_display():
     fresh("drive")
     for sz in SIZES:
         sh(f"wm size {sz}"); time.sleep(1.8)
+        sh("am force-stop com.google.android.apps.nexuslauncher")          # the stock launcher crashes at odd sizes (emulator image): its dialog would steal the window
+        time.sleep(.7)
         problems = []
         if not alive(): problems.append("died")
         t = ui_texts()
@@ -123,6 +125,7 @@ def sc_display():
         if problems: Result.add(f"ui/display-{sz}", False, ";".join(problems)); start("drive")
         else:
             w, h = map(int, sz.split("x"))
+            if h > w: w, h = h, w                 # the activity is landscape-only: on a portrait display the system rotates it, uiautomator reports rotated coordinates
             # the status-bar clock and the dock must lie inside the screen whatever the aspect ratio
             dockb = [b for s_, b in t if s_ == "Home"]
             inside = all(b[2] <= w + 2 and b[3] <= h + 2 for _, b in t)
@@ -148,6 +151,7 @@ def sc_fontscale():
 def sc_locale():
     for tag in ["ar-EG", "he-IL", "fa-IR", "hi-IN", "ja-JP", "de-DE", "en-US"]:
         set_locale(tag)
+        sh("am force-stop com.google.android.apps.nexuslauncher")          # the stock launcher crashes on a live locale change; its dialog would steal the window
         for scr, pg in [("settings", "vehicle"), ("drive", None), ("apps", None), ("home", None)]:
             cold(scr, page=pg, reset=(scr == "home")); time.sleep(2.5)
             t = ui_texts()
@@ -157,7 +161,7 @@ def sc_locale():
             if scr == "settings" and t:
                 ctl = [b for s_, b in t if s_ in ("km/h", "mph", "bar", "psi", "kPa", "\u00b0C", "\u00b0F")]
                 left = [b for b in ctl if b[0] < 800]
-                ok = ok and not left; msg = f"{len(ctl)} unit chips, {len(left)} left of x=800"
+                ok = ok and not left and len(ctl) >= 6; msg = f"{len(ctl)} unit chips, {len(left)} left of x=800"
             # digits must stay Latin whatever the locale (the status-bar clock and every value use Locale.US)
             if t and any(re.search(r"[\u0660-\u0669\u06f0-\u06f9\u0966-\u096f]", s_) for s_, _ in t):
                 ok = False; msg += " non-Latin digits on screen"
