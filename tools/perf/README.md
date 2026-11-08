@@ -8,7 +8,8 @@ Python 3 standard library only (use `tools/.venv/bin/python` if the system one i
 | `bench.py` | A/B frame cost per screen: interleaved runs, median and spread, "within noise" flag |
 | `soak.py` | memory / thread / fd / CPU drift over 20+ minutes (leak check), optional screen cycling |
 | `coldstart.py` | `am start -W` cold and warm start under each ART compile state (verify, speed-profile, speed) |
-| `overdraw.py` | GPU fill proxy: screenshot with the system overdraw overlay, area per overdraw level |
+| `overdraw.py` | GPU fill proxy: draws per pixel per screen from the system overdraw overlay (needs Pillow: `tools/.venv/bin/python`) |
+| `parity.py` | "same pixels?": installs two APKs, snapshot-mode screenshots of each screen, pixel diff (needs Pillow) |
 | `unit-checklist.md` | the ordered list of what to run on the real head unit |
 
 ## The numbers and what they mean
@@ -20,6 +21,7 @@ Python 3 standard library only (use `tools/.venv/bin/python` if the system one i
   RenderThread time is the cost of encoding the draw ops, a proxy for how many ops a frame contains.
 * `fps` on a *static* screen should be about 0 (a head unit stays on one screen for hours). `bench.py --scenario static --noperf`.
 * `alloc KB/s`, `gc/s`: ART runtime stats (`art.gc.bytes-allocated`, `art.gc.gc-count`) logged next to the frame stats.
+* `wakeups/s`: voluntary context switches of the process (all threads / main thread). An idle head unit should be near 0-5.
 * Every run records the host load average (`host load`). Five agents share one Mac in the review; with load above ~8 compare only
   interleaved runs and never claim a difference that sits inside the min..max spread (the table prints "within noise").
 
@@ -38,6 +40,14 @@ tools/perf/bench.py --apk full=/tmp/new.apk@full --apk light=/tmp/new.apk@light 
 # 3. Idle: frames per second and CPU on a screen that shows nothing new (no data source), without the perf overlay
 tools/perf/bench.py --apk new=/tmp/new.apk --scenario static --noperf --screen home,drive,apps,settings --runs 3 --secs 60
 
+# 3b. Steady data (parked, adapter connected: same values, fresh timestamp every 50 ms): must also be about 0 frames/s
+tools/perf/bench.py --apk new=/tmp/new.apk --scenario frozen --noperf --screen home,drive --runs 2 --secs 30
+
+# 3c. Did a change keep the pixels? Original debug build vs new one, then the project's own comparison with the design
+tools/.venv/bin/python tools/perf/parity.py --a /tmp/base-debug.apk --b app/build/outputs/apk/debug/app-debug.apk --screen drive,home,settings:display,apps
+tools/.venv/bin/python tools/perf/overdraw.py --screen home,drive,apps,settings
+tools/snap.sh drive && tools/.venv/bin/python tools/cmp.py drive      # <= 2.9 %; home <= 3.4 %
+
 # 4. Real protocol path: fake ELM327 adapter on the Mac (port per agent), app connects via 10.0.2.2
 tail -f /dev/null | tools/.venv/bin/python -m elm -n 35010 -s car &
 tools/perf/bench.py --apk new=/tmp/new.apk --scenario obd --obd-port 35010 --screen drive
@@ -50,6 +60,7 @@ tools/perf/coldstart.py --apk /tmp/new.apk --runs 7
 ```
 
 Dev hooks used by the tools (all inert in normal use): `--ez perf true` (log + overlay), `--es perfmode full|light` (pin PerfGovernor),
+`--ez flatten true` (static layers rendered into a texture), `--ez freeze true` (simulator repeats one set of values: parked car),
 `--es set "k=v,..."` (settings, e.g. `source=Simulator`, `source=ObdBluetooth,bt=` for "no source"), `--es screen home|drive|apps|settings`.
 
 Compose compiler reports: `tools/gb.sh -PcomposeReports=true :app:assembleRelease` writes `app/build/compose_compiler/`

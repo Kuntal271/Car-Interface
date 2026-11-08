@@ -22,6 +22,15 @@ download it from the workflow run's *Artifacts* if you do not want to build loca
 
 Check that the checksum on the unit (or on the stick) matches the one `tools/release.sh` printed.
 
+**Compile it ahead of time (adb only, one command, recommended):** a sideloaded APK is installed in the `verify` state, so the first
+runs are interpreted and JIT-compiled while you watch (slow first frames, jank in the first minutes). Compile it once:
+
+      adb shell cmd package compile -m speed -f dev.kuntal.cockpit
+
+On the emulator this cut cold start from 364 ms to 281 ms (`tools/perf/coldstart.py`); a slow unit gains more. Repeat it after every
+update (an install resets it). Without adb the system does the same on its own, but only during idle maintenance while charging, which a
+head unit that switches off with the ignition may rarely reach.
+
 ## 3. Make it the Home app
 
 Press the unit's Home button. Android asks which launcher to use: choose **Cockpit** and **Always**. Until you do, the stock
@@ -39,8 +48,8 @@ while Cockpit is Home, clear the default as above and tell me what happened.
 1. Open **Settings > About**. Note the version line, switch **Frame-time overlay** on.
 2. Go to **Drive** and **Home** and watch the line along the bottom of the screen for a minute each:
    `p50 .. p99 .. max .. ms  >12 ms ..%  missed ..%  PASS|FAIL  Full|Light`.
-   The gate is **p99 at or under 10 ms and no missed frames**. If more than 2 % of frames run over 12 ms for two windows in a
-   row, the app drops live updates from 20 Hz to 10 Hz by itself (`Light`) and returns when it recovers. Write the numbers
+   The gate is **p99 at or under 10 ms and no missed frames**. If more than 2 % of frames run over 12 ms for two separate 5 s windows in a
+   row, the app drops live updates from 20 Hz to 10 Hz and animates the gauges at 30 fps by itself (`Light`) and returns when it recovers. Write the numbers
    into `docs/PERF.md`: they decide whether Compose is enough or the NDK path is needed.
 3. **Settings > Display / Vehicle:** theme, 24 h clock, units, redline and shift-light settings.
 4. Everything on the Drive screen is the built-in simulator until you pick a real source (next section).

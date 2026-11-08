@@ -36,7 +36,8 @@ def sample(pid):
     stat = sh(f"cat /proc/{pid}/stat").split(")")[-1].split()
     ticks = int(stat[11]) + int(stat[12])
     threads = len(sh(f"ls /proc/{pid}/task").split())
-    fds = len(sh(f"ls /proc/{pid}/fd").split())
+    fd_out = sh(f"ls /proc/{pid}/fd 2>&1")
+    fds = -1 if ("Permission denied" in fd_out or not fd_out.strip()) else len(fd_out.split())      # -1: not readable for the shell user (needs root)
     return dict(pss=pss, java=java, native=native, gfx=gfx, views=views, acts=acts, threads=threads, fds=fds, ticks=ticks)
 
 
@@ -88,6 +89,8 @@ def main():
     xs = [r[0] / 60 for r in half]
     print("\nslope over the second half of the run (per minute):")
     for k in ("pss", "java", "native", "gfx", "views", "threads", "fds"):
+        if rows[0][1][k] < 0:
+            continue
         print(f"  {k:<8} {slope(xs, [r[1][k] for r in half]):+8.2f}   (start {rows[0][1][k]}, end {rows[-1][1][k]})")
     cpu = (rows[-1][1]["ticks"] - rows[0][1]["ticks"]) * 10 / (rows[-1][0] - rows[0][0])
     print(f"  process cpu: {cpu:.1f} ms per second on average")

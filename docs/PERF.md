@@ -97,3 +97,59 @@ one (app-cpu p50 5.7 -> 3.8 ms, p99 30.5 -> 12.2 ms with identical pixels); smoo
 **Not yet known:** the real unit's numbers. The emulator is an arm64 Android 11 image on a Mac GPU through the emulator's GL translation, in a
 debug build with a cold JIT: total p50 is 14-19 ms there, which says nothing about the head unit. First on-unit run: install a release build
 (R8 on), run the command above on Drive and Home for a few minutes, and record the lines here.
+
+
+## Findings of the performance review (branch review/perf, 2026-11-08)
+
+Full evidence, commands and per-finding commits: `docs/reviews/perf.md`. Tools: `tools/perf/` (`README.md` there). All numbers are from the
+Android 11 arm64 emulator on an Apple M2 host (host GPU), release build, AOT-compiled (`cmd package compile -m speed -f`), governor pinned,
+interleaved A/B runs; the host was shared with other jobs, so every run records the load average and only paired ratios outside the spread are claimed.
+They say what the app does and how much work it avoids, **not** what the Palm Bay's GPU and CPU will do.
+
+What was cut, measured, pixels unchanged (parity.py: home/settings/apps 0 differing pixels, drive 5 px by at most 15/255):
+
+| area | before | after |
+|------|--------|-------|
+| frames per second on an idle screen (no data source) | 1.0 (clock redrew the screen every second) | 0.0-0.1 |
+| main-thread wake-ups per second, idle | 17.5 (`Flow.sample` ticker) | 2.9 |
+| steady data (parked car, adapter connected): frames/s, process cpu | 16.9 fps, 95 ms/s (every sample repainted every bar) | 0.2-0.4 fps, 18 ms/s |
+| Light mode on Drive: frames/s, process cpu | no reduction (gauges kept gliding at 60 fps) | x0.64 both (28 -> 18 fps, 180 -> 115 ms/s) |
+| Drive UI-thread cost per frame, app-cpu p50 (JIT-only run) | 0.75 ms | 0.60 ms (paired x0.68) |
+| overdraw, draws per pixel (Home / Drive / Apps / Settings) | 4.75 / 4.60 / 4.56 / 4.84 | 3.25 / 2.60 / 2.75 / 3.37 |
+| Apps search, 300 apps, per keystroke (JVM) | 6.5 ms median, 124 ms max | 0.05 ms |
+| cold start (compile state, not code): verify -> speed | 364 ms -> 281 ms | add one adb command to the install |
+| OBD polling against an instant adapter | tight loop (PERF-10 in reviews/perf.md) | one cycle per 40 ms |
+
+Not a problem (checked): Compose stability (all 46 restartable composables are skippable; `VehicleUiState` is "unstable" only because `:vehicle` has no
+Compose compiler, and it is only ever passed inside a `State`), number formatting (about 7 us per telemetry sample on the JVM), GC (about 0.1 per second at
+about 500 KB/s allocation while driving), APK size (2.2 MB, R8 + resource shrinking already on), threads (22-25 idle).
+
+### The fallback ladder (what each step buys; the first two exist)
+
+| step | what changes | status |
+|------|--------------|--------|
+| Full | 20 Hz data, 60 fps gauges | default |
+| Light | 10 Hz data **and** gauges glide at 30 fps (skipped frames draw nothing) | implemented, measured: Drive cpu x0.64 |
+| Flat | static layers rendered once into a texture (`--ez flatten true`) | implemented as a switch; no effect measurable on the emulator, decide on the unit |
+| Lean (proposal) | no frame glows, no card sheen, no tach tip glow: about one draw per pixel less; visible but small change | not built |
+| Still (proposal) | no gliding, gauges jump at 5-10 Hz: no animation frames at all | not built |
+| SurfaceView / GLES gauge | existing escape hatch above | not built |
+
+The governor should try Flat first (it does not change motion), keep it only if the share of frames over 12 ms falls by a fifth within two
+windows, then Light, then Lean. Light is the only automatic step today.
+
+## What to measure first on the real unit
+
+Ordered; stop at the first step that fails. Commands and pass criteria are in `tools/perf/unit-checklist.md`.
+
+1. **Facts** (30 s): Android version, ABI, `wm size/density`, refresh rate, GPU string, RAM, core count and max frequency, thermal zones.
+2. **Compile ahead of time**: `adb shell cmd package compile -m speed -f dev.kuntal.cockpit`, then `tools/perf/coldstart.py` (verify vs speed).
+   If start-up and the first minutes are janky only before this step, the answer is an install step, not code.
+3. **Idle**: `bench.py --scenario static --noperf` on Home and Drive for two minutes: frames/s below 0.1, main wake-ups below 5/s, cpu below 20 ms/s.
+4. **The gate** on the moving case (`--scenario sim`, Full): read app-cpu p50/p99 *and* total p99, per screen.
+   app-cpu over 5 ms = CPU-bound; app-cpu fine but total over 10 ms = GPU/fill-bound.
+5. **If GPU-bound**: `@full+flat` (static layers as textures) vs plain; `overdraw.py` / `setprop debug.hwui.overdraw show`; then `--perfmode light`.
+6. **Apps with the real list**: fling, thread count below 40, search keystrokes without a stall.
+7. **Real adapter**: engine on for five minutes on Drive; `top -H` to see whether the OBD thread, main or RenderThread is hot.
+8. **Soak / thermal** (`soak.py`, 30 min, parked in the sun): PSS slope about 0, no frames over 16.7 ms after warm-up.
+9. **If it still fails**: one Perfetto trace of the worst screen (sched, freq, gfx, view), then the ladder above.
