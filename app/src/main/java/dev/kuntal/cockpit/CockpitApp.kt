@@ -1,5 +1,6 @@
 package dev.kuntal.cockpit
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -59,6 +60,9 @@ fun CockpitApp(startOn: Dest = Dest.Home, startPage: SettingsPage = SettingsPage
     var screen by rememberSaveable { mutableStateOf(startOn) }
     var notice by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(homePresses) { if (homePresses > 0) screen = Dest.Home }
+    // A launcher is never "finished" by BACK: from a sub-screen it goes Home, on Home it does nothing. Finishing the activity cleared the
+    // ViewModel, which closed the adapter link and reset every trip counter (see docs/reviews/monkey.md, MONKEY-14).
+    BackHandler(enabled = true) { screen = Dest.Home }
     val content = remember { if (DebugHooks.snapshot) HomeContent.DEMO else HomeContent.EMPTY }
 
     fun launch(what: String, nice: String) { if (!AppLauncher.launch(ctx, what)) notice = "No $nice app found on this unit" }
