@@ -1,0 +1,86 @@
+# detekt configuration. buildUponDefaultConfig = true, so only the differences from detekt's defaults are listed here.
+# Existing findings are frozen in config/detekt/baseline-<module>.xml; only NEW findings fail the build.
+# Regenerate the baselines with tools/rebaseline.sh (after a merge) -- never to hide a regression.
+
+build:
+  maxIssues: 0
+
+config:
+  validation: true
+  warningsAsErrors: false
+
+complexity:
+  LongMethod:
+    threshold: 80
+    ignoreAnnotated: ['Composable']          # screens are long until split by design area; revisit after the refactor
+  LongParameterList:
+    functionThreshold: 8
+    constructorThreshold: 8
+    ignoreDefaultParameters: true
+    ignoreAnnotated: ['Composable']
+  CyclomaticComplexMethod:
+    threshold: 15
+  TooManyFunctions:
+    excludes: ['**/test/**', '**/ui/**']
+  LargeClass:
+    threshold: 300
+
+coroutines:
+  GlobalCoroutineUsage:
+    active: true
+  InjectDispatcher:
+    active: true                             # Dispatchers.IO / Default must be injected (testability), not hard-coded
+  SuspendFunSwallowedCancellation:
+    active: true                             # runCatching around suspend calls swallows CancellationException
+
+exceptions:
+  TooGenericExceptionCaught:
+    active: true
+  SwallowedException:
+    active: true
+    allowedExceptionNameRegex: '_|(ignore|expected).*'
+
+naming:
+  FunctionNaming:
+    ignoreAnnotated: ['Composable']          # composables are PascalCase
+  TopLevelPropertyNaming:
+    constantPattern: '[A-Za-z][_A-Za-z0-9]*'
+
+style:
+  MagicNumber:
+    excludes: ['**/test/**', '**/ui/**', '**/*Test.kt', '**/DebugHooks.kt']   # ui/ is a measured 1280x800 design grid: the numbers ARE the data
+    ignoreNamedArgument: true
+    ignoreAnnotated: ['Composable']
+    ignorePropertyDeclaration: true
+    ignoreCompanionObjectPropertyDeclaration: true
+    ignoreExtensionFunctions: true
+  MaxLineLength:
+    maxLineLength: 160                       # existing code reaches 300 (baselined); new code stays under 160
+    excludePackageStatements: true
+    excludeImportStatements: true
+  ReturnCount:
+    max: 4
+  UnusedPrivateMember:
+    ignoreAnnotated: ['Preview']
+  UnnecessaryAbstractClass:
+    active: false
+  ForbiddenComment:
+    active: true
+    comments:
+      - reason: 'Forbidden FIXME todo marker in comment, please fix the problem.'
+        value: 'FIXME:'
+      - reason: 'Forbidden STOPSHIP todo marker in comment, please address the problem before shipping the code.'
+        value: 'STOPSHIP:'
+
+# ---- Compose rules (io.nlopez.compose.rules:detekt) ----
+Compose:
+  CompositionLocalAllowlist:
+    active: true
+    allowedCompositionLocals: LocalPalette, LocalSettings        # design tokens and the owner's settings; add new ones deliberately
+  ViewModelForwarding:
+    active: true
+  ViewModelInjection:
+    active: true
+  ModifierMissing:
+    active: true
+    checkModifiersForVisibility: 'only_public'
