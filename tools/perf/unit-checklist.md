@@ -13,10 +13,10 @@ Gate: frame cost p99 <= 10 ms (stretch 5 ms) and zero missed vsyncs, release bui
 3. **Idle** (the unit sits on one screen for hours): `tools/perf/bench.py --apk unit=app-release.apk --scenario static --noperf --screen home,drive --runs 2 --secs 120`.
    Pass: `fps` below 0.1, `wakeups/s main` below 5, `proc cpu ms/s` below 20. If not, something redraws or ticks while nothing changes:
    check `adb shell dumpsys gfxinfo dev.kuntal.cockpit framestats` for the interval between frames.
-4. **The gate itself** on the moving case: `tools/perf/bench.py --apk unit=app-release.apk --scenario sim --screen home,drive,settings --runs 3 --secs 60 --perfmode full`
-   then read `app-cpu p50/p99` (app work) and `total p99` (includes GPU wait). Also the in-app overlay: Settings > About > Frame-time overlay.
+4. **The gate itself** on the moving case: `tools/perf/bench.py --apk unit=app-release.apk@full --scenario sim --screen home,drive,settings --runs 3 --secs 60`
+   then read `app-cpu p50/p99` (app work) and `total p99` (includes GPU wait). Add `--apk light=app-release.apk@light` to see the Light step in the same table. Also the in-app overlay: Settings > About > Frame-time overlay.
    * `app-cpu p99` over 5 ms: CPU-bound in Compose. Look at `main ms/frame`, run `--perfmode light` (halves gauge frames) and compare.
-   * `app-cpu` fine but `total p99` over 10 ms: GPU/fill-bound. Run the same with `--perfmode full+flat` (static layers as textures; adds `--ez flatten true`)
+   * `app-cpu` fine but `total p99` over 10 ms: GPU/fill-bound. Run the same with `--apk plain=app-release.apk@full --apk flat=app-release.apk@full+flat` (the second turns static layers into textures, `--ez flatten true`)
      and compare `total p99`. Then look at `adb shell setprop debug.hwui.overdraw show` (restart the app) and
      `adb shell dumpsys gfxinfo dev.kuntal.cockpit framestats` (GPU column exists on Android 12+).
 5. **Apps with the real list**: open Apps, fling top to bottom and back twice with the perf overlay on; note p99 and `adb shell ls /proc/$(pidof dev.kuntal.cockpit)/task | wc -l`
