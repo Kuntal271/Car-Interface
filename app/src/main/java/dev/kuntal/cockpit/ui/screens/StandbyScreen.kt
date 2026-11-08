@@ -49,6 +49,7 @@ import dev.kuntal.cockpit.data.Units
 import dev.kuntal.cockpit.data.VehicleUiState
 import dev.kuntal.cockpit.ui.components.DemoMark
 import dev.kuntal.cockpit.ui.components.FordMark
+import dev.kuntal.cockpit.ui.components.FordOvalBlue
 import dev.kuntal.cockpit.ui.components.FordPaths
 import dev.kuntal.cockpit.ui.components.Txt
 import dev.kuntal.cockpit.ui.components.TxtR
@@ -167,7 +168,7 @@ fun BootScreen(onDone: () -> Unit) {
             scale(k, k, Offset.Zero) {
                 val o = BootAnim.oval(tt)
                 scale(.86f + .14f * o, .86f + .14f * o, Offset(FordPaths.VB_W / 2, FordPaths.VB_H / 2)) {
-                    drawPath(paths[0], Color(0xFF08399A).copy(alpha = o))
+                    drawPath(paths[0], FordOvalBlue.copy(alpha = o))
                     // ring: revealed clockwise from 12 o'clock by a growing pie-shaped clip
                     val r = BootAnim.ring(tt)
                     if (r >= 1f) drawPath(paths[1], Color.White)

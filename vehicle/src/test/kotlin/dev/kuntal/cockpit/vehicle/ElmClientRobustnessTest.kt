@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
@@ -42,12 +41,12 @@ class ElmClientRobustnessTest {
         assertTrue(t.sent.none { it.startsWith("03") || it.startsWith("04") || it.startsWith("07") || it.startsWith("ATPP") })
     }
 
-    /** CHARACTERISATION (finding ARCH-04): a sensor that stops answering keeps its last value, with no marker that it is old. */
-    @Test fun aPidThatGoesSilentKeepsItsLastValueForever() = runTest {
+    /** Fixed (was ARCH-04 / SECURITY-04 / MONKEY-05): a sensor that stops answering is dropped after a few misses, not shown as live forever. */
+    @Test fun aPidThatGoesSilentIsDroppedAfterAFewMisses() = runTest {
         val t = ScriptedTransport { cmd, n -> if (cmd == "0105" && n > 40) "NO DATA" else ScriptedTransport.HEALTHY[cmd] ?: "NO DATA" }
         val samples = ElmClient(t).samples().take(60).toList()
         assertEquals(83.0, samples.first().coolantC!!, 0.001)
-        assertEquals("coolant has been silent for a long time but the last sample still carries 83 C", 83.0, samples.last().coolantC!!, 0.001)
+        assertNull("coolant has been silent for a long time, so it must no longer be shown", samples.last().coolantC)
     }
 
     @Test fun garbageFromTheAdapterNeverThrowsInTheParser() {
@@ -63,10 +62,15 @@ class ElmClientRobustnessTest {
         }
     }
 
-    @Test fun aSilentAdapterYieldsNoSampleRatherThanZeros() = runTest {
+    /** Fixed (was a characterisation of a spin loop): a vehicle that answers nothing is not a connection; the flow fails so the link goes Lost and backs off. */
+    @Test fun aSilentVehicleIsAFailedConnectionNotAStreamOfEmptySamples() = runTest {
         val t = ScriptedTransport { _, _ -> "NO DATA" }
-        // connect() finds no supported PIDs, so every cycle is empty: samples still flow, all values null (never invented zeros)
-        val s = ElmClient(t, now = { 5L }).samples().first()
-        assertNull(s.rpm); assertNull(s.speedKmh); assertNotNull(s.tsMs)
+        try {
+            ElmClient(t, now = { 5L }).samples().first()
+            fail("a vehicle that reports nothing must not look connected")
+        } catch (e: IOException) {
+            assertTrue(e.message!!, e.message!!.contains("did not report"))
+        }
+        assertEquals("the adapter is still closed", 1, t.closed)
     }
 }

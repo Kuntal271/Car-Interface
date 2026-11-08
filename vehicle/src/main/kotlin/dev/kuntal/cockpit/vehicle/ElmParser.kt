@@ -27,7 +27,6 @@ object ElmParser {
         return null
     }
 
-    private fun Char.isAscii() = code < 128
 
     /** The decoded reading, or null for no data, a damaged reply, or a value this car cannot produce (see [PidDecoder.plausible]). */
     fun parse(pid: Pid, raw: String): Double? =

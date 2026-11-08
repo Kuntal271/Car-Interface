@@ -95,6 +95,20 @@ class ArchitectureRulesTest {
         val KNOWN = mapOf(
             "ui-not-source: ui/screens/SettingsScreen.kt" to "ARCH-06  SettingsScreen calls source.pairedAdapters() directly",
             "ui-not-debug-hooks: ui/shell/Shell.kt" to "ARCH-02  StatusBar reads DebugHooks.snapshot/CLOCK/DATE/VOLUME in production code",
+            "ui-not-debug-hooks: ui/shell/QuickControls.kt" to "ARCH-02  reads DebugHooks (snapshot fixtures / benchmark switches) in production UI; moves to src/debug in refactor step S2",
+            "ui-not-debug-hooks: ui/shell/SystemVolume.kt" to "ARCH-02  reads DebugHooks (snapshot fixtures / benchmark switches) in production UI; moves to src/debug in refactor step S2",
+            "ui-not-debug-hooks: ui/screens/StandbyScreen.kt" to "ARCH-02  reads DebugHooks (snapshot fixtures / benchmark switches) in production UI; moves to src/debug in refactor step S2",
+            "ui-not-debug-hooks: ui/screens/RadioScreen.kt" to "ARCH-02  reads DebugHooks (snapshot fixtures / benchmark switches) in production UI; moves to src/debug in refactor step S2",
+            "ui-not-debug-hooks: ui/screens/ParkingScreen.kt" to "ARCH-02  reads DebugHooks (snapshot fixtures / benchmark switches) in production UI; moves to src/debug in refactor step S2",
+            "ui-not-debug-hooks: ui/screens/PhoneScreens.kt" to "ARCH-02  reads DebugHooks (snapshot fixtures / benchmark switches) in production UI; moves to src/debug in refactor step S2",
+            "ui-not-debug-hooks: ui/screens/ProjectionScreen.kt" to "ARCH-02  reads DebugHooks (snapshot fixtures / benchmark switches) in production UI; moves to src/debug in refactor step S2",
+            "ui-not-debug-hooks: ui/screens/DriveVariantsScreen.kt" to "ARCH-02  reads DebugHooks (snapshot fixtures / benchmark switches) in production UI; moves to src/debug in refactor step S2",
+            "ui-not-debug-hooks: ui/components/Layers.kt" to "ARCH-02  reads DebugHooks (snapshot fixtures / benchmark switches) in production UI; moves to src/debug in refactor step S2",
+            "ui-not-debug-hooks: ui/components/Extras.kt" to "ARCH-02  reads DebugHooks (snapshot fixtures / benchmark switches) in production UI; moves to src/debug in refactor step S2",
+            "no-wall-clock-in-logic: data/Trips.kt" to "ARCH-03  reads the wall clock directly; inject a Clock in refactor step S4",
+            "no-wall-clock-in-logic: data/CockpitData.kt" to "ARCH-03  reads the wall clock directly; inject a Clock in refactor step S4",
+            "no-wall-clock-in-logic: VehicleSample.kt" to "ARCH-03  reads the wall clock directly; inject a Clock in refactor step S4",
+            "no-global-scope: Blocking.kt" to "ARCH-05  cancellableBlocking detaches the blocking read on GlobalScope so cancel returns at once (the socket is closed on cancel, so the thread ends); replace with an owned executor in refactor step S9",
             "no-literal-colours: ui/components/FordMark.kt" to "INFO     the Blue Oval keeps its own trademark navy; allowed on purpose",
         )
     }

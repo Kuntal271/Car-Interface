@@ -2,9 +2,13 @@
 <SmellBaseline>
   <ManuallySuppressedIssues></ManuallySuppressedIssues>
   <CurrentIssues>
+    <ID>GlobalCoroutineUsage:Blocking.kt$GlobalScope.async(Dispatchers.IO) { block() }</ID>
+    <ID>InjectDispatcher:Blocking.kt$IO</ID>
     <ID>InjectDispatcher:TcpTransport.kt$TcpTransport$IO</ID>
     <ID>LoopWithTooManyJumpStatements:ElmClient.kt$ElmClient$while</ID>
     <ID>LoopWithTooManyJumpStatements:ElmParser.kt$ElmParser$for</ID>
+    <ID>MagicNumber:CommandGuard.kt$CommandGuard$3</ID>
+    <ID>MagicNumber:CommandGuard.kt$CommandGuard$4</ID>
     <ID>MagicNumber:DriveCycle.kt$DriveCycle$0.01</ID>
     <ID>MagicNumber:DriveCycle.kt$DriveCycle$0.1</ID>
     <ID>MagicNumber:DriveCycle.kt$DriveCycle$0.5</ID>
@@ -25,6 +29,8 @@
     <ID>MagicNumber:DriveCycle.kt$DriveCycle$92.0</ID>
     <ID>MagicNumber:ElmClient.kt$ElmClient$0x20</ID>
     <ID>MagicNumber:ElmClient.kt$ElmClient$0x60</ID>
+    <ID>MagicNumber:ElmParser.kt$ElmParser$0x20</ID>
+    <ID>MagicNumber:ElmParser.kt$ElmParser$10</ID>
     <ID>MagicNumber:ElmParser.kt$ElmParser$16</ID>
     <ID>MagicNumber:ElmParser.kt$ElmParser$4</ID>
     <ID>MagicNumber:Pid.kt$Pid.AMBIENT_TEMP$0x46</ID>
@@ -38,14 +44,23 @@
     <ID>MagicNumber:Pid.kt$Pid.THROTTLE$0x11</ID>
     <ID>MagicNumber:Pid.kt$PidDecoder$100.0</ID>
     <ID>MagicNumber:Pid.kt$PidDecoder$1000.0</ID>
+    <ID>MagicNumber:Pid.kt$PidDecoder$12_000.0</ID>
+    <ID>MagicNumber:Pid.kt$PidDecoder$130.0</ID>
+    <ID>MagicNumber:Pid.kt$PidDecoder$160.0</ID>
+    <ID>MagicNumber:Pid.kt$PidDecoder$250.0</ID>
     <ID>MagicNumber:Pid.kt$PidDecoder$255.0</ID>
     <ID>MagicNumber:Pid.kt$PidDecoder$256</ID>
     <ID>MagicNumber:Pid.kt$PidDecoder$32</ID>
+    <ID>MagicNumber:Pid.kt$PidDecoder$32.0</ID>
     <ID>MagicNumber:Pid.kt$PidDecoder$4.0</ID>
     <ID>MagicNumber:Pid.kt$PidDecoder$40.0</ID>
     <ID>MagicNumber:Pid.kt$PidDecoder$7</ID>
     <ID>MagicNumber:Pid.kt$PidDecoder$8</ID>
+    <ID>MagicNumber:Pid.kt$PidDecoder$90.0</ID>
     <ID>MagicNumber:PollSchedule.kt$PollSchedule$10</ID>
     <ID>MagicNumber:PollSchedule.kt$PollSchedule$3</ID>
+    <ID>MagicNumber:StreamExchange.kt$1_000_000L</ID>
+    <ID>MagicNumber:VehicleSample.kt$MonotonicClock$1_000_000</ID>
+    <ID>ThrowsCount:StreamExchange.kt$fun exchangeOverStreams( input: InputStream, output: OutputStream, cmd: String, maxChars: Int = MAX_REPLY_CHARS, deadlineMs: Long = REPLY_DEADLINE_MS, nanoTime: () -&gt; Long = System::nanoTime, ): String</ID>
   </CurrentIssues>
 </SmellBaseline>

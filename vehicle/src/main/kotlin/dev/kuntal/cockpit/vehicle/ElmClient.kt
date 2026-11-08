@@ -67,7 +67,8 @@ class ElmClient(
                 emit(s.copy(tsMs = now()))
                 cycle++
                 val spent = now() - cycleStart
-                if (spent < minCycleMs) delay(minCycleMs - spent)          // an adapter that answers at once must not pin a core (or the bus) at thousands of cycles a second
+                // An adapter that answers at once must not pin a core (or the bus) at thousands of cycles a second.
+                if (spent < minCycleMs) delay(minCycleMs - spent)
             }
         } finally {
             withContext(NonCancellable) { transport.close() }          // a cancelled coroutine cannot suspend: without this the socket was never closed

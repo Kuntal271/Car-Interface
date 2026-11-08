@@ -2,17 +2,95 @@
 <SmellBaseline>
   <ManuallySuppressedIssues></ManuallySuppressedIssues>
   <CurrentIssues>
+    <ID>ComplexCondition:Estimates.kt$FuelEstimate$rpm == null || mapKpa == null || intakeC == null || rpm &lt; 300.0</ID>
     <ID>ComplexCondition:GearEstimator.kt$GearEstimator$kmh == null || rpm == null || kmh &lt; 5.0 || rpm &lt; 700.0</ID>
+    <ID>ComplexCondition:Overlays.kt$OverlayRules$rpm != null &amp;&amp; rpm &gt;= shiftRpm &amp;&amp; gear != null &amp;&amp; gear in 1..5</ID>
     <ID>ComposableParamOrder:SegBar.kt$SegBar</ID>
-    <ID>CyclomaticComplexMethod:CockpitApp.kt$@Composable fun CockpitApp(startOn: Dest = Dest.Home, startPage: SettingsPage = SettingsPage.Display, vm: CockpitViewModel = viewModel())</ID>
+    <ID>CyclomaticComplexMethod:CarArt.kt$fun DrawScope.drawCarTop(art: CarArt, c: CanboxState, p: Palette, front: Boolean = true, rear: Boolean = true)</ID>
+    <ID>CyclomaticComplexMethod:CockpitApp.kt$@Composable fun CockpitApp(startOn: Dest = Dest.Home, startPage: SettingsPage = SettingsPage.Display, homePresses: Int = 0, boot: Boolean = false, vm: CockpitViewModel = viewModel())</ID>
+    <ID>CyclomaticComplexMethod:DiagnosticsScreen.kt$@Composable fun DiagnosticsScreen(state: State&lt;VehicleUiState&gt;, diag: DiagSource?)</ID>
+    <ID>CyclomaticComplexMethod:DriveVariantsScreen.kt$@Composable fun DriveBoostScreen(state: State&lt;VehicleUiState&gt;, x: DriveExtras, onView: (DriveVariant) -&gt; Unit)</ID>
+    <ID>CyclomaticComplexMethod:DriveVariantsScreen.kt$@Composable fun DriveCruiseScreen(state: State&lt;VehicleUiState&gt;, x: DriveExtras, onView: (DriveVariant) -&gt; Unit)</ID>
+    <ID>CyclomaticComplexMethod:DriveVariantsScreen.kt$@Composable fun DriveHost(state: State&lt;VehicleUiState&gt;, view: DriveVariant, onView: (DriveVariant) -&gt; Unit, extras: DriveExtras)</ID>
     <ID>CyclomaticComplexMethod:HomeScreen.kt$@Composable fun HomeScreen(s: State&lt;VehicleUiState&gt;, content: HomeContent, onAction: (HomeAction) -&gt; Unit)</ID>
+    <ID>CyclomaticComplexMethod:MediaScreen.kt$@Composable fun MediaScreen( media: MediaSource?, volume: SystemVolume, eqPreset: String?, onSound: () -&gt; Unit, onRadio: () -&gt; Unit, onOpenPlayer: () -&gt; Unit, )</ID>
+    <ID>CyclomaticComplexMethod:OverlayHost.kt$@Composable fun OverlayLayer(shown: State&lt;Overlay?&gt;, demo: Boolean, onDismiss: () -&gt; Unit, onAnswer: () -&gt; Unit, onDecline: () -&gt; Unit)</ID>
+    <ID>CyclomaticComplexMethod:OverlayHost.kt$@Composable fun rememberOverlay( state: State&lt;VehicleUiState&gt;, canbox: State&lt;CanboxState?&gt;, demo: Boolean, volume: SystemVolume, screen: Dest, quickOpen: Boolean, forced: Overlay?, settings: Settings, ): OverlayCtl</ID>
+    <ID>CyclomaticComplexMethod:ParkingScreen.kt$@Composable fun ParkingScreen(radar: State&lt;Radar?&gt;, reverse: State&lt;Boolean&gt;, onExit: () -&gt; Unit, onOpenCamera: () -&gt; Unit)</ID>
+    <ID>CyclomaticComplexMethod:RadioScreen.kt$@Composable fun RadioDemoScreen(onOpenReal: () -&gt; Unit, onNotice: (String) -&gt; Unit)</ID>
     <ID>CyclomaticComplexMethod:SettingsScreen.kt$@Composable private fun ConnectionsPage(s: Settings, link: Link, set: ((Settings) -&gt; Settings) -&gt; Unit)</ID>
+    <ID>CyclomaticComplexMethod:Shell.kt$@Composable fun StatusBar(state: State&lt;VehicleUiState&gt;, onTap: () -&gt; Unit = {})</ID>
+    <ID>CyclomaticComplexMethod:StandbyScreen.kt$@Composable fun BootScreen(onDone: () -&gt; Unit)</ID>
+    <ID>CyclomaticComplexMethod:StandbyScreen.kt$@Composable fun StandbyScreen(state: State&lt;VehicleUiState&gt;, canbox: State&lt;CanboxState?&gt;, lastTripKm: Double?, onWake: () -&gt; Unit)</ID>
     <ID>CyclomaticComplexMethod:TripTracker.kt$TripTracker$fun accept(s: VehicleSample)</ID>
-    <ID>InjectDispatcher:AppsScreen.kt$IO</ID>
+    <ID>CyclomaticComplexMethod:TripsScreen.kt$@Composable private fun Chart(t: TripRecord, u: SpeedUnit)</ID>
+    <ID>EmptyElseBlock:DiagnosticsScreen.kt$if (v.isNaN()) return@forEachIndexed</ID>
+    <ID>EmptyElseBlock:Estimates.kt$Smoothness$if (speedKmh == null) return</ID>
+    <ID>EmptyElseBlock:Trips.kt$TripRecorder$if (!active) return null</ID>
     <ID>InjectDispatcher:BluetoothTransport.kt$BluetoothTransport$IO</ID>
     <ID>InjectDispatcher:CockpitApp.kt$IO</ID>
+    <ID>InjectDispatcher:CockpitViewModel.kt$CockpitViewModel$IO</ID>
+    <ID>InjectDispatcher:InstalledApps.kt$InstalledApps$IO</ID>
+    <ID>LambdaParameterInRestartableEffect:StandbyScreen.kt$onDone</ID>
+    <ID>LongParameterList:DiagnosticsScreen.kt$PidRow$(val code: String, val name: String, val unit: String, val pid: Pid, val value: (VehicleSample) -&gt; Double?, val fmt: (Double) -&gt; String, val lo: Double, val hi: Double)</ID>
     <ID>LongParameterList:Theme.kt$Palette$( val bg: Color, val s1: Color, val s2: Color, val s3: Color, val text: Color, // white: measured values and titles val dim: Color, // labels, units, annotation tags val blue: Color, // Ford blue / cobalt: structure val sky: Color, // lighter blue: icons, unlit-segment tint val cyan: Color, // ice-cyan: data fills, links/actions, live indicators val accent: Color, // selected controls val onAccent: Color, val warn: Color, // amber: warnings only val onWarn: Color, val hair: Color, val hairSoft: Color, val bgTop: Color, // top of the frame gradient val glowA: Color, val glowB: Color, val glowC: Color, // the three soft glows behind the content val fordMark: Boolean = true, // Home header: Ford oval + model name, or the neutral Cockpit mark )</ID>
+    <ID>MagicNumber:AudioSettings.kt$AudioPresets$2</ID>
+    <ID>MagicNumber:AudioSettings.kt$AudioPresets$3</ID>
+    <ID>MagicNumber:AudioSettings.kt$AudioPresets$5</ID>
+    <ID>MagicNumber:AudioSettings.kt$AudioPresets$6</ID>
+    <ID>MagicNumber:AudioSettings.kt$MockAudioSettings$10</ID>
+    <ID>MagicNumber:AudioSettings.kt$MockAudioSettings$12</ID>
     <ID>MagicNumber:BoostBar.kt$BoostBar$0.5</ID>
+    <ID>MagicNumber:Canbox.kt$MockCanbox$100</ID>
+    <ID>MagicNumber:Canbox.kt$MockCanbox$100.0</ID>
+    <ID>MagicNumber:Canbox.kt$MockCanbox$14_000</ID>
+    <ID>MagicNumber:Canbox.kt$MockCanbox$17</ID>
+    <ID>MagicNumber:Canbox.kt$MockCanbox$2.2</ID>
+    <ID>MagicNumber:Canbox.kt$MockCanbox$2.3</ID>
+    <ID>MagicNumber:Canbox.kt$MockCanbox$2.4</ID>
+    <ID>MagicNumber:Canbox.kt$MockCanbox$20_000</ID>
+    <ID>MagicNumber:Canbox.kt$MockCanbox$21.5</ID>
+    <ID>MagicNumber:Canbox.kt$MockCanbox$22.0</ID>
+    <ID>MagicNumber:Canbox.kt$MockCanbox$26_000</ID>
+    <ID>MagicNumber:Canbox.kt$MockCanbox$3</ID>
+    <ID>MagicNumber:Canbox.kt$MockCanbox$31</ID>
+    <ID>MagicNumber:Canbox.kt$MockCanbox$32_000</ID>
+    <ID>MagicNumber:Canbox.kt$MockCanbox$36_000</ID>
+    <ID>MagicNumber:Canbox.kt$MockCanbox$4</ID>
+    <ID>MagicNumber:Canbox.kt$MockCanbox$4000.0</ID>
+    <ID>MagicNumber:Canbox.kt$MockCanbox$52_000</ID>
+    <ID>MagicNumber:Canbox.kt$MockCanbox$60_000</ID>
+    <ID>MagicNumber:Canbox.kt$MockCanbox$66_000</ID>
+    <ID>MagicNumber:Canbox.kt$MockCanbox$6_000</ID>
+    <ID>MagicNumber:Canbox.kt$MockCanbox$7</ID>
+    <ID>MagicNumber:Canbox.kt$Radar$4</ID>
+    <ID>MagicNumber:Canbox.kt$Radar.Companion$0.6</ID>
+    <ID>MagicNumber:Canbox.kt$Radar.Companion$1.2</ID>
+    <ID>MagicNumber:Canbox.kt$Radar.Companion$1.8</ID>
+    <ID>MagicNumber:Canbox.kt$Radar.Companion$3</ID>
+    <ID>MagicNumber:DriveVariants.kt$CruiseText$100</ID>
+    <ID>MagicNumber:DriveVariants.kt$CruiseText$105</ID>
+    <ID>MagicNumber:DriveVariants.kt$CruiseText$50</ID>
+    <ID>MagicNumber:DriveVariants.kt$CruiseText$70</ID>
+    <ID>MagicNumber:DriveVariants.kt$CruiseText$75</ID>
+    <ID>MagicNumber:Estimates.kt$FuelEstimate$100.0</ID>
+    <ID>MagicNumber:Estimates.kt$FuelEstimate$1000.0</ID>
+    <ID>MagicNumber:Estimates.kt$FuelEstimate$120.0</ID>
+    <ID>MagicNumber:Estimates.kt$FuelEstimate$273.15</ID>
+    <ID>MagicNumber:Estimates.kt$FuelEstimate$287.05</ID>
+    <ID>MagicNumber:Estimates.kt$FuelEstimate$300.0</ID>
+    <ID>MagicNumber:Estimates.kt$FuelEstimate$3600.0</ID>
+    <ID>MagicNumber:Estimates.kt$FuelEstimate.Meter$0.5</ID>
+    <ID>MagicNumber:Estimates.kt$FuelEstimate.Meter$100.0</ID>
+    <ID>MagicNumber:Estimates.kt$FuelEstimate.Meter$3_600_000.0</ID>
+    <ID>MagicNumber:Estimates.kt$FuelEstimate.Meter$5_000</ID>
+    <ID>MagicNumber:Estimates.kt$Smoothness$100</ID>
+    <ID>MagicNumber:Estimates.kt$Smoothness$100.0</ID>
+    <ID>MagicNumber:Estimates.kt$Smoothness$12</ID>
+    <ID>MagicNumber:Estimates.kt$Smoothness$3.6</ID>
+    <ID>MagicNumber:Estimates.kt$Smoothness$30.0</ID>
+    <ID>MagicNumber:Estimates.kt$ZeroTo100$100.0</ID>
+    <ID>MagicNumber:Estimates.kt$ZeroTo100$1000.0</ID>
     <ID>MagicNumber:Format.kt$Fmt$12</ID>
     <ID>MagicNumber:FrameStats.kt$FrameStats$100.0</ID>
     <ID>MagicNumber:FrameStats.kt$FrameStats$50</ID>
@@ -20,20 +98,134 @@
     <ID>MagicNumber:FrameStats.kt$FrameStats$99</ID>
     <ID>MagicNumber:GearEstimator.kt$GearEstimator$5.0</ID>
     <ID>MagicNumber:GearEstimator.kt$GearEstimator$700.0</ID>
+    <ID>MagicNumber:MediaSource.kt$MediaFmt$60</ID>
+    <ID>MagicNumber:MediaSource.kt$MediaReducer$3</ID>
+    <ID>MagicNumber:MediaSource.kt$MediaReducer$7919L</ID>
+    <ID>MagicNumber:MediaSource.kt$MockMediaSource$1_000</ID>
+    <ID>MagicNumber:Overlays.kt$Overlay.ClimateChange$2_000</ID>
+    <ID>MagicNumber:Overlays.kt$Overlay.ClimateChange$5</ID>
+    <ID>MagicNumber:Overlays.kt$Overlay.DoorMoving$3</ID>
+    <ID>MagicNumber:Overlays.kt$Overlay.LowBattery$30_000</ID>
+    <ID>MagicNumber:Overlays.kt$Overlay.LowFuel$3</ID>
+    <ID>MagicNumber:Overlays.kt$Overlay.LowFuel$8_000</ID>
+    <ID>MagicNumber:Overlays.kt$Overlay.Notice$2_500</ID>
+    <ID>MagicNumber:Overlays.kt$Overlay.Notice$6</ID>
+    <ID>MagicNumber:Overlays.kt$Overlay.Reverse$1_500</ID>
+    <ID>MagicNumber:Overlays.kt$Overlay.ShiftUp$4</ID>
+    <ID>MagicNumber:Overlays.kt$Overlay.ShiftUp$400</ID>
+    <ID>MagicNumber:Overlays.kt$Overlay.Volume$1_500</ID>
+    <ID>MagicNumber:Overlays.kt$Overlay.Volume$5</ID>
+    <ID>MagicNumber:Overlays.kt$OverlayRules$400.0</ID>
+    <ID>MagicNumber:Overlays.kt$OverlayRules$5</ID>
     <ID>MagicNumber:PerfGovernor.kt$PerfMode.Full$50</ID>
     <ID>MagicNumber:PerfGovernor.kt$PerfMode.Light$100</ID>
+    <ID>MagicNumber:PhoneRadioDemo.kt$PhoneDemo$15</ID>
+    <ID>MagicNumber:PhoneRadioDemo.kt$PhoneDemo$3600</ID>
+    <ID>MagicNumber:PhoneRadioDemo.kt$PhoneDemo$6</ID>
+    <ID>MagicNumber:PhoneRadioDemo.kt$PhoneDemo$60</ID>
+    <ID>MagicNumber:PhoneRadioDemo.kt$RadioDemo$10</ID>
+    <ID>MagicNumber:PhoneRadioDemo.kt$RadioState$10</ID>
+    <ID>MagicNumber:PhoneRadioDemo.kt$RadioState$1019</ID>
+    <ID>MagicNumber:PhoneRadioDemo.kt$RadioState$1040</ID>
+    <ID>MagicNumber:PhoneRadioDemo.kt$RadioState$894</ID>
+    <ID>MagicNumber:PhoneRadioDemo.kt$RadioState$911</ID>
+    <ID>MagicNumber:PhoneRadioDemo.kt$RadioState$927</ID>
+    <ID>MagicNumber:PhoneRadioDemo.kt$RadioState$935</ID>
+    <ID>MagicNumber:PhoneRadioDemo.kt$RadioState$943</ID>
+    <ID>MagicNumber:PhoneRadioDemo.kt$RadioState$950</ID>
+    <ID>MagicNumber:PhoneRadioDemo.kt$RadioState$983</ID>
     <ID>MagicNumber:Settings.kt$Settings$120</ID>
     <ID>MagicNumber:Settings.kt$Settings$2000</ID>
     <ID>MagicNumber:Settings.kt$Settings$300</ID>
     <ID>MagicNumber:Settings.kt$Settings$3000</ID>
     <ID>MagicNumber:Settings.kt$Settings$5000</ID>
     <ID>MagicNumber:Settings.kt$Settings$9000</ID>
+    <ID>MagicNumber:Settings.kt$Settings.Companion$253</ID>
+    <ID>MagicNumber:Settings.kt$Settings.Companion$64</ID>
     <ID>MagicNumber:Settings.kt$Thresholds$1.609344</ID>
     <ID>MagicNumber:Settings.kt$Thresholds$10</ID>
     <ID>MagicNumber:Settings.kt$Thresholds$9</ID>
+    <ID>MagicNumber:Standby.kt$BootAnim$1_100</ID>
+    <ID>MagicNumber:Standby.kt$BootAnim$1_700</ID>
+    <ID>MagicNumber:Standby.kt$BootAnim$1_800</ID>
+    <ID>MagicNumber:Standby.kt$BootAnim$1_900</ID>
+    <ID>MagicNumber:Standby.kt$BootAnim$2_500</ID>
+    <ID>MagicNumber:Standby.kt$BootAnim$500</ID>
+    <ID>MagicNumber:Standby.kt$BootAnim$800</ID>
+    <ID>MagicNumber:Standby.kt$Standby$4</ID>
+    <ID>MagicNumber:Standby.kt$Standby$6</ID>
+    <ID>MagicNumber:Standby.kt$Standby$60_000L</ID>
     <ID>MagicNumber:TripTracker.kt$TripTracker$100.0</ID>
     <ID>MagicNumber:TripTracker.kt$TripTracker$1000.0</ID>
     <ID>MagicNumber:TripTracker.kt$TripTracker$3_600_000.0</ID>
+    <ID>MagicNumber:Trips.kt$FileTripStore.Companion$10</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$104</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$118</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$12</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$131</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$172</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$18</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$19</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$196</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$224</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$27</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$29</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$30</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$31</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$38</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$40</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$41</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$428</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$44</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$470</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$5</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$50</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$601</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$68</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$8</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$82</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$88</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$9</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$91</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$92</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore$96</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore.Companion$.005</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore.Companion$.5</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore.Companion$0.068</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore.Companion$0.088</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore.Companion$0.456</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore.Companion$0.868</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore.Companion$0.9</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore.Companion$1.04</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore.Companion$10</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore.Companion$10.0</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore.Companion$100</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore.Companion$100.0</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore.Companion$1000L</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore.Companion$111.0</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore.Companion$1_500</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore.Companion$2.5</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore.Companion$22</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore.Companion$27.0</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore.Companion$4_800</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore.Companion$5</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore.Companion$70.0</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore.Companion$8</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore.Companion$84.1</ID>
+    <ID>MagicNumber:Trips.kt$MockTripStore.Companion$9.0</ID>
+    <ID>MagicNumber:Trips.kt$TripFmt$1000L</ID>
+    <ID>MagicNumber:Trips.kt$TripFmt$3600</ID>
+    <ID>MagicNumber:Trips.kt$TripFmt$60</ID>
+    <ID>MagicNumber:Trips.kt$TripFmt$7</ID>
+    <ID>MagicNumber:Trips.kt$TripRecorder$10</ID>
+    <ID>MagicNumber:Trips.kt$TripRecorder$10.0</ID>
+    <ID>MagicNumber:Trips.kt$TripRecorder$100.0</ID>
+    <ID>MagicNumber:Trips.kt$TripRecorder$1000</ID>
+    <ID>MagicNumber:Trips.kt$TripRecorder$1000.0</ID>
+    <ID>MagicNumber:Trips.kt$TripRecorder$1000L</ID>
+    <ID>MagicNumber:Trips.kt$TripRecorder$30_000</ID>
+    <ID>MagicNumber:Trips.kt$TripRecorder$3_600_000.0</ID>
+    <ID>MagicNumber:Trips.kt$TripRecorder$60</ID>
     <ID>MagicNumber:Units.kt$Units$100.0</ID>
     <ID>MagicNumber:Units.kt$Units$32.0</ID>
     <ID>MagicNumber:Units.kt$Units$5.0</ID>
@@ -41,25 +233,103 @@
     <ID>MagicNumber:VehicleRepository.kt$VehicleRepository$10_000L</ID>
     <ID>MagicNumber:VehicleRepository.kt$VehicleRepository$1_000L</ID>
     <ID>MagicNumber:VehicleRepository.kt$VehicleRepository$4</ID>
+    <ID>MatchingDeclarationName:DriveVariantsScreen.kt$DriveExtras</ID>
     <ID>MatchingDeclarationName:FordMark.kt$FordPaths</ID>
     <ID>MatchingDeclarationName:Format.kt$Fmt</ID>
     <ID>MatchingDeclarationName:HomeScreen.kt$HomeAction</ID>
     <ID>MatchingDeclarationName:Icons.kt$Ic</ID>
+    <ID>MatchingDeclarationName:PhoneScreens.kt$DemoCall</ID>
     <ID>MatchingDeclarationName:SettingsScreen.kt$SettingsPage</ID>
     <ID>MatchingDeclarationName:Shell.kt$Dest</ID>
     <ID>MaxLineLength:AppsScreen.kt$Row</ID>
-    <ID>MaxLineLength:AppsScreen.kt$val icon by produceState&lt;androidx.compose.ui.graphics.ImageBitmap?&gt;(null, app.pkg) { value = withContext(Dispatchers.IO) { InstalledApps.icon(ctx, app.pkg) } }</ID>
+    <ID>MaxLineLength:AppsScreen.kt$val icon by produceState(InstalledApps.cachedIcon(app.pkg), app.pkg) { if (value == null) value = withContext(InstalledApps.iconDispatcher) { InstalledApps.icon(ctx, app.pkg) } }</ID>
+    <ID>MaxLineLength:CarArt.kt$if (stroke != null) drawRoundRect(stroke, Offset(x, y), Size(w, h), CornerRadius(rx), style = Stroke(sw, pathEffect = if (dash) PathEffect.dashPathEffect(floatArrayOf(4f, 4f)) else null))</ID>
+    <ID>MaxLineLength:CarArt.kt$private fun pol(cx: Float, cy: Float, r: Float, deg: Float): Offset</ID>
+    <ID>MaxLineLength:CarArt.kt$rrect(84f, 456f, 152f, 34f, 6f, if (gateOpen) p.warn.copy(alpha = .35f) else p.blue.copy(alpha = .22f), if (gateOpen) p.warn else p.sky, if (gateOpen) 2.5f else 1.5f)</ID>
+    <ID>MaxLineLength:CarScreen.kt$LiveTxt({ canbox.value?.climate?.let { if (it.acOn) "A/C on" else "A/C off" } ?: "" }, 18, 22, if (cl.acOn) p.cyan else p.dim, Modifier.at(1020, 241).width(100.dp), weight = FontWeight.SemiBold, align = TextAlign.End)</ID>
+    <ID>MaxLineLength:CarScreen.kt$LiveTxt({ canbox.value?.let { r.value(it) } ?: "" }, 18, 22, p.text, Modifier.at(192, (cy - 11).toInt()).width(126.dp), weight = FontWeight.Bold, align = TextAlign.End)</ID>
+    <ID>MaxLineLength:CarScreen.kt$Row</ID>
+    <ID>MaxLineLength:CarScreen.kt$Row6(Ic.Steer, "Steering") { c -&gt; c.steeringDeg?.let { d -&gt; if (d == 0) "Straight" else "${Fmt.signed(d.toDouble(), 0).replace("+", "")}\u00B0 ${if (d &lt; 0) "left" else "right"}" } }</ID>
+    <ID>MaxLineLength:CarScreen.kt$WaitingCard(24, 80, 1120, 696, Ic.Car, "Waiting for Canbox", "No Canbox data yet. Doors, climate, tyres and the parking radar appear here once the unit shares them.")</ID>
+    <ID>MaxLineLength:CarScreen.kt$dev.kuntal.cockpit.ui.components.Para("Canbox or OBD, depending on the unit's dialect. Climate is view only; controls stay on the dash.", 18, 23, p.dim, 276)</ID>
+    <ID>MaxLineLength:CarScreen.kt$else</ID>
+    <ID>MaxLineLength:CarScreen.kt$frontM?.let { Row(Modifier.at(sx(160f).toInt() - 60, (sy(-38f) - 32).toInt()).width(120.dp), horizontalArrangement = Arrangement.Center) { Txt(Fmt.dec(it, 1), 31, 37, p.text, family = cond, weight = FontWeight.Bold); Txt(" m", 18, 37, p.dim) } }</ID>
+    <ID>MaxLineLength:CarScreen.kt$if</ID>
+    <ID>MaxLineLength:CarScreen.kt$rearM?.let { Row(Modifier.at(sx(196f).toInt() - 60, (sy(652f) - 32).toInt()).width(120.dp), horizontalArrangement = Arrangement.Center) { Txt(Fmt.dec(it, 1), 31, 37, p.text, family = cond, weight = FontWeight.Bold); Txt(" m", 18, 37, p.dim) } }</ID>
+    <ID>MaxLineLength:CarScreen.kt$value = { LiveTxt({ canbox.value?.climate?.setC?.let { Fmt.dec(Units.temp(it, tu), 1) } ?: Fmt.DASH }, 72, 65, p.text, family = cond, weight = FontWeight.SemiBold, letterSpacing = 0.sp, tnum = true) }</ID>
+    <ID>MaxLineLength:CarScreen.kt$value = { LiveTxt({ canbox.value?.odometerKm?.let { Fmt.grouped(it) } ?: Fmt.DASH }, 56, 50, p.text, family = cond, weight = FontWeight.SemiBold, letterSpacing = 0.sp, tnum = true) }</ID>
+    <ID>MaxLineLength:CarScreen.kt$value = { LiveTxt({ canbox.value?.outsideC?.let { Fmt.temp(it, tu) } ?: Fmt.DASH }, 56, 50, p.text, family = cond, weight = FontWeight.SemiBold, letterSpacing = 0.sp, tnum = true) }</ID>
     <ID>MaxLineLength:CockpitApp.kt$"p50 %.1f p99 %.1f max %.1f ms &gt;12 ms %.1f%% missed %.1f%% %s %s".format(sum.p50, sum.p99, sum.max, sum.over12Pct, sum.missedPct, if (idle) "WAITING" else if (ok) "PASS" else "FAIL", mode)</ID>
+    <ID>MaxLineLength:CockpitApp.kt$Dest.Standby -&gt; StandbyScreen(state, canbox, remember(data) { data.trips.all().firstOrNull()?.distanceKm }) { touch[0] = SystemClock.elapsedRealtime(); screen = returnTo }</ID>
+    <ID>MaxLineLength:CockpitApp.kt$MediaScreen(data.media, volume, eq?.value?.preset, onSound = { screen = Dest.Sound }, onRadio = { if (data.demo) screen = Dest.RadioDemo else launch("radio", "radio") }, onOpenPlayer = { launch("media", "media") })</ID>
+    <ID>MaxLineLength:CockpitApp.kt$fun</ID>
+    <ID>MaxLineLength:CockpitApp.kt$if</ID>
+    <ID>MaxLineLength:CockpitApp.kt$if (screen != Dest.Standby &amp;&amp; screen != Dest.Boot &amp;&amp; Standby.shouldSleep(SystemClock.elapsedRealtime() - touch[0], settings.standbyMin, state.value.sample?.speedKmh)) sleep()</ID>
+    <ID>MaxLineLength:CockpitApp.kt$val real = when { settings.tcpHost.isNotBlank() -&gt; SourceKind.ObdTcp; settings.btName.isNotBlank() -&gt; SourceKind.ObdBluetooth; else -&gt; null }</ID>
+    <ID>MaxLineLength:CockpitViewModel.kt$CockpitViewModel$// Rate-limited downstream (newest value, at most one per period, no idle ticker), so the lighter performance mode changes the rate without restarting the source.</ID>
+    <ID>MaxLineLength:CockpitViewModel.kt$CockpitViewModel$else</ID>
     <ID>MaxLineLength:Controls.kt$Modifier.height(46.dp).pill(fill = if (on) p.accent else p.sky.copy(alpha = .12f), border = if (on) Color.Transparent else p.hair).padding(horizontal = 26.dp)</ID>
-    <ID>MaxLineLength:DriveScreen.kt$Tile(652, 374, Ic.Thermo, "Coolant", Units.label(tu), { Fmt.temp(s.value.sample?.coolantC, tu) }) { Fmt.lit(Fmt.fraction(s.value.sample?.coolantC, 40.0, 120.0), 20) }</ID>
-    <ID>MaxLineLength:DriveScreen.kt$Tile(652, 536, Ic.Gauge, "Throttle", "%", { Fmt.whole(s.value.sample?.throttlePct) }) { Fmt.lit(Fmt.fraction(s.value.sample?.throttlePct, 0.0, 100.0), 20) }</ID>
-    <ID>MaxLineLength:DriveScreen.kt$Tile(904, 374, Ic.Fan, "Intake air", Units.label(tu), { Fmt.temp(s.value.sample?.intakeC, tu) }) { Fmt.lit(Fmt.fraction(s.value.sample?.intakeC, 0.0, 110.0), 20) }</ID>
+    <ID>MaxLineLength:DebugHooks.kt$DebugHooks$@Volatile var freeze = false // --ez freeze true: the simulator repeats the design values with a fresh timestamp (parked car, adapter connected, nothing changes)</ID>
+    <ID>MaxLineLength:DiagnosticsScreen.kt$BasicText(guard, Modifier.at(48, 514).width(304.dp), style = TextStyle(color = p.text, fontSize = 20.sp, lineHeight = 27.sp, fontWeight = FontWeight.Normal, fontFamily = CockpitFonts.Barlow, letterSpacing = 0.012.em, platformStyle = PlatformTextStyle(includeFontPadding = false), lineHeightStyle = LineHeightStyle(LineHeightStyle.Alignment.Center, LineHeightStyle.Trim.None)))</ID>
+    <ID>MaxLineLength:DiagnosticsScreen.kt$Box</ID>
+    <ID>MaxLineLength:DiagnosticsScreen.kt$LiveTxt({ state.value.sample?.let { s -&gt; listOf(s.rpm, s.speedKmh, s.coolantC, s.intakeC, s.ambientC, s.oilC, s.mapKpa, s.baroKpa, s.throttlePct, s.loadPct, s.fuelPct, s.batteryV).count { it != null }.toString() } ?: Fmt.DASH }, 20, 24, p.text, Modifier.at(176, 300).width(176.dp), weight = FontWeight.SemiBold, align = TextAlign.End)</ID>
+    <ID>MaxLineLength:DiagnosticsScreen.kt$LiveTxt({ state.value.sample?.let(r.value)?.let(r.fmt) ?: Fmt.DASH }, 28, 33, p.text, Modifier.at(698, y + 6).width(90.dp), cond, FontWeight.SemiBold, TextAlign.End, tnum = true)</ID>
+    <ID>MaxLineLength:DiagnosticsScreen.kt$PidRow</ID>
+    <ID>MaxLineLength:DiagnosticsScreen.kt$RateMeter$if (n &gt;= 3) { val cnt = minOf(n, ts.size); val newest = ts[(n - 1) % ts.size]; val oldest = ts[(n - cnt) % ts.size]; hz = if (newest &gt; oldest) (cnt - 1) * 1000.0 / (newest - oldest) else 0.0 }</ID>
+    <ID>MaxLineLength:DiagnosticsScreen.kt$Row</ID>
+    <ID>MaxLineLength:DiagnosticsScreen.kt$Row(Modifier.at(48, 636 + 44 * i).height(32.dp).pill(border = p.hair).padding(horizontal = 14.dp), verticalAlignment = Alignment.CenterVertically) { Txt(t, 18, 22, p.dim, weight = FontWeight.SemiBold) }</ID>
+    <ID>MaxLineLength:DiagnosticsScreen.kt$Row(Modifier.height(32.dp).pill(border = (if (linkOn) p.cyan else p.warn).copy(alpha = .5f)).padding(horizontal = 18.dp), verticalAlignment = Alignment.CenterVertically) { Txt(linkText, 18, 22, if (linkOn) p.cyan else p.warn, weight = FontWeight.SemiBold) }</ID>
+    <ID>MaxLineLength:DiagnosticsScreen.kt$Txt("Battery", 19, 21, p.dim, Modifier.at(424, 100))</ID>
+    <ID>MaxLineLength:DiagnosticsScreen.kt$ValueUnit(424, 171, value = { LiveTxt({ state.value.sample?.batteryV?.let { Fmt.dec(it, 1) } ?: Fmt.DASH }, 48, 43, p.text, family = cond, weight = FontWeight.Bold, tnum = true) }, unit = { Txt("V", 23, 28, p.dim, family = cond) })</ID>
+    <ID>MaxLineLength:DiagnosticsScreen.kt$ValueUnit(613, 171, value = { LiveTxt({ Fmt.temp(state.value.sample?.coolantC, st.tempUnit) }, 48, 43, p.text, family = cond, weight = FontWeight.Bold, tnum = true) }, unit = { Txt(Units.label(st.tempUnit), 23, 28, p.dim, family = cond) })</ID>
+    <ID>MaxLineLength:DiagnosticsScreen.kt$ValueUnit(802, 171, value = { LiveTxt({ Fmt.whole(state.value.sample?.loadPct) }, 48, 43, p.text, family = cond, weight = FontWeight.Bold, tnum = true) }, unit = { Txt("%", 23, 28, p.dim, family = cond) })</ID>
+    <ID>MaxLineLength:DiagnosticsScreen.kt$a.forEachIndexed { k, v -&gt; if (v.isNaN()) return@forEachIndexed; val x = k / (a.size - 1f) * 150 * d; val y2 = (30 - 3 - ((v - lo) / (hi - lo)) * 24).toFloat() * d; if (!started) { path.moveTo(x, y2); started = true } else path.lineTo(x, y2) }</ID>
+    <ID>MaxLineLength:DiagnosticsScreen.kt$for ((i, k) in listOf("Type", "Protocol", "PIDs seen", "Poll rate", "Source").withIndex()) Txt(k, 20, 24, p.dim, Modifier.at(48, 200 + 50 * i + if (i == 4) 1 else 0))</ID>
+    <ID>MaxLineLength:DiagnosticsScreen.kt$state.value.sample?.let { s -&gt; rs.forEachIndexed { i, r -&gt; r.value(s)?.let { v -&gt; for (k in 0 until 30) trend.v[i][k] = v + (r.hi - r.lo) * 0.05 * Math.sin(k * 0.55 + i * 1.7) } } }</ID>
+    <ID>MaxLineLength:DiagnosticsScreen.kt$val (linkText, linkOn) = when (link) { Link.Connected -&gt; "Connected" to true; Link.Simulated -&gt; "Simulated" to true; Link.Connecting -&gt; "Connecting\u2026" to false; Link.Lost -&gt; "Lost" to false; Link.Off -&gt; "No source" to false }</ID>
+    <ID>MaxLineLength:DiagnosticsScreen.kt$val cells = listOf("RPM" to Fmt.grouped(f.rpm), "Speed" to "${f.speedKmh} km/h", "Coolant" to "${f.coolantC} \u00B0C", "Load" to "${f.loadPct} %", "Boost" to "${f.boostKpa} kPa", "Fuel trim" to Fmt.signed(f.fuelTrimPct, 1) + " %")</ID>
     <ID>MaxLineLength:DriveScreen.kt$value = { LiveTxt({ Fmt.boost(s.value.sample?.boostKpa ?: 0.0, pu) }, 120, 120, p.text, family = cond, weight = FontWeight.SemiBold, letterSpacing = 0.sp, tnum = true) }</ID>
+    <ID>MaxLineLength:DriveVariants.kt$History.Companion$fun</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$Box</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$Canvas(Modifier.at(595, 552).size(28.dp, 5.dp)) { val d = 1.dp.toPx(); drawLine(p.text, Offset(0f, 2.5f * d), Offset(28 * d, 2.5f * d), 2.5f * d, pathEffect = PathEffect.dashPathEffect(floatArrayOf(7 * d, 5 * d))) }</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$IconLabelAt(48, 156, Ic.Fuel, "Range")</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$LiveTxt({ "${Fmt.boost(state.value.trip.peakBoostKpa ?: 0.0, pu)} ${Units.label(pu)}" }, 20, 24, p.text, Modifier.at(540, 254).width(122.dp), weight = FontWeight.SemiBold, align = TextAlign.End)</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$LiveTxt({ "Trip A \u00B7 ${Fmt.distance(state.value.trip.distanceKm, u)} ${if (u == SpeedUnit.KMH) "km" else "mi"}" }, 20, 24, p.dim, Modifier.at(918, 406), cond, letterSpacing = 0.4.sp)</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$LiveTxt({ Fmt.boost(state.value.sample?.boostKpa ?: 0.0, pu) }, 118, 140, p.text, Modifier.at(198, 305).width(280.dp), cond, FontWeight.Bold, TextAlign.Center, letterSpacing = 0.sp, tnum = true)</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$LiveTxt({ Fmt.speed(state.value.sample?.speedKmh, u) }, 330, 297, p.text, Modifier.width(572.dp).baselineAt(298, 491), cond, FontWeight.SemiBold, TextAlign.Center, letterSpacing = 0.sp, tnum = true)</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$LiveTxt({ Fmt.whole(state.value.sample?.fuelPct) + "%" }, 20, 24, p.text, Modifier.at(48, 406).width(202.dp), cond, FontWeight.SemiBold, TextAlign.Center)</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$LiveTxt({ avg?.let { Fmt.dec(it, 1) } ?: Fmt.DASH }, 72, 65, p.text, Modifier.baselineAt(918, 294), cond, FontWeight.Bold, letterSpacing = 0.9.sp, tnum = true)</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$LiveTxt({ range()?.let { Fmt.whole(it) } ?: Fmt.DASH }, 72, 65, p.text, Modifier.baselineAt(48, 294), cond, FontWeight.Bold, letterSpacing = 0.9.sp, tnum = true)</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$LiveTxt({ when (x.zero.phase) { ZeroTo100.Phase.Armed -&gt; "Armed"; ZeroTo100.Phase.Running -&gt; "Running"; ZeroTo100.Phase.Waiting -&gt; "Stop to arm" } }, 18, 22, if (armed) p.cyan else p.dim, weight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$Row</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$Row(Modifier.at(451, 86).height(32.dp).pill(border = p.hair).padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) { Txt("Source \u00B7 OBD MAP \u2212 BARO", 18, 22, p.dim, weight = FontWeight.SemiBold) }</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$Stat(732, 172, "%", { Fmt.whole(state.value.sample?.throttlePct) }, 164, 179, { Fmt.lit(Fmt.fraction(state.value.sample?.throttlePct, 0.0, 100.0), 16) })</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$Stat(956, 316, Units.label(tu), { Fmt.temp(state.value.sample?.intakeC, tu) }, 164, 323, { Fmt.lit(Fmt.fraction(state.value.sample?.intakeC, 0.0, 110.0), 16) })</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$Txt(if (shown == null) "\u2013" else "Run $n \u00B7 ${if (shown.daysAgo == 0) "today" else if (shown.daysAgo == 1) "yesterday" else "${shown.daysAgo} days ago"}", 20, 24, p.text, Modifier.at(732, y + 1), weight = FontWeight.Medium)</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$Txt(label, 18, 22, p.dim, Modifier.at(if (k == 0) 298 else if (k == 4) 870 - 31 else 298 + 143 * k - 20, 615).width(if (k == 0 || k == 4) 31.dp else 40.dp), align = if (k == 0) TextAlign.Start else if (k == 4) TextAlign.End else TextAlign.Center)</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$Txt(shown?.let { Fmt.dec(it.seconds, 1) } ?: Fmt.DASH, 30, 36, if (isBest) p.cyan else p.text, family = cond, weight = FontWeight.Bold, tnum = true)</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$ValueUnit(48, 620, value = { LiveTxt({ Fmt.temp(state.value.sample?.coolantC, tu) }, 72, 65, p.text, family = cond, weight = FontWeight.Bold, letterSpacing = 0.9.sp, tnum = true) }, unit = { Txt(Units.label(tu), 23, 28, p.dim, family = cond) })</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$ValueUnit(732, 489, value = { LiveTxt({ Fmt.dec(x.zeroTimer ?: 0.0, 1) }, 64, 58, p.text, family = cond, weight = FontWeight.SemiBold, letterSpacing = 0.sp, tnum = true) }, unit = { Txt("s", 23, 28, p.dim, family = cond) })</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$ValueUnit(918, 620, value = { LiveTxt({ x.score?.toString() ?: Fmt.DASH }, 72, 65, p.text, family = cond, weight = FontWeight.Bold, letterSpacing = 0.9.sp, tnum = true) }, unit = { Txt("/ 100", 23, 28, p.dim, family = cond) })</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$ValueUnit(x, baseline, value = { LiveTxt(value, 60, 54, p.text, family = cond, weight = FontWeight.Bold, letterSpacing = 0.7.sp, tnum = true) }, unit = { Txt(unit, 23, 28, p.dim, family = cond) })</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$bars.forEachIndexed { k, b -&gt; TxtR(if (b == 0.0) Units.label(pu).let { "0 $it" } else Fmt.boostTick(b * 100.0, pu), 18, 22, p.text, 92, 596 + 24 * k, 60, weight = FontWeight.Medium); Txt(rpms[k], 18, 22, p.text, Modifier.at(612, 596 + 24 * k)) }</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$for (k in 0..5) Txt(if (k == 5) "0 s" else "\u2212${25 - 5 * k} s", 18, 22, p.text, Modifier.at((100 + 100.8f * k - 60f).toInt(), 734).width(120.dp), align = TextAlign.Center)</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$if (!bv.isNaN()) { val yy = (106 - bv.coerceIn(-1.0, 1.5) * 48 ).toFloat() * d; if (!b0) { boost.moveTo(xx, yy); b0 = true } else boost.lineTo(xx, yy) }</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$if (!rv.isNaN()) { val yy = (154 - rv.coerceIn(0.0, 7500.0) / 7500.0 * 120).toFloat() * d; if (!r0) { rpm.moveTo(xx, yy); r0 = true } else rpm.lineTo(xx, yy) }</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$listOf(-1.0, -0.5, 0.0, 0.5, 1.0, 1.5).forEachIndexed { k, b -&gt; Txt(if (b == 0.0) "0" else Fmt.boostTick(b * 100.0, pu), 21, 26, p.text, Modifier.at(tx[k].first, tx[k].second), weight = FontWeight.SemiBold) }</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$s.speedKmh?.let { v -&gt; extras.zero.accept(s.tsMs, v).let { t -&gt; if (t != null) { extras.runs.add(0, Run(t)); while (extras.runs.size &gt; 4) extras.runs.removeAt(extras.runs.size - 1) } } }</ID>
+    <ID>MaxLineLength:DriveVariantsScreen.kt$val hint by remember { androidx.compose.runtime.derivedStateOf { val s = state.value; if ((s.sample?.rpm ?: 0.0) &gt;= st.shiftRpm - 400 &amp;&amp; (s.gear ?: 9) in 1..5) s.gear!! + 1 else null } }</ID>
+    <ID>MaxLineLength:Extras.kt$Modifier.height(h.dp).pill(fill = if (on) p.accent else p.sky.copy(alpha = .12f), border = if (on) Color.Transparent else p.hair).padding(horizontal = 26.dp)</ID>
+    <ID>MaxLineLength:Extras.kt$drawCircle(if (on) Color.White else p.text.copy(alpha = .78f), 16.dp.toPx(), androidx.compose.ui.geometry.Offset(if (on) size.width - 22.dp.toPx() else 22.dp.toPx(), size.height / 2))</ID>
+    <ID>MaxLineLength:Extras.kt$for (f in floatArrayOf(.22f, .36f, .52f, .70f)) drawCircle(p.blue.copy(alpha = .25f), (f + .005f) * corner, c, style = androidx.compose.ui.graphics.drawscope.Stroke(.01f * corner))</ID>
+    <ID>MaxLineLength:Extras.kt$for (i in 0 until n) drawRoundRect(if (i &lt; lit) p.cyan else unlit, androidx.compose.ui.geometry.Offset(i * (sw + gap), top), androidx.compose.ui.geometry.Size(sw, hh), androidx.compose.ui.geometry.CornerRadius(3.dp.toPx()))</ID>
+    <ID>MaxLineLength:Extras.kt$fun</ID>
+    <ID>MaxLineLength:Extras.kt$val tile = androidx.compose.ui.graphics.Path().apply { addRoundRect(androidx.compose.ui.geometry.RoundRect(0f, 0f, size.width, size.height, androidx.compose.ui.geometry.CornerRadius(r22))) }</ID>
     <ID>MaxLineLength:FordMark.kt$FordPaths$const val OVAL = "M 132.29167,0 C 59.199637,0 -1.9786051e-4,21.2823 -1.9786051e-4,47.614671 c 0,26.324372 59.20383486051,47.612672 132.29186786051,47.612672 73.09703,0 132.29186,-21.2893 132.29186,-47.612672 C 264.58353,21.2813 205.3897,0 132.29167,0 Z"</ID>
     <ID>MaxLineLength:FordMark.kt$FordPaths$const val RING = "m 132.96168,91.051284 c -70.384996,0 -127.4418,-19.661277 -127.4418,-43.916619 0,-24.258342 57.057804,-43.9186196 127.4418,-43.9186196 70.37799,0 127.43179,19.6592776 127.43179,43.9186196 0,24.254342 -57.0558,43.916619 -127.43179,43.916619 z m 0,-84.030185 c -67.911961,0 -122.9617369,17.956253 -122.9617369,40.113566 0,22.158312 55.0477759,40.116565 122.9617369,40.116565 67.91095,0 122.95173,-17.959253 122.95173,-40.116565 0,-22.157313 -55.04478,-40.113566 -122.95173,-40.113566 z"</ID>
     <ID>MaxLineLength:FordMark.kt$FordPaths$const val SCRIPT = "m 99.718411,14.153162 c -1.808602,0.0057 -3.626498,0.07607 -5.456522,0.225827 -12.155159,1.013013 -23.724873,7.789341 -23.745873,18.077476 -0.013,5.217068 3.732823,9.444366 9.5369,9.258363 6.820089,-0.229002 12.418952,-5.63915 15.34999,-12.46024 1.112015,-2.588034 -0.947521,-3.663016 -1.927534,-2.172997 a 17.298244,17.298244 0 0 1 -6.882277,6.061655 c -3.209042,1.55602 -6.639117,1.136192 -7.67913,-1.443842 -1.462019,-3.640047 1.577064,-9.086919 8.512155,-11.649952 10.017131,-3.672048 20.49805,-1.242988 30.58319,0.633037 0.144,0 0.6812,0.295017 0.20619,0.54002 -1.80603,0.975013 -3.58411,1.767889 -6.35414,4.127919 -1.98603,1.684023 -4.58601,3.926065 -6.59703,6.368096 -1.99602,2.407032 -3.41086,4.553923 -5.282885,6.933954 -0.261004,0.344005 -0.582261,0.328146 -0.578261,0.328146 -4.563059,0.763009 -9.030095,1.27416 -13.120148,4.090196 -0.846012,0.578007 -1.213225,1.603995 -0.700217,2.389005 0.461005,0.696009 1.515402,0.769887 2.247411,0.242879 2.541034,-1.882024 5.157098,-2.767959 8.157137,-2.849959 0.131002,0.008 0.193994,0.02904 0.230994,0.109037 0.023,0.045 0.009,0.139807 -0.04496,0.209807 -4.494059,6.173081 -5.619453,7.568137 -9.000498,11.395187 -1.729022,1.967026 -3.42989,3.627214 -5.329915,5.355237 -7.6761,7.061092 -15.932443,6.939053 -18.894482,2.511995 -1.770023,-2.657035 -1.536737,-5.446231 -0.376722,-7.760262 1.428019,-2.834037 4.313781,-4.911167 6.713812,-6.124183 0.891011,-0.450006 1.147294,-1.578033 0.255282,-2.606046 -0.567007,-0.670008 -1.942218,-0.789067 -2.966231,-0.603065 -3.144042,0.575008 -6.859213,2.928343 -9.054242,5.760381 -2.474032,3.17804 -3.709898,7.036191 -3.294894,11.366248 0.745011,7.813102 7.242154,12.326204 14.618251,12.274204 5.869305,-0.0454 11.397783,-1.806217 18.050088,-8.492517 6.201081,-6.236082 11.850509,-15.551144 17.14058,-24.189257 0.166,-0.276004 0.28378,-0.423967 1.08779,-0.522967 3.31805,-0.411005 8.21743,-0.87885 11.35747,-1.058851 0.69801,-0.038 0.83983,-0.0303 1.11983,0.31471 0.81801,1.022014 2.04681,1.88942 3.03082,2.417427 0.48001,0.258003 0.7082,0.386741 1.08521,0.392741 0.465,0.01 0.82692,-0.237709 1.06092,-0.499712 0.33301,-0.362004 0.42495,-0.835497 0.24495,-1.1405 -0.18801,-0.320005 -2.37775,-1.521626 -2.44275,-2.007633 -0.048,-0.303004 0.2868,-0.376205 0.2868,-0.376205 1.61002,-0.500006 3.28499,-1.529031 4.3,-3.454057 0.99701,-1.895025 1.15791,-4.424126 -0.66611,-5.830144 -1.60102,-1.235016 -4.02,-1.040127 -5.95003,0.674895 -1.88802,1.665021 -2.51275,4.087455 -2.25775,6.210483 0.046,0.368005 0.0269,0.491818 -0.48007,0.533818 -2.90204,0.230003 -5.69822,0.309838 -8.80826,0.47284 -0.208,0.015 -0.27396,-0.121065 -0.15296,-0.264067 3.58104,-6.160081 8.92792,-10.546758 14.84201,-14.866815 0.392,-0.291003 0.27231,-0.844376 0.25631,-1.306382 10.67814,2.29703 20.99747,6.572268 32.07561,6.481268 4.58107,-0.037 8.96685,-0.726926 13.15891,-3.003955 3.68704,-1.991026 5.18322,-3.83292 5.29322,-5.746945 0.086,-1.323018 -0.84326,-2.159311 -2.16628,-1.874307 -11.19314,2.546034 -21.8712,2.517927 -33.00733,1.183909 -12.71917,-1.528645 -24.92411,-4.675563 -37.584331,-4.6359 z m 22.342859,17.852684 c 0.2616,0.01386 0.50635,0.100716 0.70435,0.268718 0.59001,0.499006 0.31075,1.744035 -0.28526,2.606046 -0.65101,0.951012 -1.7551,1.771973 -2.76211,1.971976 -0.202,0.037 -0.37692,-0.04895 -0.45992,-0.491961 h -0.001 c -0.164,-1.173016 0.22227,-2.743918 1.48828,-3.850933 0.39626,-0.346879 0.87968,-0.526942 1.31569,-0.503846 z m 89.85459,0.224793 c -2.03502,0 -4.70389,0.0036 -6.82491,0.0036 -0.505,0 -0.76611,0.06106 -1.00511,0.526067 -0.78201,1.485019 -10.32042,15.638499 -12.09644,18.387535 -0.29801,0.418006 -0.6639,0.3597 -0.7059,-0.117305 -0.18,-1.632022 -1.60324,-3.507927 -3.84628,-4.40594 -1.71002,-0.687008 -3.38205,-0.810913 -5.11908,-0.582911 -3.13703,0.417006 -5.93164,2.057136 -8.38968,3.904161 -3.70304,2.789037 -6.89754,6.399709 -11.0226,9.069744 -2.25203,1.453019 -5.33498,2.720466 -7.39801,0.830441 -1.86701,-1.714022 -1.65711,-5.522123 1.19993,-8.466162 0.30101,-0.309004 0.66213,-0.05118 0.60513,0.225826 -0.27,1.332017 0.0621,2.656304 1.08314,3.585316 1.24601,1.105015 3.02979,1.231004 4.5558,0.492994 1.80202,-0.883011 2.86036,-2.590386 3.17036,-4.528412 0.47701,-3.005039 -1.86011,-5.655865 -4.78215,-5.867868 -2.37503,-0.165003 -4.65184,0.653013 -6.86987,2.467037 -1.11302,0.913012 -1.74631,1.588959 -2.70733,2.942977 -0.235,0.334005 -0.59491,0.367949 -0.58291,-0.125057 0.11101,-3.84705 -1.49728,-6.011841 -4.71032,-6.082842 -2.49204,-0.058 -5.15662,1.2797 -7.23264,2.919723 -2.27604,1.810023 -4.26608,4.208117 -6.3991,6.462147 -0.265,0.278004 -0.49703,0.265121 -0.57103,-0.273885 -0.065,-2.549034 -0.71226,-5.01815 -1.90428,-6.771173 -0.42101,-0.610008 -1.30813,-0.912235 -2.05414,-0.500229 -0.344,0.187003 -1.5428,0.732297 -2.41381,1.427305 -0.43301,0.353005 -0.60031,0.863764 -0.41031,1.518773 1.15002,3.807049 0.89701,8.137116 -0.66301,11.795163 -1.43302,3.348044 -4.21796,6.370312 -7.48999,7.392325 -2.15603,0.677009 -4.39817,0.345829 -5.78519,-1.547195 -1.90502,-2.612035 -1.13478,-7.153948 1.70326,-10.926998 2.50703,-3.320043 6.13017,-5.430242 9.74722,-6.78926 0.426,-0.162003 0.51274,-0.431612 0.39274,-0.789617 -0.197,-0.590008 -0.50972,-1.390513 -0.63872,-1.757518 -0.331,-0.873012 -1.26013,-1.015972 -2.39314,-0.89297 -2.62704,0.303004 -4.996,1.19398 -7.33703,2.434997 -6.13008,3.250042 -9.20226,9.540164 -10.55027,12.906208 -0.64801,1.615021 -1.20278,2.625159 -1.91979,3.519171 -0.96601,1.203015 -2.179122,2.297079 -4.397151,4.226104 -0.200003,0.177002 -0.349903,0.545798 -0.181902,0.887803 0.227003,0.465006 1.379837,2.077054 1.705842,2.221056 0.361005,0.176002 0.779745,-0.06965 0.947747,-0.189653 1.552014,-1.041014 3.409084,-2.692161 4.318094,-3.812176 0.318,-0.383004 0.64645,-0.221822 0.81545,0.360186 0.84802,2.996039 3.06865,5.441718 6.13969,6.464731 5.62007,1.877025 11.45016,-0.839598 15.85022,-5.568661 2.79603,-3.00504 3.80522,-4.938324 4.87722,-6.252341 1.81603,-2.229029 5.40007,-7.214875 9.66713,-10.415917 1.56502,-1.180015 3.41812,-2.080124 4.35013,-1.483115 0.74701,0.480006 0.98814,1.594786 -0.21188,3.754815 -4.35005,7.867103 -10.75447,17.110339 -11.92848,19.353369 -0.214,0.389005 -0.0271,0.694016 0.38395,0.694016 2.27703,-0.01 4.53516,-0.0052 6.60219,-0.0052 0.343,-0.016 0.49825,-0.170859 0.67025,-0.411862 3.33904,-5.175068 6.48201,-10.102927 9.85006,-15.195994 0.19,-0.300004 0.363,-0.06744 0.37,0.06356 0.07,1.181016 0.36273,2.798221 1.07074,3.860235 1.27402,1.962025 3.07829,2.80492 5.08031,2.81792 1.59202,0.018 2.39694,-0.221788 4.11397,-0.856796 a 14.475204,14.475204 0 0 0 3.38016,-1.796276 c 0.50301,-0.345004 0.59075,0.23346 0.57775,0.322462 -0.77201,4.109054 0.18215,8.9767 4.3062,10.995727 4.93606,2.410032 10.35823,-0.976828 13.47827,-4.033868 0.30501,-0.295004 0.63407,-0.264005 0.66507,0.370004 0.066,1.168015 0.59805,2.553291 1.57407,3.523304 2.61403,2.598034 7.8902,1.568762 13.18526,-2.490291 3.40005,-2.597034 6.9569,-6.267899 10.16994,-10.154951 0.11901,-0.150001 0.20779,-0.393167 -0.0222,-0.637171 -0.49,-0.507006 -1.19758,-1.08727 -1.68259,-1.534275 -0.221,-0.186003 -0.54629,-0.132734 -0.73329,0.0083 -3.29305,3.101041 -6.25699,6.638215 -10.54304,9.563255 -1.44502,0.998013 -3.74713,1.80408 -4.78215,0.418062 -0.403,-0.538007 -0.35669,-1.283318 0.0403,-2.26033 1.25102,-3.086041 21.03003,-32.904445 22.05605,-34.660468 l 0.002,-0.0021 c 0.176,-0.306004 -0.01,-0.529684 -0.39998,-0.529684 z m -27.71463,18.641783 c 0.51789,-0.0045 1.0028,0.09419 1.44436,0.304375 2.43603,1.151015 1.65797,3.944073 0.56896,6.137102 a 0.58700828,0.58700828 0 0 0 -0.0439,0.45217 c 0.04,0.228003 0.33957,0.448971 0.63458,0.553972 0.103,0.038 0.16145,0.111914 0.0445,0.351917 -0.84202,1.785023 -1.61409,2.814061 -2.6691,4.364081 -0.968,1.433019 -2.06027,2.550127 -3.38429,3.626141 -1.99503,1.635021 -4.76485,3.413971 -7.05488,2.217956 -1.01801,-0.524007 -1.45712,-1.933221 -1.43712,-3.074236 0.053,-3.210042 1.49017,-6.504014 4.15221,-9.742055 2.63741,-3.214293 5.5006,-5.17171 7.74475,-5.191423 z"</ID>
-    <ID>MaxLineLength:FrameMeter.kt$FrameMeter$fun start()</ID>
     <ID>MaxLineLength:FrameMeter.kt$FrameMeter$if</ID>
+    <ID>MaxLineLength:FrozenSource.kt$FrozenSource$class</ID>
     <ID>MaxLineLength:HomeScreen.kt$Box(Modifier.at(457, 342).size(107.dp, 80.dp).roundBtn(primary = true)) { Icon(if (m?.playing == true) Ic.Pause else Ic.Play, 40, p.onAccent, Modifier.at(34, 18)) }</ID>
     <ID>MaxLineLength:HomeScreen.kt$Canvas(Modifier.at(24, 88).size(24.dp)) { rotate(45f) { drawRect(p.cyan, topLeft = Offset(size.width * .18f, size.height * .18f), size = Size(size.width * .64f, size.height * .64f)) } }</ID>
     <ID>MaxLineLength:HomeScreen.kt$LiveTxt({ Fmt.grouped(Math.round(s.value.sample?.rpm ?: 0.0).toInt()) }, 40, 40, p.text, family = cond, weight = FontWeight.SemiBold, tnum = true)</ID>
@@ -68,10 +338,81 @@
     <ID>MaxLineLength:HomeScreen.kt$SegBar(40, 10.dp, Modifier.at(752, 300).width(368.dp), litCount = { Fmt.lit(Fmt.fraction(s.value.sample?.speedKmh, 0.0, st.speedScaleKmh.toDouble()), 40) })</ID>
     <ID>MaxLineLength:HomeScreen.kt$VitalValue(728, Units.label(tu), { Fmt.temp(s.value.sample?.coolantC, tu) }, 842) { Fmt.lit(Fmt.fraction(s.value.sample?.coolantC, 60.0, 120.0), 6) }</ID>
     <ID>MaxLineLength:HomeScreen.kt$value = { LiveTxt({ Fmt.speed(s.value.sample?.speedKmh, u) }, 168, 168, p.text, family = cond, weight = FontWeight.SemiBold, letterSpacing = 0.sp, tnum = true) }</ID>
+    <ID>MaxLineLength:Icons.kt$Ic$Picture : Ic</ID>
     <ID>MaxLineLength:Icons.kt$Ic.Fan$"M12 10.5C12 6 14 3.5 16.5 4.5c2 1 .5 4.5-4.5 6M13.5 12c4.5 0 7 2 6.5 4.5-.5 2.2-4 1.5-6.5-3M12 13.5c0 4.5-2 7-4.5 6-2-1-.5-4.5 4.5-6M10.5 12C6 12 3.5 10 4 7.5c.5-2.2 4-1.5 6.5 3"</ID>
-    <ID>MaxLineLength:MainActivity.kt$MainActivity$val kv = intent.getStringExtra("set")?.split(',')?.mapNotNull { it.split('=', limit = 2).takeIf { p -&gt; p.size == 2 }?.let { p -&gt; p[0].trim() to p[1].trim() } }?.toMap().orEmpty()</ID>
+    <ID>MaxLineLength:InstalledApps.kt$InstalledApps$try</ID>
+    <ID>MaxLineLength:InstalledApps.kt$InstalledApps$try { ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_RECENT, "") ?: "" } catch (_: ClassCastException) { "" }</ID>
+    <ID>MaxLineLength:MediaScreen.kt$Box(Modifier.at(461, 438).size(89.dp, 80.dp).roundBtn(primary = true).tap { media.toggle() }) { Icon(if (playing) Ic.Pause else Ic.Play, 40, p.onAccent, Modifier.at(25, 20)) }</ID>
+    <ID>MaxLineLength:MediaScreen.kt$LiveTxt({ MediaFmt.remaining(st.value?.remainingSec ?: 0) }, 20, 24, p.text, Modifier.at(500, 413).width(152.dp), cond, FontWeight.Medium, TextAlign.End, tnum = true)</ID>
+    <ID>MaxLineLength:MediaScreen.kt$LiveTxt({ val a = list.firstVisibleItemIndex; "${a + 1}\u2013${minOf(a + 8, n)} of $n" }, 19, 21, p.dim, Modifier.at(924, 98).width(200.dp), align = TextAlign.End)</ID>
+    <ID>MaxLineLength:MediaScreen.kt$OptionChip(205, 712, 143, when (repeat) { RepeatMode.One -&gt; "Repeat one"; RepeatMode.All -&gt; "Repeat all"; else -&gt; "Repeat" }, Ic.Repeat, repeat != RepeatMode.Off, { media.cycleRepeat() })</ID>
+    <ID>MaxLineLength:MediaScreen.kt$SegSlider(360, 397, 292, 10, 40, frac = { st.value?.progress?.toFloat() ?: 0f }) { f -&gt; st.value?.track?.let { media.seekTo((f * it.durationSec).toInt()) } }</ID>
+    <ID>MaxLineLength:MediaScreen.kt$WaitingCard(24, 80, 1120, 696, Ic.Music, "Waiting for a media player", "Nothing is playing and no player has shared its session with this app. Start music in the player app and it shows up here.")</ID>
+    <ID>MaxLineLength:MediaScreen.kt$fmt?.let { f -&gt; Row(Modifier.at(360, 162).height(32.dp).pill(border = p.hair).padding(horizontal = 14.dp), verticalAlignment = Alignment.CenterVertically) { Txt(f, 18, 22, p.text, weight = FontWeight.SemiBold) } }</ID>
+    <ID>MaxLineLength:MediaScreen.kt$softWrap = true</ID>
+    <ID>MaxLineLength:MediaScreen.kt$style = TextStyle(color = p.text, fontSize = 64.sp, fontFamily = cond, fontWeight = FontWeight.SemiBold, lineHeight = 61.sp, letterSpacing = 0.012.em, platformStyle = PlatformTextStyle(includeFontPadding = false), lineHeightStyle = LineHeightStyle(LineHeightStyle.Alignment.Center, LineHeightStyle.Trim.None))</ID>
+    <ID>MaxLineLength:MediaSource.kt$DemoLibrary$MediaKind.Bluetooth -&gt; "FLAC \u00B7 44.1 kHz"</ID>
+    <ID>MaxLineLength:OverlayHost.kt$Box(Modifier.at(382, 363).size(65.dp, 60.dp).background(p.accent, RoundedCornerShape(50)), contentAlignment = Alignment.Center) { Txt("R", 40, 48, p.onAccent, weight = FontWeight.SemiBold) }</ID>
+    <ID>MaxLineLength:OverlayHost.kt$Box(Modifier.at(676, 104).size(84.dp, 84.dp).background(p.s2, CircleShape), contentAlignment = Alignment.Center) { Txt(o.initials, 44, 53, p.cyan, family = cond, weight = FontWeight.ExtraBold) }</ID>
+    <ID>MaxLineLength:OverlayHost.kt$Txt("Reduce load. Stop safely when possible.", 24, 29, p.onWarn, Modifier.at(0, 514).width(1280.dp), weight = FontWeight.SemiBold, align = TextAlign.Center)</ID>
+    <ID>MaxLineLength:OverlayHost.kt$Txt(if (o.rangeKm != null) " \u00B7 about ${o.rangeKm} km left" else " \u00B7 find a station soon", 20, 24, p.onWarn.copy(alpha = .8f), weight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:OverlayHost.kt$is Overlay.Notice</ID>
+    <ID>MaxLineLength:OverlayHost.kt$is Overlay.ShiftUp</ID>
+    <ID>MaxLineLength:OverlayHost.kt$snapshotFlow { OverlayRules.doorMoving(canbox.value?.doorsOpen ?: emptySet(), state.value.sample?.speedKmh) }.distinctUntilChanged().collect { if (it != null) show(it) else clear("door") }</ID>
+    <ID>MaxLineLength:OverlayHost.kt$val kick = remember { MutableSharedFlow&lt;Unit&gt;(replay = 1, extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST) } // not Compose state: bumping it must not recompose the app</ID>
+    <ID>MaxLineLength:Overlays.kt$OverlayRules$fun shiftUp(rpm: Double?, shiftRpm: Int, gear: Int?): Overlay.ShiftUp?</ID>
+    <ID>MaxLineLength:ParkingScreen.kt$Box</ID>
+    <ID>MaxLineLength:ParkingScreen.kt$Row</ID>
+    <ID>MaxLineLength:ParkingScreen.kt$Row(Modifier.at(15, 14).size(100.dp, 34.dp).pill(fill = p.warn, border = Color.Transparent), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) { Txt("Object", 22, 27, p.onWarn, weight = FontWeight.SemiBold) }</ID>
+    <ID>MaxLineLength:ParkingScreen.kt$Txt(when (view) { ParkView.Rear -&gt; "Rear sensors"; ParkView.Front -&gt; "Front sensors"; ParkView.Around -&gt; "All sensors" }, 19, 21, p.dim, Modifier.at(916, 227))</ID>
+    <ID>MaxLineLength:ParkingScreen.kt$TxtR(Math.round(beep * 100).toString(), 32, 36, p.text, 1220, 585, 60, cond, FontWeight.SemiBold, tnum = true)</ID>
+    <ID>MaxLineLength:ParkingScreen.kt$TxtR(Math.round(bright * 100).toString(), 32, 36, p.text, 1220, 641, 60, cond, FontWeight.SemiBold, tnum = true)</ID>
+    <ID>MaxLineLength:ParkingScreen.kt$WaitingCard(24, 80, 1120, 696, Ic.Park, "Waiting for Canbox", "No parking sensor data yet. The radar and distances appear here once the unit shares them.")</ID>
+    <ID>MaxLineLength:ParkingScreen.kt$drawRect(p.warn.copy(alpha = .12f)); drawRect(p.warn, style = Stroke(2.5f.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(7.dp.toPx(), 6.dp.toPx()))))</ID>
+    <ID>MaxLineLength:ParkingScreen.kt$if ((near ?: 9.0) &lt; 0.8) Row(Modifier.at(1165, 222).size(73.dp, 32.dp).background(p.warn, androidx.compose.foundation.shape.RoundedCornerShape(50)), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) { Txt("Close", 18, 22, p.onWarn, weight = FontWeight.SemiBold) }</ID>
+    <ID>MaxLineLength:ParkingScreen.kt$val edge = path { moveTo((cx - half(230f)) * d, 230f * d); lineTo((cx - half(660f)) * d, 660f * d); moveTo((cx + half(230f)) * d, 230f * d); lineTo((cx + half(660f)) * d, 660f * d) }</ID>
+    <ID>MaxLineLength:ParkingScreen.kt$val near by remember { derivedStateOf { val r = radar.value; when (view) { ParkView.Rear -&gt; r?.nearestRearM; ParkView.Front -&gt; r?.nearestFrontM; ParkView.Around -&gt; listOfNotNull(r?.nearestRearM, r?.nearestFrontM).minOrNull() } } }</ID>
+    <ID>MaxLineLength:PhoneRadioDemo.kt$PhoneDemo$fun</ID>
+    <ID>MaxLineLength:PhoneRadioDemo.kt$PhoneDemo$return if (d.length &gt;= 6) RECENTS.map { it.contact }.firstOrNull { c -&gt; c.number.filter { it.isDigit() }.endsWith(d) } ?: DemoContact(dialed, dialed) else DemoContact(dialed, dialed)</ID>
+    <ID>MaxLineLength:PhoneRadioDemo.kt$ProjectionState$data</ID>
+    <ID>MaxLineLength:PhoneScreens.kt$BaselineRow(1120, 637, gap = 4, alignEnd = true) { Txt("${Math.round(vol * 30)}", 40, 39, p.text, family = cond, weight = FontWeight.SemiBold, tnum = true); Txt("/ 30", 23, 28, p.dim, family = cond) }</ID>
+    <ID>MaxLineLength:PhoneScreens.kt$Box</ID>
+    <ID>MaxLineLength:PhoneScreens.kt$Box(Modifier.at(1068, y + 12).size(56.dp, 56.dp).background(p.s2, CircleShape).pill(border = p.blue).tap { onCall(e.contact) }, contentAlignment = Alignment.Center) { Icon(Ic.Phone, 26, p.blue) }</ID>
+    <ID>MaxLineLength:PhoneScreens.kt$Box(Modifier.at(414, 196).size(62.dp, 56.dp).background(p.sky.copy(alpha = .12f), RoundedCornerShape(16.dp)).tap { dialed = PhoneDemo.key(dialed, '&lt;') }, contentAlignment = Alignment.Center) { Icon(Ic.Close, 26, p.text) }</ID>
+    <ID>MaxLineLength:PhoneScreens.kt$PillBtn(40, 664, 438, "Call", { if (dialed.any { it.isDigit() }) onCall(PhoneDemo.contactFor(dialed)) else onNotice("Enter a number first") }, h = 96, ic = Ic.Phone, primary = true)</ID>
+    <ID>MaxLineLength:PhoneScreens.kt$Row</ID>
+    <ID>MaxLineLength:PhoneScreens.kt$Row(Modifier.at(48, 101).height(31.dp).pill(border = p.cyan.copy(alpha = .5f)).padding(horizontal = 14.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) { Icon(Ic.Phone, 16, p.cyan); Txt("In call \u00B7 Pixel 8", 18, 22, p.cyan, weight = FontWeight.SemiBold) }</ID>
+    <ID>MaxLineLength:PhoneScreens.kt$Txt(call.contact.initials.ifEmpty { "?" }, 128, 128, p.text, Modifier.at(48, 262).size(250.dp, 250.dp), cond, FontWeight.ExtraBold, TextAlign.Center)</ID>
+    <ID>MaxLineLength:PhoneScreens.kt$if (e.missed) Row(Modifier.size(80.dp, 28.dp).background(p.warn, RoundedCornerShape(50)), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) { Txt("Missed", 18, 22, p.onWarn, weight = FontWeight.Bold) }</ID>
+    <ID>MaxLineLength:PhoneScreens.kt$private</ID>
+    <ID>MaxLineLength:PhoneScreens.kt$val keys = listOf("1" to "", "2" to "ABC", "3" to "DEF", "4" to "GHI", "5" to "JKL", "6" to "MNO", "7" to "PQRS", "8" to "TUV", "9" to "WXYZ", "*" to "", "0" to "+", "#" to "")</ID>
     <ID>MaxLineLength:Primitives.kt$drawRoundRect(border ?: p.hair, topLeft = Offset(hw / 2, hw / 2), size = Size(size.width - hw, size.height - hw), cornerRadius = CornerRadius(r.x - hw / 2), style = Stroke(hw))</ID>
     <ID>MaxLineLength:Primitives.kt$drawRoundRect(p.hairSoft, topLeft = Offset(hw / 2, hw / 2), size = Size(size.width - hw, size.height - hw), cornerRadius = CornerRadius(r.x - hw / 2), style = Stroke(hw))</ID>
+    <ID>MaxLineLength:ProjectionScreen.kt$BaselineRow(463, 583, gap = 4) { Txt("${link.mbps}", 40, 36, p.text, family = cond, weight = FontWeight.Bold); Txt("Mb/s", 23, 28, p.dim, family = cond) }</ID>
+    <ID>MaxLineLength:ProjectionScreen.kt$Box(Modifier.at(722, y + 2).size(34.dp, 34.dp).background(p.sky.copy(alpha = .18f), CircleShape), contentAlignment = Alignment.Center) { Icon(Ic.Phone, 20, if (i == 0) p.cyan else p.dim) }</ID>
+    <ID>MaxLineLength:ProjectionScreen.kt$Canvas(Modifier.at(210, 320).size(190.dp, 10.dp)) { val d = 1.dp.toPx(); for (k in 0 until 14) drawCircle(p.cyan, 2.2f * d, Offset((6 + k * 13) * d, 5 * d)) }</ID>
+    <ID>MaxLineLength:ProjectionScreen.kt$Row(Modifier.at(534, 102).height(32.dp).pill(border = p.cyan.copy(alpha = .5f)).padding(horizontal = 18.dp), verticalAlignment = Alignment.CenterVertically) { Txt(if (link.connected) "Connected" else "Not connected", 18, 22, p.cyan, weight = FontWeight.SemiBold) }</ID>
+    <ID>MaxLineLength:ProjectionScreen.kt$Txt("Phone", 19, 21, p.dim, Modifier.at(48, 522))</ID>
+    <ID>MaxLineLength:ProjectionScreen.kt$if</ID>
+    <ID>MaxLineLength:ProjectionScreen.kt$val phones = listOf(Triple("Pixel 8", "Android Auto \u00B7 connected now", "Active"), Triple("iPhone 13", "CarPlay \u00B7 last used 3 days ago", ""), Triple("Moto G84", "Bluetooth only", ""))</ID>
+    <ID>MaxLineLength:QuickControls.kt$QuickControls$fun wifiOn(): Boolean</ID>
+    <ID>MaxLineLength:QuickPanel.kt$BaselineRow(518, 126, gap = 2, alignEnd = true) { LiveTxt({ brightness.pct.toString() }, 40, 39, p.text, family = cond, weight = FontWeight.SemiBold, tnum = true); Txt("%", 23, 28, p.dim, family = cond) }</ID>
+    <ID>MaxLineLength:QuickPanel.kt$BaselineRow(518, 232, gap = 2, alignEnd = true) { LiveTxt({ volume.level.value.toString() }, 40, 39, p.cyan, family = cond, weight = FontWeight.SemiBold, tnum = true); Txt(" / ${volume.max}", 23, 28, p.dim, family = cond) }</ID>
+    <ID>MaxLineLength:RadioScreen.kt$BaselineRow(1144, 114, gap = 4, alignEnd = true) { Txt("${radio.signalDb}", 24, 29, p.text, family = cond, weight = FontWeight.SemiBold, tnum = true); Txt("dB\u00B5V", 18, 22, p.dim, family = cond) }</ID>
+    <ID>MaxLineLength:RadioScreen.kt$Box</ID>
+    <ID>MaxLineLength:RadioScreen.kt$Row</ID>
+    <ID>MaxLineLength:RadioScreen.kt$Row(Modifier.at(646, 460).size(195.dp, 96.dp).pill(fill = p.sky.copy(alpha = .12f), border = p.hair).tap { radio = radio.seek(true) }, horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally), verticalAlignment = Alignment.CenterVertically) { Txt("Seek", 21, 26, p.text, weight = FontWeight.SemiBold); Icon(Ic.Next, 26, p.text) }</ID>
+    <ID>MaxLineLength:RadioScreen.kt$Row(Modifier.at(791, 84).height(40.dp).pill(border = p.cyan.copy(alpha = .5f)).padding(horizontal = 22.dp), verticalAlignment = Alignment.CenterVertically) { Txt(if (radio.stereo) "Stereo" else "Mono", 18, 22, p.cyan, weight = FontWeight.SemiBold) }</ID>
+    <ID>MaxLineLength:RadioScreen.kt$Row(Modifier.at(898, 84).height(40.dp).pill(border = p.cyan.copy(alpha = .5f)).padding(horizontal = 22.dp), verticalAlignment = Alignment.CenterVertically) { Txt("RDS", 18, 22, p.cyan, weight = FontWeight.SemiBold) }</ID>
+    <ID>MaxLineLength:RadioScreen.kt$TabPills(24, 80, RadioSource.entries, source, { it.label }) { if (it == RadioSource.Radio) source = it else onNotice("${it.label} is not part of the demo") }</ID>
+    <ID>MaxLineLength:RadioScreen.kt$Txt(if (idx != null) "Preset ${idx + 1}" + (radio.station?.name?.takeIf { it.isNotEmpty() }?.let { " \u00B7 Bajao!".takeIf { _ -&gt; it == "Red FM" } ?: "" } ?: "") else "Not saved", 26, 29, p.dim, Modifier.at(414, 224).width(708.dp), cond, FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:RadioScreen.kt$Txt(if (pr == null) "Empty" else st?.name?.ifEmpty { "Unnamed" } ?: "Unnamed", 18, 20, if (on) p.onAccent else p.dim, Modifier.at(16, 66), weight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:RadioScreen.kt$Txt(radio.station?.name?.ifEmpty { "FM " + RadioDemo.mhzText(radio.tenths) } ?: "No station", 54, 54, p.text, Modifier.at(414, 158).width(708.dp), cond, FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:RadioScreen.kt$for (m in 88..108 step 2) Txt(m.toString(), 20, 24, p.text, Modifier.at((scaleX(m.toDouble()) - 20).toInt(), 362).width(40.dp), align = TextAlign.Center)</ID>
+    <ID>MaxLineLength:RadioScreen.kt$for (pr in radio.presets) if (pr != null &amp;&amp; pr != radio.tenths) { val px = scaleX(pr / 10.0).toFloat() * d; val t = androidx.compose.ui.graphics.Path().apply { moveTo(px, 426 * d); lineTo(px - 5 * d, 436 * d); lineTo(px + 5 * d, 436 * d); close() }; drawPath(t, p.blue) }</ID>
+    <ID>MaxLineLength:RadioScreen.kt$if</ID>
+    <ID>MaxLineLength:Settings.kt$Settings.Companion$const val MAX_HOST = 253 // longest valid DNS name; a pasted megabyte used to be stored, drawn on every redraw and resolved on every keystroke</ID>
+    <ID>MaxLineLength:Settings.kt$Settings.Companion$raw.filter { Character.getType(it).let { t -&gt; t != Character.CONTROL.toInt() &amp;&amp; t != Character.FORMAT.toInt() &amp;&amp; t != Character.LINE_SEPARATOR.toInt() &amp;&amp; t != Character.PARAGRAPH_SEPARATOR.toInt() } }</ID>
     <ID>MaxLineLength:SettingsScreen.kt$Box</ID>
     <ID>MaxLineLength:SettingsScreen.kt$Modifier.at(X, 456 + 62 * i).size(708.dp, 56.dp).pill(fill = if (on) p.accent else p.sky.copy(alpha = .12f), border = if (on) Color.Transparent else p.hair).tap { set { it.copy(btAddress = addr, btName = name) } }</ID>
     <ID>MaxLineLength:SettingsScreen.kt$Para("Ford and the Blue Oval are trademarks of Ford Motor Company. This is an independent, non-commercial personal project, not affiliated with or endorsed by Ford.", 18, 26, p.dim, 708, Modifier.at(X, Y0 + 380))</ID>
@@ -87,38 +428,168 @@
     <ID>MaxLineLength:SettingsScreen.kt$SourceRow(150, Ic.Gauge, "Simulator", "Drive-cycle replay for demos and testing", s.source == SourceKind.Simulator) { set { it.copy(source = SourceKind.Simulator) } }</ID>
     <ID>MaxLineLength:SettingsScreen.kt$SourceRow(238, Ic.Bt, "OBD adapter \u00B7 Bluetooth", if (s.btName.isNotBlank()) s.btName else "Choose a paired ELM327 adapter", s.source == SourceKind.ObdBluetooth) { set { it.copy(source = SourceKind.ObdBluetooth) } }</ID>
     <ID>MaxLineLength:SettingsScreen.kt$SourceRow(326, Ic.Wifi, "OBD adapter \u00B7 Wi-Fi", "${s.tcpHost}:${s.tcpPort}", s.source == SourceKind.ObdTcp, last = true) { set { it.copy(source = SourceKind.ObdTcp) } }</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$TextBox(X + 440, 456, 160, s.tcpPort.toString(), "Port", number = true, maxLen = 5) { v -&gt; v.toIntOrNull()?.let { n -&gt; set { it.copy(tcpPort = n) } } }</ID>
     <ID>MaxLineLength:SettingsScreen.kt$Txt(if (perf.count == 0) Fmt.DASH else "%.1f / %.1f ms".format(perf.p50, perf.p99), 21, 26, if (perf.count &gt; 0 &amp;&amp; perf.meetsGate()) p.cyan else p.text, weight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$value = text</ID>
+    <ID>MaxLineLength:Shell.kt$Box</ID>
     <ID>MaxLineLength:Shell.kt$Txt(if (snap) DebugHooks.CLOCK else Fmt.clock(now.hour, now.minute, st.clock), 36, 36, p.text, Modifier.baselineAt(28, 42), CockpitFonts.Condensed, FontWeight.SemiBold, letterSpacing = 0.03.em)</ID>
+    <ID>MaxLineLength:SnapshotFixtures.kt$SnapshotFixtures$audio = MockAudioSettings(AudioState(preset = "Punch", bands = listOf(4, 3, 1, 0, -1, 0, 2, 3), balance = -2, fader = 3, subwooferDb = 4, loudness = true, speedVolume = true))</ID>
+    <ID>MaxLineLength:SnapshotFixtures.kt$SnapshotFixtures$val boostY = intArrayOf(106, 106, 106, 106, 103, 98, 92, 86, 81, 75, 69, 64, 60, 60, 60, 60, 60, 60, 76, 72, 70, 66, 64, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60)</ID>
+    <ID>MaxLineLength:SnapshotFixtures.kt$SnapshotFixtures$val rpmY = intArrayOf(140, 140, 140, 136, 131, 127, 122, 118, 114, 109, 105, 100, 96, 92, 87, 83, 78, 74, 110, 107, 105, 103, 100, 98, 96, 93, 91, 89, 86, 84, 82, 80, 77, 75, 73, 97, 96, 94, 92, 91, 89, 88, 86, 84, 83, 81, 80, 78, 77, 75, 74)</ID>
+    <ID>MaxLineLength:SnapshotFixtures.kt$SnapshotFixtures$x.runs.addAll(listOf(dev.kuntal.cockpit.data.Run(12.6), dev.kuntal.cockpit.data.Run(12.8), dev.kuntal.cockpit.data.Run(12.5), dev.kuntal.cockpit.data.Run(12.3, daysAgo = 1)))</ID>
+    <ID>MaxLineLength:SoundScreen.kt$AudioPresets.FREQ.forEachIndexed { i, f -&gt; Txt(f, 18, 22, p.dim, Modifier.at((COL0 + COLP * i - 14).toInt(), 572).size(74.dp, 22.dp), align = TextAlign.Center) }</ID>
+    <ID>MaxLineLength:SoundScreen.kt$LiveTxt({ volume.level.value.toString() }, 56, 50, p.text, Modifier.at(592, 646).size(60.dp, 52.dp), cond, FontWeight.SemiBold, TextAlign.End, tnum = true)</ID>
+    <ID>MaxLineLength:SoundScreen.kt$Row</ID>
+    <ID>MaxLineLength:SoundScreen.kt$WaitingCard(24, 80, 1120, 696, Ic.Eq, "Sound is set on the unit", "The equalizer, balance and fader belong to the unit's own sound app. This screen can control them once the unit shares its sound service.")</ID>
+    <ID>MaxLineLength:StandbyScreen.kt$Fact(1190, "Last trip", lastTripKm?.let { Fmt.distance(it, st.speedUnit) } ?: Fmt.DASH, (if (st.speedUnit == dev.kuntal.cockpit.data.SpeedUnit.KMH) "km" else "mi").takeIf { lastTripKm != null }, alignEnd = true)</ID>
+    <ID>MaxLineLength:StandbyScreen.kt$Txt(":", 340, 279, p.text.copy(alpha = if (colon) 1f else .25f), Modifier.padding(horizontal = 6.dp).offset(y = (-37).dp), cond, FontWeight.Bold, letterSpacing = 4.08.sp)</ID>
+    <ID>MaxLineLength:StandbyScreen.kt$Txt(DateTimeFormatter.ofPattern("EEEE \u00B7 d MMMM", Locale.US).format(now), 19, 21, p.dim, Modifier.at(0, 256).width(1280.dp), align = TextAlign.Center)</ID>
+    <ID>MaxLineLength:StandbyScreen.kt$dev.kuntal.cockpit.ui.components.ValueUnit(x, 687, value = { Txt(value, 48, 43, p.text, family = cond, weight = FontWeight.Bold, tnum = true) }, unit = { if (unit != null) Txt(unit, 23, 28, p.dim, family = cond) })</ID>
+    <ID>MaxLineLength:StandbyScreen.kt$drawCircle(Brush.radialGradient(0f to p.blue.copy(alpha = .42f * a), .55f to p.glowB.copy(alpha = .3f * a), 1f to Color.Transparent, center = Offset(450 * d, 310 * d), radius = 450 * d), 450 * d, Offset(450 * d, 310 * d))</ID>
+    <ID>MaxLineLength:StandbyScreen.kt$drawRect(Brush.horizontalGradient(0f to Color.Transparent, .5f to Color.White.copy(alpha = .28f), 1f to Color.Transparent, startX = x - 30f, endX = x + 30f), Offset(x - 30f, 0f), Size(60f, FordPaths.VB_H))</ID>
+    <ID>MaxLineLength:StandbyScreen.kt$else</ID>
+    <ID>MaxLineLength:SystemVolume.kt$SystemVolume$if</ID>
     <ID>MaxLineLength:Tach.kt$TextStyle(fontFamily = CockpitFonts.Barlow, fontWeight = FontWeight.Medium, fontSize = (24f * s).toSp(), color = p.dim, platformStyle = PlatformTextStyle(includeFontPadding = false))</ID>
     <ID>MaxLineLength:Tach.kt$val numStyle = TextStyle(fontFamily = CockpitFonts.Condensed, fontWeight = FontWeight.SemiBold, fontSize = (40f * s).toSp(), platformStyle = PlatformTextStyle(includeFontPadding = false))</ID>
+    <ID>MaxLineLength:Theme.kt$Modifier.fillMaxSize().graphicsLayer(compositingStrategy = if (dev.kuntal.cockpit.DebugHooks.flatten) CompositingStrategy.Offscreen else CompositingStrategy.Auto)</ID>
+    <ID>MaxLineLength:Theme.kt$if (bx &gt; .5f) { drawRect(palette.bg, Offset.Zero, Size(bx + 1f, size.height)); drawRect(palette.bg, Offset(size.width - bx - 1f, 0f), Size(bx + 1f, size.height)) }</ID>
+    <ID>MaxLineLength:Theme.kt$if (by &gt; .5f) { drawRect(palette.bg, Offset.Zero, Size(size.width, by + 1f)); drawRect(palette.bg, Offset(0f, size.height - by - 1f), Size(size.width, by + 1f)) }</ID>
+    <ID>MaxLineLength:TripTracker.kt$TripTracker$if</ID>
+    <ID>MaxLineLength:TripTracker.kt$TripTracker$if (!v.isFinite() || v &lt; 0.0 || v &gt; MAX_PLAUSIBLE_KMH) return</ID>
+    <ID>MaxLineLength:Trips.kt$FileTripStore.Companion$events = f[9].split(';').filter { it.isNotEmpty() }.map { e -&gt; val q = e.split(',', limit = 3); TripEvent(TripEventKind.valueOf(q[0]), q[2], q[1].toInt()) }</ID>
+    <ID>MaxLineLength:Trips.kt$FileTripStore.Companion$id = f[0].toLong()</ID>
+    <ID>MaxLineLength:Trips.kt$FileTripStore.Companion$points = f[8].split(';').filter { it.isNotEmpty() }.map { p -&gt; val q = p.split(','); TripPoint(q[0].toDouble(), q.getOrNull(1)?.toDoubleOrNull(), q.getOrNull(2)?.toIntOrNull()) }</ID>
+    <ID>MaxLineLength:Trips.kt$MockTripStore.Companion$111</ID>
+    <ID>MaxLineLength:Trips.kt$MockTripStore.Companion$43</ID>
+    <ID>MaxLineLength:Trips.kt$MockTripStore.Companion$return TripRecord(id, startMs, startMs + durSec * 1000L, km, avg, top, pts.maxOfOrNull { it.boostBar ?: -9.0 }, km * 0.068, pts, events, demo = true)</ID>
+    <ID>MaxLineLength:Trips.kt$TripFmt$TripEventKind.PeakBoost -&gt; t.points.getOrNull(e.atSec / TripRecord.STEP_SEC)?.rpm?.let { "Peak boost at ${Fmt.grouped(it)} rpm" } ?: t.maxBoostBar?.let { "Peak boost ${boostLabel(it)}" } ?: e.text</ID>
+    <ID>MaxLineLength:Trips.kt$TripRecorder$if (longestStop &gt;= 60) add(TripEvent(TripEventKind.LongestStop, "Longest stop \u00B7 ${(longestStop / 60).roundToInt()} min", ((endMs - startMs) / 1000).toInt()))</ID>
+    <ID>MaxLineLength:Trips.kt$TripRecorder$if (t &gt;= nextPointMs) { points.add(TripPoint(Math.round(v * 10) / 10.0, s.boostKpa?.let { Math.round(it) / 100.0 }, s.rpm?.roundToInt())); nextPointMs += TripRecord.STEP_SEC * 1000L }</ID>
+    <ID>MaxLineLength:Trips.kt$TripRecorder$s.boostKpa?.let { b -&gt; val bar = b / 100.0; if (maxBoost.let { m -&gt; m == null || bar &gt; m }) { maxBoost = bar; peakAt = ((t - startMs) / 1000).toInt() } }</ID>
+    <ID>MaxLineLength:TripsScreen.kt$Modifier.size(454.dp, 80.dp).tap { sel = i; armed = false }.then(if (on) Modifier.background(p.accent, androidx.compose.foundation.shape.RoundedCornerShape(14.dp)) else Modifier)</ID>
+    <ID>MaxLineLength:TripsScreen.kt$Row</ID>
+    <ID>MaxLineLength:TripsScreen.kt$Txt("Distance", 19, 21, p.dim, Modifier.at(560, 144))</ID>
+    <ID>MaxLineLength:TripsScreen.kt$Txt("Max boost", 19, 21, p.dim, Modifier.at(560, 265))</ID>
+    <ID>MaxLineLength:TripsScreen.kt$Txt(TripFmt.eventText(t, e, { Fmt.boost(it * 100.0, pu) + " " + Units.label(pu) }, { Fmt.speed(it, u) + " " + Units.label(u) }), 21, 25, p.text, Modifier.at(584, (cy - 12.5f).toInt()))</ID>
+    <ID>MaxLineLength:TripsScreen.kt$Txt(TripFmt.title(t.startMs, nowMs, zone).substringBefore(" \u00B7") + " \u00B7 " + TripFmt.range(t.startMs, t.endMs, zone), 26, 29, p.text, Modifier.at(542, 101), cond, FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:TripsScreen.kt$ValueUnit(289, 223, value = { Txt("1,204", 38, 34, p.text, family = cond, weight = FontWeight.Bold, tnum = true) }, unit = { Txt(if (u == SpeedUnit.KMH) "km" else "mi", 23, 28, p.dim, family = cond) })</ID>
+    <ID>MaxLineLength:TripsScreen.kt$ValueUnit(560, 235, value = { Txt(Fmt.distance(t.distanceKm, u), 72, 65, p.text, family = cond, weight = FontWeight.Bold, tnum = true) }, unit = { Txt(unitDist, 23, 28, p.dim, family = cond) })</ID>
+    <ID>MaxLineLength:TripsScreen.kt$ValueUnit(560, 328, value = { Txt(t.maxBoostBar?.let { Fmt.boost(it * 100.0, pu) } ?: Fmt.DASH, 40, 36, p.cyan, family = cond, weight = FontWeight.Bold, tnum = true) }, unit = { Txt(Units.label(pu), 23, 28, p.dim, family = cond) })</ID>
+    <ID>MaxLineLength:TripsScreen.kt$ValueUnit(781, 235, value = { Txt(Fmt.speed(t.avgKmh, u), 40, 36, p.text, family = cond, weight = FontWeight.Bold, tnum = true) }, unit = { Txt(Units.label(u), 23, 28, p.dim, family = cond) })</ID>
+    <ID>MaxLineLength:TripsScreen.kt$ValueUnit(781, 328, value = { Txt(t.fuelL?.let { Fmt.dec(it, 1) } ?: Fmt.DASH, 40, 36, p.text, family = cond, weight = FontWeight.Bold, tnum = true) }, unit = { Txt("L", 23, 28, p.dim, family = cond) })</ID>
+    <ID>MaxLineLength:TripsScreen.kt$ValueUnit(960, 235, value = { Txt(Fmt.speed(t.topKmh, u), 40, 36, p.text, family = cond, weight = FontWeight.Bold, tnum = true) }, unit = { Txt(Units.label(u), 23, 28, p.dim, family = cond) })</ID>
+    <ID>MaxLineLength:TripsScreen.kt$ValueUnit(960, 328, value = { Txt(t.avgLPer100?.let { Fmt.dec(it, 1) } ?: Fmt.DASH, 40, 36, p.text, family = cond, weight = FontWeight.Bold, tnum = true) }, unit = { Txt("L/100", 23, 28, p.dim, family = cond) })</ID>
+    <ID>MaxLineLength:TripsScreen.kt$WaitingCard(24, 286, 470, 490, Ic.Route, "No trips yet", "Trips are recorded while the app is connected to the car's OBD adapter and the car moves.")</ID>
+    <ID>MaxLineLength:TripsScreen.kt$drawLine(p.text, Offset(1032.7f * d, 380.5f * d), Offset(1060.7f * d, 380.5f * d), 3 * d, pathEffect = PathEffect.dashPathEffect(floatArrayOf(6 * d, 5 * d)))</ID>
+    <ID>MaxLineLength:TripsScreen.kt$for (i in 0 until n) { val b = t.points[i].boostBar ?: continue; val y = bY(b) * d; if (!started) { bl.moveTo(px(i), y); started = true } else { bl.lineTo(px(i), y) } }</ID>
+    <ID>MaxLineLength:TripsScreen.kt$val area = Path().apply { moveTo(px(0), 511 * d); for (i in 0 until n) lineTo(px(i), spY(t.points[i].speedKmh) * d); lineTo(px(n - 1), 511 * d); close() }</ID>
+    <ID>MaxLineLength:TripsScreen.kt$while (m &lt; durMin - step / 3) { val x = (CX0 + (m / durMin * CW).toFloat()) * d; drawLine(p.dim.copy(alpha = .6f), Offset(x, 511 * d), Offset(x, 517 * d), 1.5f * d); m += step }</ID>
+    <ID>MaxLineLength:VehicleRepository.kt$VehicleRepository$state = state.copy(sample = null, gear = null, link = Link.Lost)</ID>
     <ID>MaxLineLength:VehicleRepository.kt$VehicleRepository$state = state.copy(sample = s, link = if (simulated) Link.Simulated else Link.Connected, trip = trip.snapshot(), gear = GearEstimator.estimate(s.speedKmh, s.rpm))</ID>
     <ID>ModifierMissing:AppsScreen.kt$AppsScreen</ID>
+    <ID>ModifierMissing:CarScreen.kt$CarScreen</ID>
     <ID>ModifierMissing:CockpitApp.kt$CockpitApp</ID>
     <ID>ModifierMissing:Controls.kt$Chips</ID>
     <ID>ModifierMissing:Controls.kt$SettingRow</ID>
     <ID>ModifierMissing:Controls.kt$Stepper</ID>
+    <ID>ModifierMissing:DiagnosticsScreen.kt$DiagnosticsScreen</ID>
     <ID>ModifierMissing:DriveScreen.kt$DriveScreen</ID>
+    <ID>ModifierMissing:DriveVariantsScreen.kt$DriveBoostScreen</ID>
+    <ID>ModifierMissing:DriveVariantsScreen.kt$DriveCruiseScreen</ID>
+    <ID>ModifierMissing:DriveVariantsScreen.kt$DriveHost</ID>
+    <ID>ModifierMissing:Extras.kt$DemoMark</ID>
+    <ID>ModifierMissing:Extras.kt$IconLabelAt</ID>
+    <ID>ModifierMissing:Extras.kt$OptionChip</ID>
+    <ID>ModifierMissing:Extras.kt$PillBtn</ID>
+    <ID>ModifierMissing:Extras.kt$SegSlider</ID>
+    <ID>ModifierMissing:Extras.kt$TabPills</ID>
+    <ID>ModifierMissing:Extras.kt$ToggleSwitch</ID>
+    <ID>ModifierMissing:Extras.kt$TxtR</ID>
+    <ID>ModifierMissing:Extras.kt$WaitingCard</ID>
     <ID>ModifierMissing:HomeScreen.kt$HomeScreen</ID>
+    <ID>ModifierMissing:Layers.kt$StaticLayer</ID>
+    <ID>ModifierMissing:MediaScreen.kt$MediaScreen</ID>
+    <ID>ModifierMissing:OverlayHost.kt$OverlayLayer</ID>
+    <ID>ModifierMissing:ParkingScreen.kt$ParkingScreen</ID>
+    <ID>ModifierMissing:PhoneScreens.kt$PhoneDemoScreen</ID>
     <ID>ModifierMissing:Primitives.kt$BaselineRow</ID>
     <ID>ModifierMissing:Primitives.kt$ValueUnit</ID>
+    <ID>ModifierMissing:ProjectionScreen.kt$ProjectionDemoScreen</ID>
+    <ID>ModifierMissing:QuickPanel.kt$QuickPanel</ID>
+    <ID>ModifierMissing:RadioScreen.kt$RadioDemoScreen</ID>
     <ID>ModifierMissing:SettingsScreen.kt$SettingsScreen</ID>
     <ID>ModifierMissing:Shell.kt$Dock</ID>
     <ID>ModifierMissing:Shell.kt$StatusBar</ID>
+    <ID>ModifierMissing:SoundScreen.kt$SoundScreen</ID>
+    <ID>ModifierMissing:StandbyScreen.kt$BootScreen</ID>
+    <ID>ModifierMissing:StandbyScreen.kt$StandbyScreen</ID>
     <ID>ModifierMissing:Theme.kt$DesignCanvas</ID>
+    <ID>ModifierMissing:TripsScreen.kt$TripsScreen</ID>
     <ID>ModifierWithoutDefault:AppsScreen.kt$modifier</ID>
+    <ID>ModifierWithoutDefault:Extras.kt$modifier</ID>
     <ID>ModifierWithoutDefault:HomeScreen.kt$modifier</ID>
+    <ID>MultipleEmitters:CarScreen.kt$CarTopView</ID>
+    <ID>MultipleEmitters:CarScreen.kt$Climate</ID>
     <ID>MultipleEmitters:CockpitApp.kt$NotYet</ID>
     <ID>MultipleEmitters:Controls.kt$SettingRow</ID>
+    <ID>MultipleEmitters:DiagnosticsScreen.kt$FaultList</ID>
+    <ID>MultipleEmitters:DiagnosticsScreen.kt$Table</ID>
     <ID>MultipleEmitters:DriveScreen.kt$BoostScale</ID>
-    <ID>MultipleEmitters:DriveScreen.kt$Tile</ID>
+    <ID>MultipleEmitters:DriveScreen.kt$TileFrame</ID>
+    <ID>MultipleEmitters:Extras.kt$WaitingCard</ID>
     <ID>MultipleEmitters:HomeScreen.kt$ShortcutTile</ID>
     <ID>MultipleEmitters:HomeScreen.kt$VitalFrame</ID>
+    <ID>MultipleEmitters:MediaScreen.kt$Queue</ID>
+    <ID>MultipleEmitters:OverlayHost.kt$Banner</ID>
+    <ID>MultipleEmitters:OverlayHost.kt$OverlayLayer</ID>
+    <ID>MultipleEmitters:ParkingScreen.kt$Guidelines</ID>
     <ID>MultipleEmitters:SettingsScreen.kt$ConnectionsPage</ID>
     <ID>MultipleEmitters:SettingsScreen.kt$VehiclePage</ID>
+    <ID>MultipleEmitters:SoundScreen.kt$Bands</ID>
+    <ID>MultipleEmitters:SoundScreen.kt$Pad</ID>
+    <ID>MultipleEmitters:TripsScreen.kt$Chart</ID>
+    <ID>MultipleEmitters:TripsScreen.kt$Detail</ID>
+    <ID>MutableStateAutoboxing:ParkingScreen.kt$mutableStateOf(0.6f)</ID>
+    <ID>MutableStateAutoboxing:ParkingScreen.kt$mutableStateOf(0.7f)</ID>
+    <ID>MutableStateAutoboxing:PhoneScreens.kt$mutableStateOf(0.6f)</ID>
     <ID>MutableStateAutoboxing:Shell.kt$mutableStateOf(0)</ID>
+    <ID>NoNameShadowing:OverlayHost.kt${ kotlinx.coroutines.delay((it - now()).coerceAtLeast(0) + 20); refresh() }</ID>
+    <ID>ParameterNaming:StandbyScreen.kt$onDone</ID>
+    <ID>ReturnCount:Trips.kt$TripRecorder$fun accept(s: VehicleSample): TripRecord?</ID>
     <ID>TooManyFunctions:Format.kt$Fmt</ID>
+    <ID>TooManyFunctions:MediaSource.kt$MockMediaSource : MediaSource</ID>
+    <ID>UnsafeCallOnNullableType:CockpitData.kt$CockpitData$AudioPresets.bands("Punch")!!</ID>
+    <ID>UnsafeCallOnNullableType:DriveVariantsScreen.kt$best!!</ID>
+    <ID>UnsafeCallOnNullableType:DriveVariantsScreen.kt$s.gear!!</ID>
+    <ID>UnsafeCallOnNullableType:Sources.kt$Sources$DebugHooks.driveState.sample!!</ID>
     <ID>UnsafeCallOnNullableType:TripTracker.kt$TripTracker$best!!</ID>
     <ID>UnsafeCallOnNullableType:TripTracker.kt$TripTracker$runStartMs!!</ID>
+    <ID>UnusedParameter:OverlayHost.kt$settings: Settings</ID>
+    <ID>UnusedParameter:RadioScreen.kt$onOpenReal: () -&gt; Unit</ID>
+    <ID>UnusedParameter:TripsScreen.kt$onExportAll: () -&gt; Unit</ID>
+    <ID>UnusedPrivateProperty:SoundScreen.kt$private const val EQ_TOP = 246f</ID>
+    <ID>UseOrEmpty:CarScreen.kt$canbox.value?.climate?.let { "${it.fan} / ${it.fanMax}" } ?: ""</ID>
+    <ID>UseOrEmpty:CarScreen.kt$canbox.value?.climate?.let { if (it.acOn) "A/C on" else "A/C off" } ?: ""</ID>
+    <ID>UseOrEmpty:CarScreen.kt$canbox.value?.let { r.value(it) } ?: ""</ID>
+    <ID>UseOrEmpty:DiagnosticsScreen.kt$diag.faults() ?: emptyList()</ID>
+    <ID>UseOrEmpty:DriveVariantsScreen.kt$x.score?.let { CruiseText.smooth(it) } ?: ""</ID>
     <ID>UseOrEmpty:InstalledApps.kt$InstalledApps$ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_RECENT, "") ?: ""</ID>
+    <ID>UseOrEmpty:MainActivity.kt$MainActivity$intent.getStringExtra("screen") ?: ""</ID>
+    <ID>UseOrEmpty:MediaScreen.kt$st.value?.queue ?: emptyList()</ID>
+    <ID>UseOrEmpty:MediaScreen.kt$st.value?.track?.album ?: ""</ID>
+    <ID>UseOrEmpty:MediaScreen.kt$st.value?.track?.artist ?: ""</ID>
+    <ID>UseOrEmpty:OverlayHost.kt$canbox.value?.doorsOpen ?: emptySet()</ID>
+    <ID>UseOrEmpty:RadioScreen.kt$" \u00B7 Bajao!".takeIf { _ -&gt; it == "Red FM" } ?: ""</ID>
+    <ID>UseOrEmpty:RadioScreen.kt$radio.station?.name?.takeIf { it.isNotEmpty() }?.let { " \u00B7 Bajao!".takeIf { _ -&gt; it == "Red FM" } ?: "" } ?: ""</ID>
+    <ID>UseOrEmpty:Settings.kt$Settings.Companion$raw.trim().uppercase().takeIf { MAC.matches(it) } ?: ""</ID>
+    <ID>UseOrEmpty:Trips.kt$CompositeTripStore$demo?.all() ?: emptyList()</ID>
+    <ID>UseOrEmpty:Trips.kt$TripCsv$t.fuelL?.let { Fmt.dec(it, 2) } ?: ""</ID>
+    <ID>UseOrEmpty:Trips.kt$TripCsv$t.maxBoostBar?.let { Fmt.dec(it, 2) } ?: ""</ID>
+    <ID>WildcardImport:PhoneScreens.kt$import dev.kuntal.cockpit.data.*</ID>
+    <ID>WildcardImport:PhoneScreens.kt$import dev.kuntal.cockpit.ui.components.*</ID>
+    <ID>WildcardImport:ProjectionScreen.kt$import dev.kuntal.cockpit.data.*</ID>
+    <ID>WildcardImport:ProjectionScreen.kt$import dev.kuntal.cockpit.ui.components.*</ID>
+    <ID>WildcardImport:RadioScreen.kt$import dev.kuntal.cockpit.data.*</ID>
+    <ID>WildcardImport:RadioScreen.kt$import dev.kuntal.cockpit.ui.components.*</ID>
   </CurrentIssues>
 </SmellBaseline>

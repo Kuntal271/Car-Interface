@@ -211,9 +211,31 @@
     </issue>
 
     <issue
+        id="ModifierParameter"
+        message="Optional Modifier parameter should have a default value of `Modifier`"
+        errorLine1="fun TachFace(modifier: Modifier = Modifier.size(600.dp), maxRpm: Float = 7000f, redRpm: Float = 6000f) {"
+        errorLine2="             ~~~~~~~~">
+        <location
+            file="src/main/java/dev/kuntal/cockpit/ui/components/Tach.kt"
+            line="46"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="ModifierParameter"
+        message="Optional Modifier parameter should have a default value of `Modifier`"
+        errorLine1="fun TachArc(rpm: State&lt;Float>, modifier: Modifier = Modifier.size(600.dp), maxRpm: Float = 7000f, redRpm: Float = 6000f) {"
+        errorLine2="                               ~~~~~~~~">
+        <location
+            file="src/main/java/dev/kuntal/cockpit/ui/components/Tach.kt"
+            line="98"
+            column="32"/>
+    </issue>
+
+    <issue
         id="ProduceStateDoesNotAssignValue"
         message="produceState calls should assign `value` inside the producer lambda"
-        errorLine1="    val icon by produceState&lt;androidx.compose.ui.graphics.ImageBitmap?>(null, app.pkg) { value = withContext(Dispatchers.IO) { InstalledApps.icon(ctx, app.pkg) } }"
+        errorLine1="    val icon by produceState(InstalledApps.cachedIcon(app.pkg), app.pkg) { if (value == null) value = withContext(InstalledApps.iconDispatcher) { InstalledApps.icon(ctx, app.pkg) } }"
         errorLine2="                ~~~~~~~~~~~~">
         <location
             file="src/main/java/dev/kuntal/cockpit/ui/screens/AppsScreen.kt"
@@ -228,19 +250,52 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/AndroidManifest.xml"
-            line="21"
+            line="30"
             column="13"/>
     </issue>
 
     <issue
-        id="QueryAllPackagesPermission"
-        message="A `&lt;queries>` declaration should generally be used instead of QUERY_ALL_PACKAGES; see https://g.co/dev/packagevisibility for details"
-        errorLine1="    &lt;uses-permission android:name=&quot;android.permission.QUERY_ALL_PACKAGES&quot; />"
-        errorLine2="                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        id="AutoboxingStateCreation"
+        message="Prefer `mutableDoubleStateOf` instead of `mutableStateOf`"
+        errorLine1="    var hz by mutableStateOf(if (dev.kuntal.cockpit.DebugHooks.snapshot) 12.0 else 0.0)"
+        errorLine2="              ~~~~~~~~~~~~~~">
         <location
-            file="src/main/AndroidManifest.xml"
-            line="8"
-            column="22"/>
+            file="src/main/java/dev/kuntal/cockpit/ui/screens/DiagnosticsScreen.kt"
+            line="189"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="AutoboxingStateCreation"
+        message="Prefer `mutableFloatStateOf` instead of `mutableStateOf`"
+        errorLine1="    var beep by rememberSaveable { mutableStateOf(0.6f) }"
+        errorLine2="                                   ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/kuntal/cockpit/ui/screens/ParkingScreen.kt"
+            line="84"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="AutoboxingStateCreation"
+        message="Prefer `mutableFloatStateOf` instead of `mutableStateOf`"
+        errorLine1="    var bright by rememberSaveable { mutableStateOf(0.7f) }"
+        errorLine2="                                     ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/kuntal/cockpit/ui/screens/ParkingScreen.kt"
+            line="85"
+            column="38"/>
+    </issue>
+
+    <issue
+        id="AutoboxingStateCreation"
+        message="Prefer `mutableFloatStateOf` instead of `mutableStateOf`"
+        errorLine1="    var vol by remember { mutableStateOf(0.6f) }"
+        errorLine2="                          ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/kuntal/cockpit/ui/screens/PhoneScreens.kt"
+            line="113"
+            column="27"/>
     </issue>
 
     <issue
@@ -250,8 +305,19 @@
         errorLine2="                             ~~~~~~~~~~~~~~">
         <location
             file="src/main/java/dev/kuntal/cockpit/ui/shell/Shell.kt"
-            line="64"
+            line="88"
             column="30"/>
+    </issue>
+
+    <issue
+        id="AutoboxingStateCreation"
+        message="Prefer `mutableIntStateOf` instead of `mutableStateOf`"
+        errorLine1="    var clockEpoch by remember { mutableStateOf(0) }              // bumped when the system clock or zone is set: re-aim the minute timer"
+        errorLine2="                                 ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/dev/kuntal/cockpit/ui/shell/Shell.kt"
+            line="89"
+            column="34"/>
     </issue>
 
 </issues>

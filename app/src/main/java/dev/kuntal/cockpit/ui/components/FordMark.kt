@@ -24,6 +24,9 @@ object FordPaths {
 }
 
 /** Parsed once per process (the script path alone is 7 kB of SVG data and used to be re-parsed on every visit to Home). */
+/** The Blue Oval keeps its own trademark navy in every theme (the one literal colour allowed outside Theme.kt). */
+val FordOvalBlue = Color(0xFF08399A)
+
 private val FORD_PATHS by lazy { listOf(FordPaths.OVAL, FordPaths.RING, FordPaths.SCRIPT).map { PathParser().parsePathString(it).toPath() } }
 
 @Composable
@@ -32,7 +35,7 @@ fun FordMark(heightDp: Int, modifier: Modifier = Modifier) {
     val w = heightDp * FordPaths.VB_W / FordPaths.VB_H
     Canvas(modifier.size(w.dp, heightDp.dp)) {
         scale(size.height / FordPaths.VB_H, size.height / FordPaths.VB_H, pivot = Offset.Zero) {
-            drawPath(paths[0], Color(0xFF08399A))
+            drawPath(paths[0], FordOvalBlue)
             drawPath(paths[1], Color.White)
             drawPath(paths[2], Color.White)
         }
